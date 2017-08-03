@@ -6,6 +6,7 @@ microservices as easy as possible.
 Please execute 
 
     pip3.5 install -r requirements.txt
+
 to install all python requirements.
 
 ## Setup
