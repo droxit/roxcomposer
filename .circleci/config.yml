@@ -62,7 +62,7 @@ jobs:
           command: |
             . venv/bin/activate
             python setup.py sdist
-            mv ./dist/*.tar.gz ./test-reports/pip_package.tar.gz
+            cp ./dist/*.tar.gz ./test-reports/
       - store_artifacts:
           path: test-reports
           destination: test-reports
@@ -70,8 +70,8 @@ jobs:
           name: deploy to gru
           command: |
             . venv/bin/activate
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/pip_package.tar.gz devpi@176.9.144.37:/tmp
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040; devpi upload --index droxit/dev /tmp/pip_package.tar.gz; devpi logoff'
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
 #          dev:
 #            branch: dev
 #            commands: |
