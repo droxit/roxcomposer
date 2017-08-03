@@ -53,7 +53,9 @@ jobs:
       - run:
           name: build package
           command:
-              tar cf ./test-reports/build.tar.gz .
+              mkdir ./test-reports;
+              touch ./test-reports/build.tar.gz;
+              tar cf ./test-reports/build.tar.gz *;
 
       - store_artifacts:
           path: test-reports
