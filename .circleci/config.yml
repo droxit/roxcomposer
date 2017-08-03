@@ -53,7 +53,7 @@ jobs:
       - run:
           name: build package
           command:
-#              mkdir ./test-reports;
+              mkdir ./test-reports;
 #              touch ./test-reports/build.tar.gz;
               tar cz --exclude venv -f ./test-reports/build.tar.gz *;
 
