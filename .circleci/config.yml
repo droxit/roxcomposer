@@ -54,7 +54,7 @@ jobs:
           name: build package
           command: |
               . venv/bin/activate
-              gzip -c . > ./test-reports/build.gz
+              gzip -cr . > ./test-reports/build.gz
 
       - store_artifacts:
           path: test-reports
