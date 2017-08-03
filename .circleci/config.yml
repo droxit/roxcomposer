@@ -49,6 +49,13 @@ jobs:
             . venv/bin/activate
             ./tests/run_tests.sh
 
+      # build package
+      - run:
+          name: build package
+          command: |
+              . venv/bin/activate
+              gzip -c . > ./test-reports/build.gz
+
       - store_artifacts:
           path: test-reports
           destination: test-reports
