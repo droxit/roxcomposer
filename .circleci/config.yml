@@ -71,7 +71,7 @@ jobs:
           command: |
             . venv/bin/activate
             scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/pip_package.tar.gz devpi@176.9.144.37:/tmp
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi use http://localhost:4040; devpi login droxit --password=droxit; devpi upload --index droxit/dev /tmp/pip_package.tar.gz; devpi logoff'
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040; devpi upload --index droxit/dev /tmp/pip_package.tar.gz; devpi logoff'
 #          dev:
 #            branch: dev
 #            commands: |
