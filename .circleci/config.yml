@@ -67,8 +67,7 @@ jobs:
           path: test-reports
           destination: test-reports
       - deploy:
-          production:
-            branch: master
+          name: gru
             commands: |
               . venv/bin/activate
               scp ./test-reports/pip_package.tar.gz 176.9.144.37:/tmp
