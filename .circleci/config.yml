@@ -66,10 +66,16 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
-#      - deployment:
-##          production:
+      - deployment:
+          production:
+            branch: master
+            commands: |
+              . venv/bin/activate
+              scp ./test-reports/pip_package.tar.gz 176.9.144.37:/tmp
+              ssh devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi upload --index droxit/dev /tmp/pip_package.tar.gz; devpi logoff'
 #          dev:
 #            branch: dev
-#            commands:
-
-
+#            commands: |
+#              . venv/bin/activate
+#              scp ./test-reports/pip_package.tar.gz 176.9.144.37:/tmp
+#              ssh devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi upload --index droxit/dev /tmp/pip_package.tar.gz; devpi logoff'
