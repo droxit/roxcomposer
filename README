@@ -10,7 +10,8 @@ Please execute
 to install all python requirements.
 
 ## Setup
-to be done via pip - still in progress
+To setup the framework and to use it, you can use our local pip package on gru. Please execute the following command
+pip3.5 install -i http://localhost:4040/droxit/dev mosaic
 
 ## Build Config
 To configure builds along the the Continuous Integration pipeline please have a look at the 
