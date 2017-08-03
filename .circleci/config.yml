@@ -42,9 +42,12 @@ jobs:
       # run tests!
       - run:
           name: run tests
+#          command: |
+#            . venv/bin/activate
+#            python start.py tests
           command: |
             . venv/bin/activate
-            python manage.py test
+            ./tests/run_tests.sh
 
       - store_artifacts:
           path: test-reports
