@@ -52,7 +52,8 @@ jobs:
       # build package
       - run:
           name: build package
-          command:
+          command: |
+            . venv/bin/activate
             mkdir ./test-reports;
             tar cz --exclude venv -f ./test-reports/build.tar.gz *;
 
