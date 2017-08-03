@@ -35,7 +35,7 @@ setup(
     author_email='info@droxit.de',
 
     # Choose your license
-    license='proprietary',
+    license='none',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -50,7 +50,7 @@ setup(
         'Topic :: Software Development :: Microservices',
 
         # Pick your license as you wish (should match "license" above)
-        'License :: Proprietary license',
+        "License :: none - don't use it",
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
