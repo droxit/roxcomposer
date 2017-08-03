@@ -56,7 +56,20 @@ jobs:
             . venv/bin/activate
             mkdir ./test-reports;
             tar cz --exclude venv -f ./test-reports/build.tar.gz *;
-
+      # create pip package
+      - run:
+          name: create pip package
+          command: |
+            . venv/bin/activate
+            python setup.py sdist
+            mv ./dist/*.tar.gz ./test-reports/pip_package.tar.gz
       - store_artifacts:
           path: test-reports
           destination: test-reports
+#      - deployment:
+##          production:
+#          dev:
+#            branch: dev
+#            commands:
+
+
