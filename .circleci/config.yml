@@ -55,7 +55,7 @@ jobs:
           command:
 #              mkdir ./test-reports;
 #              touch ./test-reports/build.tar.gz;
-              tar cz --exclucde venv -f ./test-reports/build.tar.gz *;
+              tar cz --exclude venv -f ./test-reports/build.tar.gz *;
 
       - store_artifacts:
           path: test-reports
