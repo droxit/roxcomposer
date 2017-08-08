@@ -4,17 +4,17 @@ from mosaic import base_service
 
 
 class NumberService(base_service.BaseService):
-    def __init__(self, args=None):
-        if args is None:
-            args = {'tolle': 'arguments'}
-        base_service.BaseService.__init__(self, args)
+    def __init__(self, params=None):
+        super().__init__(params)
 
         # self.init_communication()
 
     def addition(self, x, y):
-        self.set_payload(x, y)
-        msg = self.mosaic_message.SerializeToString()
-        return self.speak_msg(msg)
+        self.set_content({
+            'firstNumber': x,
+            'secondNumber': y
+        })
+        return self.send()
 
 if __name__ == '__main__':
     service = NumberService()
