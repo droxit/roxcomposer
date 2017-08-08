@@ -8,18 +8,16 @@ class NumberService(base_service.BaseService):
         if params is None:
             params = {
                 'ip': '127.0.0.1',
-                'port': 5001
+                'port': 5002
             }
         super().__init__(params)
 
-        # self.init_communication()
-
     def addition(self, x, y):
-        self.set_content({
+        self.mosaic_message.set_content({
             'firstNumber': x,
             'secondNumber': y
         })
-        return self.send()
+        return self.mosaic_message.send('127.0.0.1', 5001)
 
 if __name__ == '__main__':
     service = NumberService()

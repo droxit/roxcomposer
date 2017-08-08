@@ -55,7 +55,8 @@ class Message:
         #     break
         connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
         connection.close()
-        return msg_received
+
+        return Message(msg_received)
 
     def add_service(self, ip, port, params):
         pipeline = service_com_pb2.Pipeline()

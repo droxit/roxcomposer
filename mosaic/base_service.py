@@ -14,50 +14,10 @@ class BaseService:
 
         self.mosaic_message = mosaic_message.Message()
         self.mosaic_message.add_service(self.params['ip'], self.params['port'], self.params)
-        # self.pipeline = service_com_pb2.Pipeline()
         self.payload = None
-        #
-        # self.connection = None
-        # self.hearing_socket = None
-        # self.sender_address = None
-        # self.COMMUNICATION_IP = '127.0.0.1'
-        # self.COMMUNICATION_PORT = 5001
-        # self.BUFFER_SIZE = 1024
-        # self.MSG_RESPONSE_OK = 0
-
-        # service = self.pipeline.services.add()
-        # service.id = 'service-' + params['ip'] + ':' + params['port']
-        # parameter = service.parameters.add()
-        # parameter.serviceParams = urllib.parse.urlencode(params)
-
-        # self.mosaic_message.pipeline.CopyFrom(self.pipeline)
 
     def recv(self):
-        recv = self.mosaic_message.recv(self.params['ip'], self.params['port'])
-        return mosaic_message.Message(recv)
-
-        # self.hearing_socket = socket.socket()
-        # # self.hearing_socket.setblocking(0)
-        # self.hearing_socket.bind((self.COMMUNICATION_IP, self.COMMUNICATION_PORT))
-        # self.hearing_socket.listen()
-        #
-        # self.connection, self.sender_address = self.hearing_socket.accept()
-        # # while 1:
-        # data = self.connection.recv(self.BUFFER_SIZE)
-        #     # if not data:
-        #     #     break
-        # print(data)
-        # self.mosaic_message = service_com_pb2.MosaicMessage()
-        # self.mosaic_message.MergeFromString(data)
-        # print(self.get_mosaic_message())
-        # self.connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
-        # self.connection.close()
-
-    # def set_payload(self, first_number, second_number):
-    #     self.payload.firstNumber = first_number
-    #     self.payload.secondNumber = second_number
-    #
-    #     self.mosaic_message.payload.CopyFrom(self.payload)
+        return self.mosaic_message.recv(self.params['ip'], self.params['port'])
 
     def set_content(self, data):
         return mosaic_message.Message.set_content(self.mosaic_message, data)
@@ -69,11 +29,6 @@ class BaseService:
         return mosaic_message.Message.get_content_as_dict(self.mosaic_message)
 
     def send(self):
-        # self.connection = socket.create_connection((self.COMMUNICATION_IP, self.COMMUNICATION_PORT))
-        # print(self.connection)
-        # self.connection.send(msg)
-        # return self.connection.recv(self.BUFFER_SIZE)
-        # self.mosaic_message = mosaic_message.Utils.serialize(self.mosaic_message.get_mosaic_msg())
         return self.mosaic_message.send(self.params['ip'], self.params['port'])
 
     def get_mosaic_message(self):
