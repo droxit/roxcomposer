@@ -8,7 +8,7 @@ class TestBaseService(unittest.TestCase):
     def setUp(self):
         self.init_base_service = base_service.BaseService()
 
-    def test_initiate_communication(self):
+    def test_init(self):
         self.assertTrue(self.init_base_service.get_mosaic_message().HasField('pipeline'))
 
 if __name__ == '__main__':
