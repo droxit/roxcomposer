@@ -47,7 +47,7 @@ jobs:
 #            python start.py tests
           command: |
             . venv/bin/activate
-            ~/repo/mosaic/tests/run_tests.sh
+            ~/repo/tests/run_tests.sh
 
       # build package
       - run:
