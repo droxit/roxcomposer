@@ -13,7 +13,7 @@ class BaseService:
             }
 
         self.mosaic_message = mosaic_message.Message()
-        self.mosaic_message.set_pipeline(self.params['ip'], self.params['port'], self.params)
+        self.mosaic_message.add_service(self.params['ip'], self.params['port'], self.params)
         # self.pipeline = service_com_pb2.Pipeline()
         self.payload = None
         #
@@ -33,7 +33,8 @@ class BaseService:
         # self.mosaic_message.pipeline.CopyFrom(self.pipeline)
 
     def recv(self):
-        return mosaic_message.Message.recv(self.mosaic_message, self.params['ip'], self.params['port'])
+        recv = self.mosaic_message.recv(self.params['ip'], self.params['port'])
+        return mosaic_message.Message(recv)
 
         # self.hearing_socket = socket.socket()
         # # self.hearing_socket.setblocking(0)
@@ -72,8 +73,8 @@ class BaseService:
         # print(self.connection)
         # self.connection.send(msg)
         # return self.connection.recv(self.BUFFER_SIZE)
-        self.mosaic_message = mosaic_message.Utils.serialize(self.mosaic_message)
-        return mosaic_message.Message.send(self.mosaic_message, self.params['ip'], self.params['port'])
+        # self.mosaic_message = mosaic_message.Utils.serialize(self.mosaic_message.get_mosaic_msg())
+        return self.mosaic_message.send(self.params['ip'], self.params['port'])
 
     def get_mosaic_message(self):
         return mosaic_message.Message.get_mosaic_msg(self.mosaic_message)

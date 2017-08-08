@@ -10,9 +10,7 @@ class MathService(base_service.BaseService):
 
     def addition(self):
         recv = self.recv()
-        print('received:', recv)
-        exit()
-        content = self.get_content_as_dict()
+        content = recv.get_content_as_dict()
         return content['firstNumber'] + content['secondNumber']
 
 if __name__ == '__main__':

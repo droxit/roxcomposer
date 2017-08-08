@@ -5,6 +5,11 @@ from mosaic import base_service
 
 class NumberService(base_service.BaseService):
     def __init__(self, params=None):
+        if params is None:
+            params = {
+                'ip': '127.0.0.1',
+                'port': 5001
+            }
         super().__init__(params)
 
         # self.init_communication()
@@ -18,4 +23,4 @@ class NumberService(base_service.BaseService):
 
 if __name__ == '__main__':
     service = NumberService()
-    print(service.addition(1, 2))
+    print(service.addition(10, 200))

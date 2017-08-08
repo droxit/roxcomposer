@@ -13,20 +13,26 @@ class Utils:
         return service_com_pb2.MosaicMessage.SerializeToString(mosaic_msg)
 
     @staticmethod
-    def deserialize(mosaic_msg):
-        return service_com_pb2.MosaicMessage().MergeFromString(mosaic_msg)
+    def deserialize(mosaic_msg_serialized):
+        mosaic_msg_received = service_com_pb2.MosaicMessage()
+        mosaic_msg_received.MergeFromString(mosaic_msg_serialized)
+        return mosaic_msg_received
 
 
 class Message:
-    def __init__(self):
-        self.mosaic_msg = service_com_pb2.MosaicMessage()
+    def __init__(self, protobuf_msg=None):
+        if protobuf_msg is None:
+            self.mosaic_msg = service_com_pb2.MosaicMessage()
+        else:
+            self.mosaic_msg = service_com_pb2.MosaicMessage()
+            self.mosaic_msg.CopyFrom(protobuf_msg)
         self.BUFFER_SIZE = 1024
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
 
     def send(self, ip, port):
         address_tuple = (ip, port)
-        # self.mosaic_msg = Utils.serialize(self.mosaic_msg)
+        self.mosaic_msg = Utils.serialize(self.mosaic_msg)
 
         connection = socket.create_connection(address_tuple)
         connection.send(self.mosaic_msg)
@@ -44,17 +50,14 @@ class Message:
         connection, sender_address = s.accept()
         # while 1:
         data = connection.recv(self.BUFFER_SIZE)
-        # self.mosaic_msg = Utils.deserialize(data)
-        # print(self.mosaic_msg)
-        # exit()
+        msg_received = Utils.deserialize(data)
         # if not data:
         #     break
         connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
         connection.close()
-        return data
-        # return Utils.deserialize(data)
+        return msg_received
 
-    def set_pipeline(self, ip, port, params):
+    def add_service(self, ip, port, params):
         pipeline = service_com_pb2.Pipeline()
         service = pipeline.services.add()
         service.id = 'service-' + ip + ':' + str(port)
