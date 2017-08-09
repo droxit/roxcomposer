@@ -1,7 +1,8 @@
 #!/usr/bin/env python3.5
 
 import unittest
-from mosaic import number_service
+
+from mosaic.tests.classes import number_service
 
 
 class TestNumberService(unittest.TestCase):

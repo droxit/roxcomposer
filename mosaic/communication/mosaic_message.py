@@ -25,7 +25,7 @@ class Message:
             self.mosaic_msg = service_com_pb2.MosaicMessage()
         else:
             self.mosaic_msg = service_com_pb2.MosaicMessage()
-            self.mosaic_msg.CopyFrom(protobuf_msg)
+            self.mosaic_msg.MergeFrom(protobuf_msg)
         self.BUFFER_SIZE = 1024
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
