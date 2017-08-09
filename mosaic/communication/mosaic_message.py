@@ -69,8 +69,7 @@ class Message:
 
     def set_content(self, data):
         payload = service_com_pb2.Payload()
-        payload.firstNumber = data['firstNumber']
-        payload.secondNumber = data['secondNumber']
+        payload.body = data
 
         self.mosaic_msg.payload.CopyFrom(payload)
 

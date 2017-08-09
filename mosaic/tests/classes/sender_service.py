@@ -3,7 +3,7 @@
 from mosaic import base_service
 
 
-class NumberService(base_service.BaseService):
+class SenderService(base_service.BaseService):
     def __init__(self, params=None):
         if params is None:
             params = {
@@ -12,13 +12,10 @@ class NumberService(base_service.BaseService):
             }
         super().__init__(params)
 
-    def addition(self, x, y):
-        self.mosaic_message.set_content({
-            'firstNumber': x,
-            'secondNumber': y
-        })
+    def input(self, data):
+        self.mosaic_message.set_content(data)
         return self.mosaic_message.send('127.0.0.1', 5001)
 
 if __name__ == '__main__':
-    service = NumberService()
-    print(service.addition(10, 200))
+    service = SenderService()
+    print(service.input('hallöle - schauen wir doch ma obs geht12931875639342="%§=)"%&"§$'))

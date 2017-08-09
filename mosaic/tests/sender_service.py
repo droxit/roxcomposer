@@ -2,12 +2,12 @@
 
 import unittest
 
-from mosaic.tests.classes import number_service
+from mosaic.tests.classes import sender_service
 
 
 class TestNumberService(unittest.TestCase):
     def setUp(self):
-        self.number_service = number_service.NumberService()
+        self.number_service = sender_service.SenderService()
 
 
 if __name__ == '__main__':
