@@ -21,7 +21,5 @@ message Parameter {
 }
 
 message Payload {
-    int32 firstNumber = 1;
-    int32 secondNumber = 2;
-    int32 thirdNumber = 3;
+    string body = 1;
 }
