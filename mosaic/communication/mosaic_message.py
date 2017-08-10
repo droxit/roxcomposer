@@ -3,6 +3,7 @@
 from mosaic.communication import service_com_pb2
 from google.protobuf import json_format
 import urllib.parse
+import json
 
 
 class Utils:
@@ -23,7 +24,7 @@ class Message:
             self.protobuf_msg = service_com_pb2.MosaicMessage()
         else:
             self.protobuf_msg = service_com_pb2.MosaicMessage()
-            self.protobuf_msg.MergeFrom(protobuf_msg)
+            self.protobuf_msg.CopyFrom(protobuf_msg)
 
         self.pipeline = service_com_pb2.Pipeline()
         self.payload = service_com_pb2.Payload()
@@ -32,18 +33,25 @@ class Message:
         if params is None:
             params = {}
         service = self.pipeline.services.add()
-        service.id = 'service-' + ip + ':' + str(port)
+        service.id = ip + ':' + str(port)
         parameter = service.parameters.add()
         parameter.serviceParams = urllib.parse.urlencode(params)
 
         self.protobuf_msg.pipeline.CopyFrom(self.pipeline)
 
     def get_services(self):
+        return self.protobuf_msg.pipeline.services
+
+    def get_services_as_dict(self):
         return json_format.MessageToDict(self.protobuf_msg.pipeline)
 
     def pop_service(self):
-        services = self.get_services()['services']
-        return services.pop(0)
+        services_as_dict = self.get_services_as_dict()
+        me = services_as_dict['services'].pop(0)
+
+        json_format.Parse(json.dumps(services_as_dict), self.protobuf_msg.pipeline)
+
+        return me
 
     def set_content(self, data):
         payload = service_com_pb2.Payload()

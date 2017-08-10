@@ -16,6 +16,7 @@ class BaseService:
         self.BUFFER_SIZE = 1024
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
+        self.arguments = {}
 
         self.mosaic_message = mosaic_message.Message()
         # self.mosaic_message.add_service(self.params['ip'], self.params['port'], self.params)
@@ -25,8 +26,16 @@ class BaseService:
     def on_message(self, msg):
             pass
 
-    def send(self, ip, port):
-        address_tuple = (ip, port)
+    def send(self):
+        me = self.mosaic_message.pop_service()
+
+        if len(self.mosaic_message.get_services_as_dict()['services']) == 0:
+            return
+
+        next_service = self.mosaic_message.get_services_as_dict()['services'][0]
+        next_service_id = next_service['id'].split(':')
+        address_tuple = (next_service_id[0], next_service_id[1])
+
         self.mosaic_message = mosaic_message.Utils.serialize(self.mosaic_message.get_protobuf_msg())
 
         connection = socket.create_connection(address_tuple)
@@ -46,13 +55,19 @@ class BaseService:
             connection, sender_address = s.accept()
             print('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
             data = connection.recv(self.BUFFER_SIZE)
+
             msg_received = mosaic_message.Utils.deserialize(data)
-            self.on_message(mosaic_message.Message(msg_received))
+            self.mosaic_message = mosaic_message.Message(msg_received)
+
+            self.on_message(self.mosaic_message)
             connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
-            connection.close()
+            # connection.close()
 
             if not data:
                 break
+
+    def recv_pipeline_msg(self):
+        self.recv(self.params['ip'], self.params['port'])
 
     def set_content(self, data):
         return mosaic_message.Message.set_content(self.mosaic_message, data)
