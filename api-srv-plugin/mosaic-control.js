@@ -13,6 +13,7 @@ var module.exports = function(container) {
     container['add_pipeline'] = add_pipeline;
     container['get_services'] = get_services;
     container['get_pipelines'] = get_pipelines;
+    container['set_pipeline'] = set_pipeline;
     container['post_to_pipeline'] = post_to_pipeline;
 }
 
@@ -54,6 +55,29 @@ function spawn(args, cb) {
     cb(null, {'message': 'service created'});
 }
 
+function post_to_pipeline(args) {
+}
+
 function get_services() {
     return processes;
+}
+
+function get_pipelines() {
+    return pipelines;
+}
+
+function set_pipeline(args) {
+    pipelines[args.name] = args.services;
+    cb(null, {'message': 'ok'});
+}
+
+function shutdown(args, cb) {
+    if(args.name in services) {
+        var proc = services[args.name].proc;
+        delete services[args.name];
+        proc.kill('SIGTERM');
+        cb(null, {'message': 'service stopped'});
+    } else {
+        cb({'code': 400, 'message': "service unknown"});
+    }
 }
