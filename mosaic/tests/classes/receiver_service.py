@@ -11,8 +11,7 @@ class ReceiverService(base_service.BaseService):
         recv = self.recv(self.params['ip'], self.params['port'])
         return recv.get_content_as_dict()
 
-    @staticmethod
-    def on_message(msg):
+    def on_message(self, msg):
         print(msg.get_protobuf_msg_as_dict())
 
 if __name__ == '__main__':

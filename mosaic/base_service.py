@@ -21,8 +21,7 @@ class BaseService:
         self.mosaic_message.add_service(self.params['ip'], self.params['port'], self.params)
         self.payload = None
 
-    @staticmethod
-    def on_message(msg):
+    def on_message(self, msg):
             pass
 
     def send(self, ip, port):
