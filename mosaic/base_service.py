@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3.6
 
 from mosaic.communication import mosaic_message
 import socket
@@ -18,7 +18,8 @@ class BaseService:
         self.MSG_RESPONSE_NOK = 1
 
         self.mosaic_message = mosaic_message.Message()
-        self.mosaic_message.add_service(self.params['ip'], self.params['port'], self.params)
+        # self.mosaic_message.add_service(self.params['ip'], self.params['port'], self.params)
+
         self.payload = None
 
     def on_message(self, msg):
