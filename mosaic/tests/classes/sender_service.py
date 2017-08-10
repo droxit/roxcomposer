@@ -14,8 +14,8 @@ class SenderService(base_service.BaseService):
 
     def input(self, data):
         self.mosaic_message.set_content(data)
-        return self.mosaic_message.send('127.0.0.1', 5001)
+        return self.send('127.0.0.1', 5001)
 
 if __name__ == '__main__':
     service = SenderService()
-    print(service.input('hallöle - schauen wir doch ma obs geht12931875639342="%§=)"%&"§$'))
+    print(service.input('hallöle'))

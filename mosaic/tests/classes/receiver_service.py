@@ -8,8 +8,12 @@ class ReceiverService(base_service.BaseService):
         super().__init__(params)
 
     def output(self):
-        recv = self.mosaic_message.recv(self.params['ip'], self.params['port'])
+        recv = self.recv(self.params['ip'], self.params['port'])
         return recv.get_content_as_dict()
+
+    @staticmethod
+    def on_message(msg):
+        print(msg.get_protobuf_msg_as_dict())
 
 if __name__ == '__main__':
     math_service = ReceiverService()
