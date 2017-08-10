@@ -2,12 +2,12 @@
 
 import unittest
 
-from mosaic.tests.classes import math_service
+from mosaic.tests.classes import receiver_service
 
 
 class TestMathService(unittest.TestCase):
     def setUp(self):
-        self.math_service = math_service.MathService()
+        self.math_service = receiver_service.ReceiverService()
 
     # def test_addition(self):
     #     self.math_service.set_payload(2, 3)

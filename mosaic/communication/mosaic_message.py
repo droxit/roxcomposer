@@ -1,87 +1,64 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3.6
 
 from mosaic.communication import service_com_pb2
 from google.protobuf import json_format
-import socket
-import sys
 import urllib.parse
 
 
 class Utils:
     @staticmethod
-    def serialize(mosaic_msg):
-        return service_com_pb2.MosaicMessage.SerializeToString(mosaic_msg)
+    def serialize(protobuf_msg):
+        return service_com_pb2.MosaicMessage.SerializeToString(protobuf_msg)
 
     @staticmethod
-    def deserialize(mosaic_msg_serialized):
-        mosaic_msg_received = service_com_pb2.MosaicMessage()
-        mosaic_msg_received.MergeFromString(mosaic_msg_serialized)
-        return mosaic_msg_received
+    def deserialize(protobuf_msg_serialized):
+        protobuf_msg_received = service_com_pb2.MosaicMessage()
+        protobuf_msg_received.MergeFromString(protobuf_msg_serialized)
+        return protobuf_msg_received
 
 
 class Message:
     def __init__(self, protobuf_msg=None):
         if protobuf_msg is None:
-            self.mosaic_msg = service_com_pb2.MosaicMessage()
+            self.protobuf_msg = service_com_pb2.MosaicMessage()
         else:
-            self.mosaic_msg = service_com_pb2.MosaicMessage()
-            self.mosaic_msg.MergeFrom(protobuf_msg)
-        self.BUFFER_SIZE = 1024
-        self.MSG_RESPONSE_OK = 0
-        self.MSG_RESPONSE_NOK = 1
+            self.protobuf_msg = service_com_pb2.MosaicMessage()
+            self.protobuf_msg.MergeFrom(protobuf_msg)
 
-    def send(self, ip, port):
-        address_tuple = (ip, port)
-        self.mosaic_msg = Utils.serialize(self.mosaic_msg)
+        self.pipeline = service_com_pb2.Pipeline()
+        self.payload = service_com_pb2.Payload()
 
-        connection = socket.create_connection(address_tuple)
-        connection.send(self.mosaic_msg)
-
-        resp = connection.recv(self.BUFFER_SIZE)
-        connection.close()
-        return resp
-
-    def recv(self, ip, port):
-        s = socket.socket()
-        # s.setblocking(0)
-        s.bind((ip, port))
-        s.listen()
-
-        connection, sender_address = s.accept()
-        # while 1:
-        data = connection.recv(self.BUFFER_SIZE)
-        msg_received = Utils.deserialize(data)
-        # if not data:
-        #     break
-        connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
-        connection.close()
-
-        return Message(msg_received)
-
-    def add_service(self, ip, port, params):
-        pipeline = service_com_pb2.Pipeline()
-        service = pipeline.services.add()
+    def add_service(self, ip, port, params=None):
+        if params is None:
+            params = {}
+        service = self.pipeline.services.add()
         service.id = 'service-' + ip + ':' + str(port)
         parameter = service.parameters.add()
         parameter.serviceParams = urllib.parse.urlencode(params)
 
-        self.mosaic_msg.pipeline.CopyFrom(pipeline)
+        self.protobuf_msg.pipeline.CopyFrom(self.pipeline)
+
+    def get_services(self):
+        return json_format.MessageToDict(self.protobuf_msg.pipeline)
+
+    def pop_service(self):
+        services = self.get_services()['services']
+        return services.pop(0)
 
     def set_content(self, data):
         payload = service_com_pb2.Payload()
-        payload.firstNumber = data['firstNumber']
-        payload.secondNumber = data['secondNumber']
+        payload.body = data
 
-        self.mosaic_msg.payload.CopyFrom(payload)
+        self.protobuf_msg.payload.CopyFrom(payload)
 
     def get_content(self):
-        return self.mosaic_msg.payload
+        return self.protobuf_msg.payload
 
     def get_content_as_dict(self):
-        return json_format.MessageToDict(self.mosaic_msg.payload)
+        return json_format.MessageToDict(self.protobuf_msg.payload)
 
-    def get_mosaic_msg(self):
-        return self.mosaic_msg
+    def get_protobuf_msg(self):
+        return self.protobuf_msg
 
-    def get_mosaic_msg_as_dict(self):
-        return json_format.MessageToDict(self.mosaic_msg)
+    def get_protobuf_msg_as_dict(self):
+        return json_format.MessageToDict(self.protobuf_msg)
