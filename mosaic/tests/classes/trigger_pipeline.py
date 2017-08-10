@@ -5,10 +5,10 @@ import socket
 
 if __name__ == '__main__':
     mosaic_msg = mosaic_message.Message()
-    mosaic_msg.add_service('127.0.0.1', 5002)
     mosaic_msg.add_service('127.0.0.1', 5001)
+    mosaic_msg.add_service('127.0.0.1', 4001)
 
-    address_tuple = ('127.0.0.1', 5002)
+    address_tuple = ('127.0.0.1', 5001)
     print(mosaic_msg.get_protobuf_msg_as_dict())
     mosaic_msg = mosaic_message.Utils.serialize(mosaic_msg.get_protobuf_msg())
 
