@@ -25,7 +25,7 @@ class HtmlGenerator(base_service.BaseService):
                 <html>
                     <head>
                         <meta charset="utf-8">
-                        <title>Beispiel zum header-Element</title>
+                        <title>droxIT - mosaic</title>
                         <style>
                             body {margin: 3em;}
                             header {background: #eee; padding: 1em;}
