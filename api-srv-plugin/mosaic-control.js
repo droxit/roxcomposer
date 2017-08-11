@@ -68,18 +68,25 @@ function post_to_pipeline(args, cb) {
 
     var pline = pipelines[args.name];
     var msg = new mosaic_message.MosaicMessage();
+    var arr = [];
     for(var s in pline) {
         var p = pline[s];
         var service = new mosaic_message.Service();
         service.setId(processes[p].params.ip + ":" + processes[p].params.port);
-        msg.getPipeline().addService(service);
+        arr.push(service);
     }
-    msg.getPayload().setBody(args.data);
+    var pipeline = new mosaic_message.Pipeline();
+    pipeline.setServicesList(arr);
+    msg.setPipeline(pipeline);
+    payload = new mosaic_message.Payload();
+    payload.setBody(args.data);
+    msg.setPayload(payload);
 
     var socket = new net.Socket();
     var start = processes[pline[0]];
-    socket.connect({port: start.args.port, host: start.args.ip}, () => {
-        socket.end(msg.serializeBinary());
+    socket.connect({port: start.params.port, host: start.params.ip}, () => {
+        var packet = msg.serializeBinary();
+        socket.end(String.fromCharCode.apply(null, packet));
         cb(null, {'message': 'pipeline initiated'});
     });
     socket.on('error', (e) => {
