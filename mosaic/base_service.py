@@ -61,7 +61,7 @@ class BaseService:
 
             self.on_message(self.mosaic_message)
             connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
-            # connection.close()
+            connection.close()
 
             if not data:
                 break
