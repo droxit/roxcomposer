@@ -48,7 +48,7 @@ function start_service(args, cb) {
     services[name] = {};
     services[name].path = args.path;
     services[name].params = args.params;
-    processes[name] = spawn('python3', opt)
+    processes[name] = spawn('python3', opt, {stdio: 'inherit'})
         .on('exit', (code, signal) => {
             logger.info({service: name, exit_code: code}, "service exited");
             delete processes[name];
@@ -74,7 +74,7 @@ function post_to_pipeline(args, cb) {
     for(var s in pline) {
         var p = pline[s];
         var service = new mosaic_message.Service();
-        service.setId(processes[p].params.ip + ":" + processes[p].params.port);
+        service.setId(services[p].params.ip + ":" + services[p].params.port);
         arr.push(service);
     }
     var pipeline = new mosaic_message.Pipeline();
