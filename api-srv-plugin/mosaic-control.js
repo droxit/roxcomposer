@@ -3,6 +3,7 @@ var spawn = require('child_process').spawn;
 var net = require('net');
 var mosaic_message = require('./service_com_pb.js');
 var processes = {};
+var services = {};
 var pipelines = {};
 var address;
 var port;
@@ -39,18 +40,19 @@ function start_service(args, cb) {
     var name = args.name;
     var params = args.params;
 
-    if(name in processes) {
+    if(name in services) {
         cb({'code': 400, 'message': 'a service with that name already exists'});
     }
 
     var opt = [ path, JSON.stringify(params) ];
-    processes[name] = {};
-    processes[name].path = args.path;
-    processes[name].params = args.params;
-    spawn('python3', opt)
+    services[name] = {};
+    services[name].path = args.path;
+    services[name].params = args.params;
+    processes[name] = spawn('python3', opt)
         .on('exit', (code, signal) => {
             logger.info({service: name, exit_code: code}, "service exited");
             delete processes[name];
+            delete services[name];
         })
         .on('error', (e) => {
             logger.error({error: e, args: args}, "unable to spawn service");
@@ -83,7 +85,7 @@ function post_to_pipeline(args, cb) {
     msg.setPayload(payload);
 
     var socket = new net.Socket();
-    var start = processes[pline[0]];
+    var start = services[pline[0]];
     socket.connect({port: start.params.port, host: start.params.ip}, () => {
         var packet = msg.serializeBinary();
         socket.end(String.fromCharCode.apply(null, packet));
@@ -97,7 +99,7 @@ function post_to_pipeline(args, cb) {
 
 // no args required
 function get_services(args, cb) {
-    cb(null, processes);
+    cb(null, services);
 }
 
 // no args required
