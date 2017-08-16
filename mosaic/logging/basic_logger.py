@@ -2,14 +2,14 @@ import logging
 
 class BasicLogger():
     def __init__(self, servicename, **kwargs):
-        kwargs['format'] = '%(levelname)s:' + servicename + ':(message)s'
+        kwargs['format'] = '[%(levelname)s] service:' + servicename + ' - %(message)s'
         logging.basicConfig(**kwargs)
 
     def info(self, msg):
         logging.info(msg)
 
     def debug(self, msg):
-        logging.debug(msg, msg)
+        logging.debug(msg)
 
     def warn(self, msg):
         logging.warning(msg)
