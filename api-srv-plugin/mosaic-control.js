@@ -37,7 +37,7 @@ function init(args) {
  **/
 function start_service(args, cb) {
     var path = args.path;
-    var name = args.name;
+    var name = args.params.name;
     var params = args.params;
 
     if(name in services) {
