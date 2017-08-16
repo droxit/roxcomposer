@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.6
 
 from mosaic.communication import mosaic_message
+from mosaic.logging import basic_logger
 import socket
 import sys
 
@@ -11,11 +12,16 @@ class BaseService:
         if params is None:
             self.params = {
                 'ip': '127.0.0.1',
-                'port': 5001
+                'port': 5001,
+                'name': 'anonymous-service'
             }
         self.BUFFER_SIZE = 1024
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
+        logger_params = {}
+        if 'logging' in params:
+            logger_params = params['logging']
+        self.logger = basic_logger.BasicLogger(params['name'], **logger_params)
         self.arguments = {}
 
         self.mosaic_message = mosaic_message.Message()
