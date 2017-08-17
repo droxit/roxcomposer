@@ -1,6 +1,7 @@
 import logging
 
-class BasicLogger():
+
+class BasicLogger:
     def __init__(self, servicename, **kwargs):
         kwargs['format'] = '[%(levelname)s] service:' + servicename + ' - %(message)s'
         logging.basicConfig(**kwargs)
@@ -19,4 +20,3 @@ class BasicLogger():
 
     def fatal(self, msg):
         logging.fatal(msg)
-
