@@ -40,8 +40,9 @@ class BaseService:
     def send(self):
         me = self.mosaic_message.pop_service()
 
-        if 'services' not in (self.mosaic_message.get_services_as_dict() or
-                              len(self.mosaic_message.get_services_as_dict()['services']) == 0):
+        if 'services' not in self.mosaic_message.get_services_as_dict():
+            return
+        elif len(self.mosaic_message.get_services_as_dict()['services']) == 0:
             return
 
         next_service = self.mosaic_message.get_services_as_dict()['services'][0]
