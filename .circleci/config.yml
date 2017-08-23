@@ -44,7 +44,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python start.py test
+            python setup.py test
 
       # build package
       - run:
