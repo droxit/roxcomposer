@@ -10,7 +10,7 @@ import sys
 # with other services. To test it out just create a service which inherits from this BaseService class. Simply use the
 # send and receive functions to communicate with other services. The direction of the communication is handled over
 # a predefined pipeline which gets posted to the first service in the pipeline. The pipeline object ist contained
-# in the mosaic message. Check the README for more information.
+# in the mosaic message. Check the README.rst for more information.
 class BaseService:
     def __init__(self, params=None):
         self.params = params

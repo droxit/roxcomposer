@@ -1,10 +1,11 @@
 # droxIT - mosaic
-This is droxits microservice framework repository. It yields a python framework to set up 
-microservices as easy as possible. 
+This is droxits microservice framework repository. It yields a python framework to set up microservices as easy as possible.
 
 ##
-Dev: [![CircleCI](https://circleci.com/gh/droxit/mosaic/tree/dev.svg?style=svg)](https://circleci.com/gh/droxit/mosaic/tree/dev)
-Master: [![CircleCI](https://circleci.com/gh/droxit/mosaic/tree/master.svg?style=svg)](https://circleci.com/gh/droxit/mosaic/tree/master)
+Dev: .. image:: https://circleci.com/gh/droxit/mosaic/tree/dev.svg?style=svg
+    :target: https://circleci.com/gh/droxit/mosaic/tree/dev
+Master: .. image:: https://circleci.com/gh/droxit/mosaic/tree/master.svg?style=svg
+    :target: https://circleci.com/gh/droxit/mosaic/tree/master
 
 ## dependencies
 Please execute 
