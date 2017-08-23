@@ -6,10 +6,20 @@ from mosaic import base_service
 
 class TestBaseService(unittest.TestCase):
     def setUp(self):
-        self.init_base_service = base_service.BaseService()
+        self.test_params_default = {
+            'ip': '127.0.0.1',
+            'port': 5001,
+            'name': 'anonymous-service'
+        }
 
     def test_init(self):
-        self.assertTrue(self.init_base_service.get_mosaic_message().HasField('pipeline'))
+        # test initiatiaton without parameters
+        bs_default = base_service.BaseService()
+
+        self.assertDictEqual(bs_default.params, self.test_params_default)
+        # initial message has to be empty
+        self.assertDictEqual(bs_default.get_protobuf_message_as_dict(), {})
+
 
 if __name__ == '__main__':
     unittest.main()

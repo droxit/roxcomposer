@@ -18,15 +18,15 @@ class BaseService:
             self.params = {
                 'ip': '127.0.0.1',
                 'port': 5001,
-                'name': 'anonymous-service'
+                'name': 'anonymous-service',
             }
         self.BUFFER_SIZE = 1024
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
         logger_params = {}
-        if 'logging' in params:
+        if 'logging' in self.params:
             logger_params = params['logging']
-        self.logger = basic_logger.BasicLogger(params['name'], **logger_params)
+        self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
         self.arguments = {}
 
         self.mosaic_message = mosaic_message.Message()
@@ -104,3 +104,6 @@ class BaseService:
     # get the currently handled message as a protobuf object
     def get_protobuf_message(self):
         return mosaic_message.Message.get_protobuf_msg(self.mosaic_message)
+
+    def get_protobuf_message_as_dict(self):
+        return mosaic_message.Message.get_protobuf_msg_as_dict(self.mosaic_message)
