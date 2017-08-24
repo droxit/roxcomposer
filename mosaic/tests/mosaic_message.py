@@ -71,6 +71,32 @@ class TestMosaicMessage(unittest.TestCase):
         # self.assertDictEqual(dummy_message.get_protobuf_msg_as_dict(),
         #                     json_format.MessageToDict(self.dummy_protobuf_msg))
 
+    def test_get_content_as_dict(self):
+        dummy_message = mosaic_message.Message(self.dummy_protobuf_msg)
+
+        self.assertTrue(type(dummy_message.get_content_as_dict()) is dict)
+
+        dummy_message.set_content('sollte true sein')
+        self.assertEqual(dummy_message.get_content_as_dict()['body'], 'sollte true sein')
+
+    def test_set_content(self):
+        dummy_message = mosaic_message.Message(self.dummy_protobuf_msg)
+        dummy_message.set_content('angepasst')
+
+        self.assertEqual(dummy_message.get_content_as_dict()['body'], 'angepasst')
+        self.assertFalse(dummy_message.get_content_as_dict()['body'] is 'yeaaah test')
+
+        # test empty string as input
+        dummy_message.set_content('')
+        self.assertNotIn('body', dummy_message.get_services_as_dict())
+
+    def test_get_content(self):
+        dummy_message = mosaic_message.Message(self.dummy_protobuf_msg)
+
+        self.assertTrue(type(dummy_message.get_content()) is service_com_pb2.Payload)
+
+        dummy_message.set_content('sollte true sein')
+        self.assertEqual(dummy_message.get_content_as_dict()['body'], 'sollte true sein')
 
 if __name__ == '__main__':
     unittest.main()
