@@ -98,5 +98,19 @@ class TestMosaicMessage(unittest.TestCase):
         dummy_message.set_content('sollte true sein')
         self.assertEqual(dummy_message.get_content_as_dict()['body'], 'sollte true sein')
 
+    def test_pop_service(self):
+        dummy_message = mosaic_message.Message(self.dummy_protobuf_msg)
+        dummy_message.add_service('127.0.0.1', 1234)
+
+        popped_service = dummy_message.pop_service()
+        self.assertTrue(type(popped_service is dict))
+        self.assertEqual(popped_service['id'], '127.0.0.1:6766')
+        self.assertTrue(len(dummy_message.get_services_as_dict()) is 1)
+
+        popped_service = dummy_message.pop_service()
+        self.assertEqual(popped_service['id'], '127.0.0.1:1234')
+        self.assertTrue(len(dummy_message.get_services_as_dict()) is 0)
+
+
 if __name__ == '__main__':
     unittest.main()
