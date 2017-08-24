@@ -8,9 +8,9 @@ import sys
 
 # The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
 # with other services. To test it out just create a service which inherits from this BaseService class. Simply use the
-# send and receive functions to communicate with other services. The direction of the communication is handled over
-# a predefined pipeline which gets posted to the first service in the pipeline. The pipeline object ist contained
-# in the mosaic message. Check the README.rst for more information.
+# dispatch and listen (listen_to) functions to communicate with other services. The communication follows a
+# predefined pipeline structure. That means every service whih is listed in a pipeline will get and send a message in
+# the defined direction.
 class BaseService:
     def __init__(self, params=None):
         self.params = params
@@ -34,7 +34,6 @@ class BaseService:
             self.logger.error('"port" is missing in the parameters passed.')
         elif 'name' not in self.params:
             self.logger.error('"name" is missing in the parameters passed.')
-        self.arguments = {}
 
         self.mosaic_message = mosaic_message.Message()
         self.payload = None
@@ -113,5 +112,6 @@ class BaseService:
     def get_protobuf_message(self):
         return mosaic_message.Message.get_protobuf_msg(self.mosaic_message)
 
+    # get the currently handled message as a python dictionary
     def get_protobuf_message_as_dict(self):
         return mosaic_message.Message.get_protobuf_msg_as_dict(self.mosaic_message)
