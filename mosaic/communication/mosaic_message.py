@@ -6,6 +6,8 @@ import urllib.parse
 import json
 
 
+# This class offers serialization and deserialization functions to parse a protobuf message directly after it has been
+# sent or received.
 class Utils:
     @staticmethod
     def serialize(protobuf_msg):
@@ -18,8 +20,11 @@ class Utils:
         return protobuf_msg_received
 
 
+# The Message class offers an easier handling of protobuf messages used for communication. Therefor services don't need
+# to use the protobuf classes and methods.
 class Message:
     def __init__(self, protobuf_msg=None):
+        # the messag can be set up either as a new message or an existing protobuf msg
         if protobuf_msg is None:
             self.protobuf_msg = service_com_pb2.MosaicMessage()
         else:
@@ -29,6 +34,7 @@ class Message:
         self.pipeline = service_com_pb2.Pipeline()
         self.payload = service_com_pb2.Payload()
 
+    # add a service to the currently processed pipeline
     def add_service(self, ip, port, params=None):
         service = self.pipeline.services.add()
         service.id = ip + ':' + str(port)
@@ -38,12 +44,15 @@ class Message:
 
         self.protobuf_msg.pipeline.MergeFrom(self.pipeline)
 
+    # get services out of the current message as protobuf Service objects
     def get_services(self):
         return self.protobuf_msg.pipeline.services
 
+    # get services out of the current message as dictionary objects
     def get_services_as_dict(self):
         return json_format.MessageToDict(self.protobuf_msg.pipeline)
 
+    # pop out the first service of the pipeline
     def pop_service(self):
         services_as_dict = self.get_services_as_dict()
         me = services_as_dict['services'].pop(0)
@@ -52,20 +61,25 @@ class Message:
 
         return me
 
+    # set the content @data of the current message
     def set_content(self, data):
         payload = service_com_pb2.Payload()
         payload.body = data
 
         self.protobuf_msg.payload.CopyFrom(payload)
 
+    # get the content out of the current message as a protobuf Payload object
     def get_content(self):
         return self.protobuf_msg.payload
 
+    # get the content out of the current message as a dictionary
     def get_content_as_dict(self):
         return json_format.MessageToDict(self.protobuf_msg.payload)
 
+    # get the current message as a protobuf MosaicMessage object
     def get_protobuf_msg(self):
         return self.protobuf_msg
 
+    # get the current message as a dictionary
     def get_protobuf_msg_as_dict(self):
         return json_format.MessageToDict(self.protobuf_msg)
