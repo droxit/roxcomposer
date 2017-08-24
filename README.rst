@@ -5,9 +5,12 @@ This is droxits microservice framework repository. It yields a python framework 
 Status
 ----------
 Dev:
+
 .. image:: https://circleci.com/gh/droxit/mosaic/tree/dev.svg?style=svg&circle-token=8abde3cd460a4a044d7c3de054e757853e03a6c3
     :target: https://circleci.com/gh/droxit/mosaic/tree/dev
+
 Master:
+
 .. image:: https://circleci.com/gh/droxit/mosaic/tree/master.svg?style=svg&circle-token=8abde3cd460a4a044d7c3de054e757853e03a6c3
     :target: https://circleci.com/gh/droxit/mosaic/tree/master
 
