@@ -30,7 +30,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            python3 -m venv venv
+            python -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
 
@@ -42,12 +42,9 @@ jobs:
       # run tests!
       - run:
           name: run tests
-#          command: |
-#            . venv/bin/activate
-#            python start.py tests
           command: |
             . venv/bin/activate
-            ~/repo/mosaic/tests/run_tests.sh
+            python setup.py test
 
       # build package
       - run:
