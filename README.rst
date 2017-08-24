@@ -33,7 +33,7 @@ Remember that you need to open an ssh tunnel to gru, to use this command.
 Further documentation
 ---------------------
 For further documentation please consider reading the `Handbook
-https://droxit.atlassian.net/wiki/spaces/PROJ/pages/74088468/Handbook` _.
+<https://droxit.atlassian.net/wiki/spaces/PROJ/pages/74088468/Handbook/>`_.
 
 Build Config
 ---------
