@@ -69,6 +69,9 @@ jobs:
             . venv/bin/activate
             scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
             ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'rm -f /opt/mosaic-deploy/incoming/*'
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz ./api_srv_plugin/*.js devpi@176.9.144.37:/opt/mosaic-deploy/incoming
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'cd /opt/mosaic-deploy/; ./build_mosaic.sh incoming/mosaic*.tar.gz incoming'
 #          dev:
 #            branch: dev
 #            commands: |
