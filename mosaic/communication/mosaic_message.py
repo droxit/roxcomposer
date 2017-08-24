@@ -30,14 +30,13 @@ class Message:
         self.payload = service_com_pb2.Payload()
 
     def add_service(self, ip, port, params=None):
-        if params is None:
-            params = {}
         service = self.pipeline.services.add()
         service.id = ip + ':' + str(port)
-        parameter = service.parameters.add()
-        parameter.serviceParams = urllib.parse.urlencode(params)
+        if params is not None:
+            parameter = service.parameters.add()
+            parameter.serviceParams = urllib.parse.urlencode(params)
 
-        self.protobuf_msg.pipeline.CopyFrom(self.pipeline)
+        self.protobuf_msg.pipeline.MergeFrom(self.pipeline)
 
     def get_services(self):
         return self.protobuf_msg.pipeline.services
