@@ -27,6 +27,13 @@ class BaseService:
         if 'logging' in self.params:
             logger_params = params['logging']
         self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
+
+        if 'ip' not in self.params:
+            self.logger.error('"ip" is missing in the parameters passed.')
+        elif 'port' not in self.params:
+            self.logger.error('"port" is missing in the parameters passed.')
+        elif 'name' not in self.params:
+            self.logger.error('"name" is missing in the parameters passed.')
         self.arguments = {}
 
         self.mosaic_message = mosaic_message.Message()
