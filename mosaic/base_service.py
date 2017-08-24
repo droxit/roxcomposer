@@ -44,7 +44,8 @@ class BaseService:
         pass
 
     # send a mosaic protobuf message to the next service in the pipeline.
-    def send(self):
+    def dispatch(self, msg):
+        self.mosaic_message.set_content(msg)
         me = self.mosaic_message.pop_service()
 
         if 'services' not in self.mosaic_message.get_services_as_dict():
@@ -67,7 +68,7 @@ class BaseService:
 
     # receive mosaic protobuf messages sent to a socket running on the specified ip and port. To handle the received
     # message please implement the on_message funtion in your inherited service.
-    def recv(self, ip, port):
+    def listen_to(self, ip, port):
         s = socket.socket()
         # s.setblocking(0)
         s.bind((ip, port))
@@ -81,7 +82,7 @@ class BaseService:
             msg_received = mosaic_message.Utils.deserialize(data)
             self.mosaic_message = mosaic_message.Message(msg_received)
 
-            self.on_message(self.mosaic_message)
+            self.on_message(self.mosaic_message.get_content_as_dict()['body'])
             connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
             connection.close()
 
@@ -90,8 +91,8 @@ class BaseService:
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the mosaic protobuf message.
-    def recv_pipeline_msg(self):
-        self.recv(self.params['ip'], self.params['port'])
+    def listen(self):
+        self.listen_to(self.params['ip'], self.params['port'])
 
     # set the content of the message currently handled by the service. @data should be a (json) string.
     def set_content(self, data):
@@ -100,7 +101,7 @@ class BaseService:
     # get the content of the message currently handled by the service in protobuf format. To get a more usable message
     # use the get_contant_as_dict function.
     def get_content(self):
-        return mosaic_message.Message.get_content(self.mosaic_message)
+        return mosaic_message.Message.get_content_as_dict(self.mosaic_message)['body']
 
     # get the content of the message curerntly handled by the service as a dicitionary. Remember that the dict only
     # yields a representation of the actual message. So if you actually want to manipulate values in the message you
