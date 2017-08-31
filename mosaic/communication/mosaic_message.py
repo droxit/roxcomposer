@@ -31,8 +31,8 @@ class Message:
             self.protobuf_msg = service_com_pb2.MosaicMessage()
             self.protobuf_msg.CopyFrom(protobuf_msg)
 
-        self.pipeline = service_com_pb2.Pipeline()
-        self.payload = service_com_pb2.Payload()
+        self.pipeline = self.protobuf_msg.pipeline
+        self.payload = self.protobuf_msg.payload
 
     # add a service to the currently processed pipeline
     def add_service(self, ip, port, params=None):
@@ -41,8 +41,6 @@ class Message:
         if params is not None:
             parameter = service.parameters.add()
             parameter.serviceParams = urllib.parse.urlencode(params)
-
-        self.protobuf_msg.pipeline.MergeFrom(self.pipeline)
 
     # get services out of the current message as protobuf Service objects
     def get_services(self):
