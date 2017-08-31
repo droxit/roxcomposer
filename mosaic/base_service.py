@@ -63,6 +63,7 @@ class BaseService:
         connection.send(self.mosaic_message)
 
         resp = connection.recv(self.BUFFER_SIZE)
+        self.logger.debug(resp)
         connection.close()
         return resp
 
@@ -70,6 +71,7 @@ class BaseService:
     # message please implement the on_message funtion in your inherited service.
     def listen_to(self, ip, port):
         s = socket.socket()
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # s.setblocking(0)
         s.bind((ip, port))
         s.listen()
