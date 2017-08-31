@@ -4,6 +4,7 @@ from mosaic.communication import mosaic_message
 from mosaic.logging import basic_logger
 import socket
 import sys
+from mosaic import exceptions
 
 
 # The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
@@ -12,28 +13,31 @@ import sys
 # predefined pipeline structure. That means every service whih is listed in a pipeline will get and send a message in
 # the defined direction.
 class BaseService:
-    def __init__(self, params=None):
+    def __init__(self, params):
         self.params = params
-        if params is None:
-            self.params = {
-                'ip': '127.0.0.1',
-                'port': 5001,
-                'name': 'anonymous-service',
-            }
+        if self.params is None:
+            raise exceptions.ParameterMissingException('BaseService.__init__() - params is None.')
+
+        # buffer size to read the msg
         self.BUFFER_SIZE = 1024
+
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
+
+        required_params = [
+            'ip',
+            'port',
+            'name'
+        ]
+        for param in required_params:
+            if param not in self.params:
+                raise exceptions.ParameterMissingException('BaseService.__init__() - "' + param + '" is required in '
+                                                                                                  'params.')
+
         logger_params = {}
         if 'logging' in self.params:
             logger_params = params['logging']
         self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
-
-        if 'ip' not in self.params:
-            self.logger.error('"ip" is missing in the parameters passed.')
-        elif 'port' not in self.params:
-            self.logger.error('"port" is missing in the parameters passed.')
-        elif 'name' not in self.params:
-            self.logger.error('"name" is missing in the parameters passed.')
 
         self.mosaic_message = mosaic_message.Message()
         self.payload = None
