@@ -16,9 +16,9 @@ class BaseService:
     def __init__(self, params):
         self.params = params
         if self.params is None:
-            raise exceptions.ParameterMissingException('BaseService.__init__() - params is None.')
+            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
 
-        # buffer size to read the msg
+        # buffer size to read a msg in specified byte chunks
         self.BUFFER_SIZE = 1024
 
         self.MSG_RESPONSE_OK = 0
@@ -31,16 +31,15 @@ class BaseService:
         ]
         for param in required_params:
             if param not in self.params:
-                raise exceptions.ParameterMissingException('BaseService.__init__() - "' + param + '" is required in '
-                                                                                                  'params.')
+                raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
 
+        # initialize logger
         logger_params = {}
         if 'logging' in self.params:
             logger_params = params['logging']
         self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
 
         self.mosaic_message = mosaic_message.Message()
-        self.payload = None
 
     # need to be overwritten by inhertied classes.
     def on_message(self, msg):

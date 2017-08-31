@@ -3,6 +3,7 @@
 import unittest
 from mosaic.communication import mosaic_message
 from mosaic.communication import service_com_pb2
+from mosaic import exceptions
 from google.protobuf import json_format
 import urllib.parse
 
@@ -36,6 +37,9 @@ class TestMosaicMessage(unittest.TestCase):
         # test dummy protobuf msg initiation
         self.assertDictEqual(dummy_message.get_protobuf_msg_as_dict(),
                              json_format.MessageToDict(self.dummy_protobuf_msg))
+
+        faulty_message = {'msg': 'hehe i am faulty'}
+        self.assertRaises(exceptions.InvalidMosaicMessage, mosaic_message.Message, faulty_message)
 
     def test_add_service(self):
         dummy_message = mosaic_message.Message(self.dummy_protobuf_msg)
