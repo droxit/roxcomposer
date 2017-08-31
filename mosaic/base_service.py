@@ -7,7 +7,9 @@ import sys
 from mosaic import exceptions
 
 
-# The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages # with other services. To test it out just create a service which inherits from this BaseService class. Simply use the # dispatch and listen (listen_to) functions to communicate with other services. The communication follows a
+# The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
+# with other services. To test it out just create a service which inherits from this BaseService class. Simply use the
+# dispatch and listen (listen_to) functions to communicate with other services. The communication follows a
 # predefined pipeline structure. That means every service whih is listed in a pipeline will get and send a message in
 # the defined direction.
 class BaseService:
