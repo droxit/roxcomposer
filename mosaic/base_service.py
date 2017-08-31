@@ -45,12 +45,13 @@ class BaseService:
     # send a mosaic protobuf message to the next service in the pipeline.
     def dispatch(self, msg):
         self.mosaic_message.set_content(msg)
-        me = self.mosaic_message.pop_service()
 
         if 'services' not in self.mosaic_message.get_services_as_dict():
             return
-        elif len(self.mosaic_message.get_services_as_dict()['services']) == 0:
+        elif len(self.mosaic_message.get_services_as_dict()['services']) <= 1:
             return
+
+        me = self.mosaic_message.pop_service()
 
         next_service = self.mosaic_message.get_services_as_dict()['services'][0]
         next_service_id = next_service['id'].split(':')
