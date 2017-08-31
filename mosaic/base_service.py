@@ -7,9 +7,7 @@ import sys
 from mosaic import exceptions
 
 
-# The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
-# with other services. To test it out just create a service which inherits from this BaseService class. Simply use the
-# dispatch and listen (listen_to) functions to communicate with other services. The communication follows a
+# The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages # with other services. To test it out just create a service which inherits from this BaseService class. Simply use the # dispatch and listen (listen_to) functions to communicate with other services. The communication follows a
 # predefined pipeline structure. That means every service whih is listed in a pipeline will get and send a message in
 # the defined direction.
 class BaseService:
@@ -62,37 +60,53 @@ class BaseService:
 
         self.mosaic_message = mosaic_message.Utils.serialize(self.mosaic_message.get_protobuf_msg())
 
-        connection = socket.create_connection(address_tuple)
-        connection.send(self.mosaic_message)
+        try:
+            connection = socket.create_connection(address_tuple)
+            connection.send(self.mosaic_message)
 
-        resp = connection.recv(self.BUFFER_SIZE)
-        self.logger.debug(resp)
-        connection.close()
+            resp = connection.recv(self.BUFFER_SIZE)
+            self.logger.debug(resp)
+            connection.close()
+        except OSError as e:
+            self.logger.error(e)
+            return False
+
         return resp
 
     # receive mosaic protobuf messages sent to a socket running on the specified ip and port. To handle the received
     # message please implement the on_message funtion in your inherited service.
     def listen_to(self, ip, port):
-        s = socket.socket()
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # s.setblocking(0)
-        s.bind((ip, port))
-        s.listen()
+        try:
+            s = socket.socket()
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            # s.setblocking(0)
+            s.bind((ip, port))
+            s.listen()
+        except OSError as e:
+            self.logger.fatal(e)
+            sys.exit(1)
 
-        while 1:
-            connection, sender_address = s.accept()
-            self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
-            data = connection.recv(self.BUFFER_SIZE)
+        try:
+            while 1:
+                connection, sender_address = s.accept()
+                self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
+                data = connection.recv(self.BUFFER_SIZE)
 
-            msg_received = mosaic_message.Utils.deserialize(data)
-            self.mosaic_message = mosaic_message.Message(msg_received)
+                msg_received = mosaic_message.Utils.deserialize(data)
+                try:
+                    self.mosaic_message = mosaic_message.Message(msg_received)
+                except exceptions.InvalidMosaicMessage as e:
+                    self.logger.error(e)
+                    continue
 
-            self.on_message(self.mosaic_message.get_content_as_dict()['body'])
-            connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
-            connection.close()
+                self.on_message(self.mosaic_message.get_content_as_dict()['body'])
+                connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
+                connection.close()
 
-            if not data:
-                break
+                if not data:
+                    break
+        except OSError as e:
+            self.logger.error(e)
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the mosaic protobuf message.
