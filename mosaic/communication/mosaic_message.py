@@ -4,6 +4,7 @@ from mosaic.communication import service_com_pb2
 from google.protobuf import json_format
 import urllib.parse
 import json
+from mosaic import exceptions
 
 
 # This class offers serialization and deserialization functions to parse a protobuf message directly after it has been
@@ -28,8 +29,12 @@ class Message:
         if protobuf_msg is None:
             self.protobuf_msg = service_com_pb2.MosaicMessage()
         else:
-            self.protobuf_msg = service_com_pb2.MosaicMessage()
-            self.protobuf_msg.CopyFrom(protobuf_msg)
+            try:
+                self.protobuf_msg = service_com_pb2.MosaicMessage()
+                self.protobuf_msg.CopyFrom(protobuf_msg)
+            except TypeError:
+                raise exceptions.InvalidMosaicMessage('Message.__init__() - ' + str(protobuf_msg) + ' is not a valid '
+                                                                                                    'MosaicMessage.')
 
         self.pipeline = self.protobuf_msg.pipeline
         self.payload = self.protobuf_msg.payload

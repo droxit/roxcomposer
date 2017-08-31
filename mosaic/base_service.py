@@ -4,6 +4,7 @@ from mosaic.communication import mosaic_message
 from mosaic.logging import basic_logger
 import socket
 import sys
+from mosaic import exceptions
 
 
 # The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
@@ -12,31 +13,33 @@ import sys
 # predefined pipeline structure. That means every service whih is listed in a pipeline will get and send a message in
 # the defined direction.
 class BaseService:
-    def __init__(self, params=None):
+    def __init__(self, params):
         self.params = params
-        if params is None:
-            self.params = {
-                'ip': '127.0.0.1',
-                'port': 5001,
-                'name': 'anonymous-service',
-            }
+        if self.params is None:
+            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
+
+        # buffer size to read a msg in specified byte chunks
         self.BUFFER_SIZE = 1024
+
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
+
+        required_params = [
+            'ip',
+            'port',
+            'name'
+        ]
+        for param in required_params:
+            if param not in self.params:
+                raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
+
+        # initialize logger
         logger_params = {}
         if 'logging' in self.params:
             logger_params = params['logging']
         self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
 
-        if 'ip' not in self.params:
-            self.logger.error('"ip" is missing in the parameters passed.')
-        elif 'port' not in self.params:
-            self.logger.error('"port" is missing in the parameters passed.')
-        elif 'name' not in self.params:
-            self.logger.error('"name" is missing in the parameters passed.')
-
         self.mosaic_message = mosaic_message.Message()
-        self.payload = None
 
     # need to be overwritten by inhertied classes.
     def on_message(self, msg):
@@ -59,37 +62,53 @@ class BaseService:
 
         self.mosaic_message = mosaic_message.Utils.serialize(self.mosaic_message.get_protobuf_msg())
 
-        connection = socket.create_connection(address_tuple)
-        connection.send(self.mosaic_message)
+        try:
+            connection = socket.create_connection(address_tuple)
+            connection.send(self.mosaic_message)
 
-        resp = connection.recv(self.BUFFER_SIZE)
-        self.logger.debug(resp)
-        connection.close()
+            resp = connection.recv(self.BUFFER_SIZE)
+            self.logger.debug(resp)
+            connection.close()
+        except OSError as e:
+            self.logger.error(e)
+            return False
+
         return resp
 
     # receive mosaic protobuf messages sent to a socket running on the specified ip and port. To handle the received
     # message please implement the on_message funtion in your inherited service.
     def listen_to(self, ip, port):
-        s = socket.socket()
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # s.setblocking(0)
-        s.bind((ip, port))
-        s.listen()
+        try:
+            s = socket.socket()
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            # s.setblocking(0)
+            s.bind((ip, port))
+            s.listen()
+        except OSError as e:
+            self.logger.fatal(e)
+            sys.exit(1)
 
-        while 1:
-            connection, sender_address = s.accept()
-            self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
-            data = connection.recv(self.BUFFER_SIZE)
+        try:
+            while 1:
+                connection, sender_address = s.accept()
+                self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
+                data = connection.recv(self.BUFFER_SIZE)
 
-            msg_received = mosaic_message.Utils.deserialize(data)
-            self.mosaic_message = mosaic_message.Message(msg_received)
+                msg_received = mosaic_message.Utils.deserialize(data)
+                try:
+                    self.mosaic_message = mosaic_message.Message(msg_received)
+                except exceptions.InvalidMosaicMessage as e:
+                    self.logger.error(e)
+                    continue
 
-            self.on_message(self.mosaic_message.get_content_as_dict()['body'])
-            connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
-            connection.close()
+                self.on_message(self.mosaic_message.get_content_as_dict()['body'])
+                connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
+                connection.close()
 
-            if not data:
-                break
+                if not data:
+                    break
+        except OSError as e:
+            self.logger.error(e)
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the mosaic protobuf message.
