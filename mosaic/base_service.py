@@ -76,7 +76,7 @@ class BaseService:
 
         while 1:
             connection, sender_address = s.accept()
-            print('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
+            self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
             data = connection.recv(self.BUFFER_SIZE)
 
             msg_received = mosaic_message.Utils.deserialize(data)
