@@ -9,9 +9,6 @@ from multiprocessing import Process
 from mosaic import base_service
 from mosaic.communication import mosaic_message
 
-def sigint_handler(signum, frame):
-    exit(0)
-
 def start_service(serv):
     serv = AppendService(serv['msg'], serv['args'])
     serv.listen()
