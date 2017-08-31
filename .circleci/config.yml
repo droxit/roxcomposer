@@ -5,6 +5,11 @@
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - dev
+        - master
+
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
@@ -30,7 +35,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            python3 -m venv venv
+            python -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
 
@@ -42,12 +47,9 @@ jobs:
       # run tests!
       - run:
           name: run tests
-#          command: |
-#            . venv/bin/activate
-#            python start.py tests
           command: |
             . venv/bin/activate
-            ./tests/run_tests.sh
+            python setup.py test
 
       # build package
       - run:
@@ -72,6 +74,9 @@ jobs:
             . venv/bin/activate
             scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
             ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'rm -f /opt/mosaic-deploy/incoming/*'
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz ./api_srv_plugin/*.js devpi@176.9.144.37:/opt/mosaic-deploy/incoming
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'cd /opt/mosaic-deploy/; ./build_mosaic.sh /opt/mosaic-deploy/incoming/mosaic*.tar.gz /opt/mosaic-deploy/incoming'
 #          dev:
 #            branch: dev
 #            commands: |
