@@ -26,15 +26,15 @@ class TestBaseService(unittest.TestCase):
 
     def test_init(self):
         # test initiatiaton without parameters
-        self.assertRaises(exceptions.ParameterMissingException, base_service.BaseService, None)
+        self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, None)
 
         # test initiation with at least 1 param missing
-        self.assertRaises(exceptions.ParameterMissingException, base_service.BaseService, {
+        self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, {
             'ip': '127.0.0.1',
             'name': 'fancy-service'
         })
 
-        self.assertRaises(exceptions.ParameterMissingException, base_service.BaseService, {
+        self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, {
             'ip': '127.0.0.1'
         })
 
