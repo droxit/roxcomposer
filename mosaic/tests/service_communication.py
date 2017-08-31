@@ -20,16 +20,15 @@ class AppendService(base_service.BaseService):
         super().__init__(args)
 
     def on_message(self, msg):
-        print(self.mosaic_message.get_protobuf_msg_as_dict())
         self.dispatch(msg + self.msg)
 
 
 class TestPipeline(unittest.TestCase):
     def setUp(self):
         self.services = [
-            {'msg': 'service 1', 'args': {'name': 'service1', 'ip': '127.0.0.1', 'port': 10001, 'logging': {'level': 'DEBUG'}}},
-            {'msg': 'service 2', 'args': {'name': 'service1', 'ip': '127.0.0.1', 'port': 10002, 'logging': {'level': 'DEBUG'}}},
-            {'msg': 'service 3', 'args': {'name': 'service1', 'ip': '127.0.0.1', 'port': 10003, 'logging': {'level': 'DEBUG'}}},
+            {'msg': 'service 1', 'args': {'name': 'service1', 'ip': '127.0.0.1', 'port': 10001, 'logging': {'level': 'WARNING'}}},
+            {'msg': 'service 2', 'args': {'name': 'service1', 'ip': '127.0.0.1', 'port': 10002, 'logging': {'level': 'WARNING'}}},
+            {'msg': 'service 3', 'args': {'name': 'service1', 'ip': '127.0.0.1', 'port': 10003, 'logging': {'level': 'WARNING'}}},
         ]
 
         self.children = []
