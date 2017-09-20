@@ -1,8 +1,51 @@
 #!/bin/bash
 
-if [[ ($#" -lt 1) ]]
-    echo 'missing parameter'
+server="localhost:7475"
+
+### FUNCTIONS ###
+
+function usage {
+    echo "usage: mosaic-cli <COMMAND> [ARGUMENTS]"
+    echo "commands:"
+    echo "  deploy <SERVICE>"
+    exit 0
+}
+
+function curl_post {
+    header="Content-Type: application/json"
+    path=$1
+    argfile=$2
+    curl -XPOST -H header http://$server/$path -d '@'$argfile
+}
+
+function deploy {
+    if [[ ($# -lt 1) ]]
+        then usage
+    fi
+
+    service="$1"
+    
+    argfile="services/$service.json"
+
+    if [[ -e "$argfile" ]]
+       then
+          echo "deploying $service"
+          curl_post "add_service" $argfile
+       else
+           echo "service file not found: $argfile"
+           exit 1
+    fi
+}
+
+
+### EXECUTION ###
+if [[ ($# -lt 1) ]]
+    then usage
 fi
 
-case $1 in
-    'deploy'
+case "$1" in
+    "deploy")
+        shift
+        deploy $@
+        ;;
+esac
