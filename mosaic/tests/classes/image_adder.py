@@ -27,7 +27,7 @@ class ImageAdder(base_service.BaseService):
     def to_html(self):
         received_text = self.msg
         html_string = """
-            <img src="../images/minions-yeah.jpg"></img>
+            <img src="../images/minions-yeah.jpg">
         """
 
         self.logger.info('Msg sent: ' + received_text + '<br/>' + html_string)
