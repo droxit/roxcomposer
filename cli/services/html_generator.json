@@ -1,5 +1,5 @@
 {
-  "path": "services/html_generator.py",
+  "path": "../services/html_generator.py",
   "params": {
 	"ip": "127.0.0.1",
 	"port": 6001,

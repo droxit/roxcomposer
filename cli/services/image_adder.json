@@ -1,5 +1,5 @@
 {
-  "path": "services/image_adder.py",
+  "path": "../services/image_adder.py",
   "params": {
     "ip": "127.0.0.1",
     "port": 5001,
