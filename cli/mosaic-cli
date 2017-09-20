@@ -10,6 +10,8 @@ function usage {
     echo "  deploy <SERVICE>"
     echo "  list_services"
     echo "  set_pipeline <NAME> <SERVICE> [...]"
+    echo "  list_pipelines"
+    echo "  post_message <PIPELINE> <MESSAGE>"
     exit 0
 }
 
@@ -68,6 +70,18 @@ function set_pipeline {
     curl_post_data "set_pipeline" "{\"name\":\"$pname\",\"services\":[$servarr]}"
 }
 
+function post_message {
+    if [[ ($# -lt 2) ]]
+        then usage
+    fi
+
+    pname=$1
+    shift
+    message=$@
+
+    curl_post_data "post_to_pipeline" "{\"name\":\"$pname\",\"data\":\"$message\"}"
+}
+
 
 ### EXECUTION ###
 if [[ ($# -lt 1) ]]
@@ -86,6 +100,17 @@ case "$1" in
     "list_services")
         shift
         curl_get "services"
+        echo ""
+        ;;
+    "list_pipelines")
+        shift
+        curl_get "pipelines"
+        echo ""
+        ;;
+    "post_message")
+        shift
+        post_message $@
+        echo ""
         ;;
     *)
         usage
