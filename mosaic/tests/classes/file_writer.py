@@ -5,6 +5,16 @@ from mosaic import base_service
 
 class FileWriter(base_service.BaseService):
     def __init__(self, params=None):
+        if params is None:
+            params = {
+                "ip": "127.0.0.1",
+                "port": 4001,
+                "name": "file_writer",
+                "logging": {
+                    "filename": "pipeline.log",
+                    "level": "INFO"
+                }
+            }
         super().__init__(params)
 
         self.msg = ''

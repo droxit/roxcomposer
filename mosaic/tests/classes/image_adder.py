@@ -5,6 +5,16 @@ from mosaic import base_service
 
 class ImageAdder(base_service.BaseService):
     def __init__(self, params=None):
+        if params is None:
+            params = {
+                "ip": "127.0.0.1",
+                "port": 6001,
+                "name": "image_adder",
+                "logging": {
+                    "filename": "pipeline.log",
+                    "level": "INFO"
+                }
+            }
         super().__init__(params)
 
         self.msg = ''
