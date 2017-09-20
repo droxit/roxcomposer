@@ -3,13 +3,13 @@
 from mosaic import base_service
 
 
-class FileWriter(base_service.BaseService):
+class ImageAdder(base_service.BaseService):
     def __init__(self, params=None):
         if params is None:
             params = {
                 "ip": "127.0.0.1",
-                "port": 4001,
-                "name": "file_writer",
+                "port": 6001,
+                "name": "image_adder",
                 "logging": {
                     "filename": "pipeline.log",
                     "level": "INFO"
@@ -22,15 +22,17 @@ class FileWriter(base_service.BaseService):
 
     def on_message(self, msg):
         self.msg = msg
-        self.logger.info('msg received: ' + msg)
-        self.write_file()
+        self.to_html()
 
-    def write_file(self):
-        html_string = self.msg
-        f = open('index.html', 'w')
-        f.write(html_string)
-        f.close()
+    def to_html(self):
+        received_text = self.msg
+        html_string = """
+            <img src="../images/minions-yeah.jpg">
+        """
+
+        self.logger.info('Msg sent: ' + received_text + '<br/>' + html_string)
+        return self.dispatch(received_text + '<br/>' + html_string)
 
 
 if __name__ == '__main__':
-    fw = FileWriter()
+    service = ImageAdder()
