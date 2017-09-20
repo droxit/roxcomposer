@@ -1,0 +1,12 @@
+{
+  "path": "services/image_adder.py",
+  "params": {
+    "ip": "127.0.0.1",
+    "port": 6001,
+    "name": "image_adder",
+    "logging": {
+      "filename": "pipeline.log",
+      "level": "INFO"
+    }
+  }
+}
