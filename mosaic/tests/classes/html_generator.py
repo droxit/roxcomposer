@@ -5,16 +5,6 @@ from mosaic import base_service
 
 class HtmlGenerator(base_service.BaseService):
     def __init__(self, params=None):
-        if params is None:
-            params = {
-                'ip': '127.0.0.1',
-                'port': 5001,
-                'name': 'html_generator',
-                'logging': {
-                    'filename': 'pipeline.log',
-                    'level': 'INFO'
-                }
-            }
         super().__init__(params)
 
         self.msg = ''
