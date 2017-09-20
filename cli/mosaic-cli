@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ ($#" -lt 1) ]]
+    echo 'missing parameter'
+fi
+
+case $1 in
+    'deploy'
