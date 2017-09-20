@@ -8,7 +8,8 @@ function usage {
     echo "usage: mosaic-cli <COMMAND> [ARGUMENTS]"
     echo "commands:"
     echo "  deploy <SERVICE>"
-    echo "  pipeline <NAME> <SERVICE> [...]"
+    echo "  list_services"
+    echo "  set_pipeline <NAME> <SERVICE> [...]"
     exit 0
 }
 
@@ -24,6 +25,11 @@ function curl_post_data {
     path=$1
     args=$2
     curl -XPOST -H "$header" "http://$server/$path" -d "$args"
+}
+
+function curl_get {
+    path=$1
+    curl "http://$server/$path"
 }
 
 function deploy {
@@ -73,8 +79,15 @@ case "$1" in
         shift
         deploy $@
         ;;
-    "pipeline")
+    "set_pipeline")
         shift
         set_pipeline $@
+        ;;
+    "list_services")
+        shift
+        curl_get "services"
+        ;;
+    *)
+        usage
         ;;
 esac
