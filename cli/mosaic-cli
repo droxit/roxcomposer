@@ -15,7 +15,7 @@ function curl_post {
     header="Content-Type: application/json"
     path=$1
     argfile=$2
-    curl -XPOST -H header http://$server/$path -d '@'$argfile
+    curl -XPOST -H "$header" "http://$server/$path" -d "@$argfile"
 }
 
 function deploy {
@@ -30,7 +30,7 @@ function deploy {
     if [[ -e "$argfile" ]]
        then
           echo "deploying $service"
-          curl_post "add_service" $argfile
+          curl_post "start_service" $argfile
        else
            echo "service file not found: $argfile"
            exit 1
