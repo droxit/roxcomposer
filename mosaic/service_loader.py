@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-import json
 import importlib
 
 def load_class(classpath):
@@ -13,9 +12,8 @@ def load_class(classpath):
 
     return c
 
-def start_service(classpath, argstring):
-    params = json.loads(argstring)
+def start_service(classpath, args):
     c = load_class(classpath)
 
-    c(params)
+    c(args)
 
