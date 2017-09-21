@@ -20,8 +20,8 @@ def load_class(classpath):
 
     return c
 
-def start_service(classpath, args):
+def make_service_instance(classpath, args):
     c = load_class(classpath)
 
-    c(args)
+    return c(args)
 
