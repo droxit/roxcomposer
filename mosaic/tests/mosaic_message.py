@@ -5,6 +5,7 @@ from mosaic.communication import mosaic_message
 from mosaic.communication import service_com_pb2
 from mosaic import exceptions
 from google.protobuf import json_format
+import uuid
 import urllib.parse
 
 
@@ -31,7 +32,8 @@ class TestMosaicMessage(unittest.TestCase):
         # test default message initiation
         default_message = mosaic_message.Message()
 
-        self.assertDictEqual(default_message.get_protobuf_msg_as_dict(), {})
+        self.assertFalse(default_message.get_message_id() == '')
+        self.assertTrue(type(uuid.UUID(default_message.get_message_id())), uuid.UUID)
 
         dummy_message = mosaic_message.Message(self.dummy_protobuf_msg)
         # test dummy protobuf msg initiation
