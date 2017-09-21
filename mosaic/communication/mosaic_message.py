@@ -3,6 +3,7 @@
 from mosaic.communication import service_com_pb2
 from google.protobuf import json_format
 import urllib.parse
+import uuid
 import json
 from mosaic import exceptions
 
@@ -27,7 +28,11 @@ class Message:
     def __init__(self, protobuf_msg=None):
         # the messag can be set up either as a new message or an existing protobuf msg
         if protobuf_msg is None:
-            self.protobuf_msg = service_com_pb2.MosaicMessage()
+            try:
+                self.protobuf_msg = service_com_pb2.MosaicMessage()
+                self.protobuf_msg.id = str(uuid.uuid4())
+            except Exception:
+                raise exceptions.InvalidMosaicMessage('Message.__init__() - failed at creating a new MosaicMessage.')
         else:
             try:
                 self.protobuf_msg = service_com_pb2.MosaicMessage()
@@ -38,6 +43,7 @@ class Message:
 
         self.pipeline = self.protobuf_msg.pipeline
         self.payload = self.protobuf_msg.payload
+        self.id = self.protobuf_msg.id
 
     # add a service to the currently processed pipeline
     def add_service(self, ip, port, params=None):
@@ -86,3 +92,7 @@ class Message:
     # get the current message as a dictionary
     def get_protobuf_msg_as_dict(self):
         return json_format.MessageToDict(self.protobuf_msg)
+
+    # get current message id
+    def get_message_id(self):
+        return self.id

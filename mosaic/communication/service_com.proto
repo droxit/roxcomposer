@@ -5,6 +5,7 @@ package service_communication;
 message MosaicMessage {
     Pipeline pipeline = 1;
     Payload payload = 2;
+    string id = 3;
 }
 
 message Pipeline {
