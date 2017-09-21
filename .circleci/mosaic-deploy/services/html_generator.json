@@ -1,0 +1,8 @@
+{
+    "classpath": "mosaic.tests.classes.html_generator.HtmlGenerator",
+    "params": {
+        "name": "htmlgenerator.service",
+        "ip": "127.0.0.1",
+        "port": 5002
+    }
+}

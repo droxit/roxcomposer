@@ -65,6 +65,12 @@ jobs:
             . venv/bin/activate
             python setup.py sdist
             cp ./dist/*.tar.gz ./test-reports/
+      - run:
+          name: create demo package
+          command: |
+              cd .circleci/mosaic-deploy
+              ./build_mosaic.sh ../../../dist/*.tar.gz ../../../api_srv_plugin
+              cp mosaic-demo.tar.gz ../../test-reports/
       - store_artifacts:
           path: test-reports
           destination: test-reports
@@ -74,9 +80,7 @@ jobs:
             . venv/bin/activate
             scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
             ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'rm -f /opt/mosaic-deploy/incoming/*'
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz ./api_srv_plugin/*.js devpi@176.9.144.37:/opt/mosaic-deploy/incoming
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'cd /opt/mosaic-deploy/; ./build_mosaic.sh /opt/mosaic-deploy/incoming/mosaic*.tar.gz /opt/mosaic-deploy/incoming'
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
 #          dev:
 #            branch: dev
 #            commands: |

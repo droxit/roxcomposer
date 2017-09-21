@@ -1,0 +1,8 @@
+{
+    "classpath": "mosaic.tests.classes.file_writer.FileWriter",
+    "params": {
+        "name": "filewriter.service",
+        "ip": "127.0.0.1",
+        "port": 5001
+    }
+}

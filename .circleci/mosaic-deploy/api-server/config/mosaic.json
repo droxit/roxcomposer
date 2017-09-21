@@ -1,0 +1,53 @@
+{
+  "SYSTEM": {
+	"port": 7475,
+    "loglevel": "info",
+    "logfile": "api-server.log"
+  },
+  "PLUGINS": {
+      "mosaic": {
+          "path": "./plugins/mosaic_control.js"
+      }
+  },
+  "REST": {
+	"GET": {
+        "services": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "get_services"
+            }
+        },
+        "pipelines": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "get_pipelines"
+            }
+        }
+    },
+    "POST": {
+        "start_service": {
+            "handler": {
+               "type": "plugin",
+               "name": "mosaic",
+               "function": "start_service"
+            }
+        },
+        "set_pipeline": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "set_pipeline"
+            }
+        },
+        "post_to_pipeline": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "post_to_pipeline"
+            }
+        }
+    }
+  }
+}
