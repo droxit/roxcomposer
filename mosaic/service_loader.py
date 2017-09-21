@@ -4,8 +4,8 @@ import sys
 import json
 import importlib
 
-def load_class(classname):
-    components = classname.split('.')
+def load_class(classpath):
+    components = classpath.split('.')
     modpath = ".".join(components[:-1])
     classname = components[-1]
     mod = importlib.import_module(modpath)
@@ -13,19 +13,9 @@ def load_class(classname):
 
     return c
 
-
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print('not enough arguments provided')
-        exit(1)
-
-    name = sys.argv[1]
-    try:
-        params = json.loads(sys.argv[2])
-    except Exception:
-        print('unable to load args - invalid json?')
-
-    c = load_class(sys.argv[1])
+def start_service(classpath, argstring):
+    params = json.loads(argstring)
+    c = load_class(classpath)
 
     c(params)
 
