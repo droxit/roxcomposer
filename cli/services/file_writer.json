@@ -1,0 +1,12 @@
+{
+  "path": "../services/file_writer.py",
+  "params": {
+	"ip": "127.0.0.1",
+	"port": 4001,
+	"name": "file_writer",
+	"logging": {
+	  "filename": "pipeline.log",
+	  "level": "INFO"
+	}
+  }
+}

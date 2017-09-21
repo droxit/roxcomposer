@@ -1,0 +1,12 @@
+{
+  "path": "../services/html_generator.py",
+  "params": {
+	"ip": "127.0.0.1",
+	"port": 6001,
+	"name": "html_generator",
+	"logging": {
+	  "filename": "pipeline.log",
+	  "level": "INFO"
+	}
+  }
+}

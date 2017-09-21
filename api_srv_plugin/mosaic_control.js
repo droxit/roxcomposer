@@ -74,7 +74,8 @@ function post_to_pipeline(args, cb) {
     for(var s in pline) {
         var p = pline[s];
         var service = new mosaic_message.Service();
-        service.setId(services[p].params.ip + ":" + services[p].params.port);
+        var p_new = p.replace("'", '');
+        service.setId(services[p_new]['params'].ip + ":" + services[p_new]['params'].port);
         arr.push(service);
     }
     var pipeline = new mosaic_message.Pipeline();
