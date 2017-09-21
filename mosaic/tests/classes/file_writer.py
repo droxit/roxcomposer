@@ -1,5 +1,7 @@
 #!/usr/bin/env python3.6
 
+import sys
+import json
 from mosaic import base_service
 
 
@@ -33,4 +35,8 @@ class FileWriter(base_service.BaseService):
 
 
 if __name__ == '__main__':
-    fw = FileWriter()
+    params = None
+    if len(sys.argv) > 1:
+        params = json.loads(sys.argv[1])
+
+    fw = FileWriter(params)
