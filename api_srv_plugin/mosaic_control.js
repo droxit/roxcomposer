@@ -36,15 +36,30 @@ function init(args) {
  * args need to contain the name of the service and the path to the service module
  **/
 function start_service(args, cb) {
-    var path = args.path;
-    var name = args.params.name;
-    var params = args.params;
+    var opt;
+
+    if ('path' in args) {
+        opt = [args.path];
+    } else if('classpath' in args) {
+        opt = ['plugins/service_container.py', args.classpath];
+    } else {
+        cb({'code': 400, 'message': 'either a module path or a service class must be specified'});
+    }
+
+    if (!('params' in args))
+        cb({'code': 400, 'message': 'params must be given - even if they are empty'});
+
+    if (!('name' in args.params))
+        cb({'code': 400, 'message': 'a service name must be given'});
 
     if(name in services) {
         cb({'code': 400, 'message': 'a service with that name already exists'});
     }
 
-    var opt = [ path, JSON.stringify(params) ];
+    var name = args.params.name;
+    var params = args.params;
+
+    opt.push(JSON.stringify(params));
     services[name] = {};
     services[name].path = args.path;
     services[name].params = args.params;
