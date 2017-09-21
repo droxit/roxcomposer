@@ -5,7 +5,7 @@ API_PLUGIN_PATH=$2
 BUILD_DIR="mosaic"
 
 # clean build directory
-rm -r $BUILD_DIR/*
+mkdir $BUILD_DIR/*
 
 cd $BUILD_DIR
 mkdir packages
