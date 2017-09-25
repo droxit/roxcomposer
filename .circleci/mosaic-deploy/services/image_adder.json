@@ -1,0 +1,9 @@
+{
+    "classpath": "mosaic.tests.classes.image_adder.ImageAdder",
+    "params": {
+        "name": "imageadder.service",
+        "ip": "127.0.0.1",
+        "port": 5003,
+        "image": "./assests/minions-yeah.jpg"
+    }
+}

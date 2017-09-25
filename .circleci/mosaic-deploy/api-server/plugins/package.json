@@ -1,0 +1,25 @@
+{
+  "name": "mosaic-control",
+  "version": "0.0.3",
+  "description": "mosaic control plugin for the droxit API server",
+  "main": "mosaic-control.js",
+  "dependencies": {
+    "google-protobuf": "latest"
+  },
+  "devDependencies": {
+    "supertest": "^2.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/droxit/api-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/droxit/api-server/issues"
+  },
+  "homepage": "https://github.com/droxit/core#readme"
+}

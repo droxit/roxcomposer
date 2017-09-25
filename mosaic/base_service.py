@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.6
 
 from mosaic.communication import mosaic_message
-from mosaic.logging import basic_logger
+from mosaic.log import basic_logger
 import socket
 import sys
 from mosaic import exceptions
