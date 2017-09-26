@@ -39,4 +39,4 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         params = json.loads(sys.argv[1])
 
-    fw = FileWriter(params)
+    service = FileWriter(params)
