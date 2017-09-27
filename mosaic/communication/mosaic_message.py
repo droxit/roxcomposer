@@ -97,6 +97,24 @@ class Message:
     def get_message_id(self):
         return self.id
 
+    # this function returns true, if the pipeline is empty, which means if there is no other services except itself in
+    # the pipeline
+    def is_empty_pipeline(self, mosaic_msg=None):
+        if mosaic_msg is None:
+            if self.get_services_as_dict().get('services') is None:
+                return True
+            elif len(self.get_services_as_dict()['services']) == 1:
+                return True
+            else:
+                return False
+        else:
+            if mosaic_msg.get_services_as_dict().get('services') is None:
+                return True
+            elif len(mosaic_msg.get_services_as_dict()['services']) == 1:
+                return True
+            else:
+                return False
+
     # override str method, to get a string representaion of the message
     def __str__(self):
         return str(self.get_protobuf_msg_as_dict())
