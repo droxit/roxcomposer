@@ -2,7 +2,7 @@
 
 from mosaic.communication import mosaic_message
 from mosaic.log import basic_logger
-import time
+from mosaic.monitor import basic_monitoring
 import socket
 import sys
 from mosaic import exceptions
@@ -39,6 +39,12 @@ class BaseService:
         if 'logging' in self.params:
             logger_params = params['logging']
         self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
+
+        # initialize monitoring
+        monitoring_params = {}
+        if 'monitoring' in self.params:
+            monitoring_params = params['monitoring']
+        self.monitoring = basic_monitoring.BasicMonitoring(**monitoring_params)
 
         self.mosaic_message = mosaic_message.Message()
 
@@ -94,7 +100,7 @@ class BaseService:
                 connection, sender_address = s.accept()
                 self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
                 data = connection.recv(self.BUFFER_SIZE)
-                print('MosaicMessage received at', time.time())
+                self.monitoring.msg_received()
 
                 msg_received = mosaic_message.Utils.deserialize(data)
                 try:
