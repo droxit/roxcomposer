@@ -77,7 +77,7 @@ class BaseService:
         try:
             connection = socket.create_connection(address_tuple)
             connection.send(self.mosaic_message)
-            self.monitoring.msg_dispatched()
+            self.monitoring.msg_dispatched(id=self.get_service_id())
 
             resp = connection.recv(self.BUFFER_SIZE)
             self.logger.debug(resp)
@@ -106,13 +106,13 @@ class BaseService:
                 connection, sender_address = s.accept()
                 self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
                 data = connection.recv(self.BUFFER_SIZE)
-                self.monitoring.msg_received()
+                self.monitoring.msg_received(id=self.get_service_id())
 
                 msg_received = mosaic_message.Utils.deserialize(data)
                 try:
                     self.mosaic_message = mosaic_message.Message(msg_received)
                     if self.mosaic_message.is_empty_pipeline():
-                        self.monitoring.msg_reached_final_destination()
+                        self.monitoring.msg_reached_final_destination(id=self.get_service_id())
 
                     self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
                 except exceptions.InvalidMosaicMessage as e:
@@ -155,3 +155,7 @@ class BaseService:
     # get the currently handled message as a python dictionary
     def get_protobuf_message_as_dict(self):
         return mosaic_message.Message.get_protobuf_msg_as_dict(self.mosaic_message)
+
+    # get current service id
+    def get_service_id(self):
+        return self.params['ip'] + ':' + str(self.params['port'])
