@@ -164,9 +164,9 @@ function set_pipeline(args, cb) {
         return;
     }
     for(s in args.services) {
-        if(!(s in services)) {
-            var msg = 'set_pipeline: no service with that name';
-            logger.error({service: s}, msg);
+        if(!(args.services[s] in services)) {
+            var msg = `set_pipeline: no service with name [${args.services[s]}]`;
+            logger.error(msg);
             cb({'code': 400, 'message': msg});
             return;
         }
