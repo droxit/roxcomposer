@@ -35,13 +35,18 @@ class BaseService:
                 raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
 
         # initialize logger
-        logger_params = {}
+        logger_params = {
+            'filename': 'pipeline.log',
+            'level': 'INFO'
+        }
         if 'logging' in self.params:
             logger_params = params['logging']
         self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
 
         # initialize monitoring
-        monitoring_params = {}
+        monitoring_params = {
+            'filename': 'monitoring.log'
+        }
         if 'monitoring' in self.params:
             monitoring_params = params['monitoring']
         self.monitoring = basic_monitoring.BasicMonitoring(**monitoring_params)
