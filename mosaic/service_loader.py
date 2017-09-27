@@ -23,7 +23,6 @@ def load_class(classpath):
 
 def make_service_instance(classpath, args):
     c = load_class(classpath)
-    c.listen()
 
     return c(args)
 

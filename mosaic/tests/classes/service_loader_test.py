@@ -1,4 +1,4 @@
-class DummyClass():
+class DummyClass:
     def __init__(self, args):
         self.args = args
 
