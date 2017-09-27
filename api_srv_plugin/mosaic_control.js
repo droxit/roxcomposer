@@ -25,10 +25,10 @@ module.exports = function(container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
-    address = args.address;
-    port = args.port;
-    portrange = args.portrange_start;
-    logger = args.logger;
+    if(args && 'logger' in args)
+        logger = args.logger;
+    else
+        logger = bunyan({name: 'mosaic_control'});
 }
 
 /**
@@ -124,6 +124,29 @@ function get_pipelines(args, cb) {
 
 // args = { 'name': "...", 'pipeline': [ ... service names ... ] }
 function set_pipeline(args, cb) {
+    if(!(services in args)) {
+        var msg = 'set_pipeline: service array missing from arguments';
+        logger.error({args: args}, msg);
+        cb({'code': 400, 'message': msg});
+    }
+    if(!Array.isArray(args.services)) {
+        var msg = 'set_pipeline: args.services must be an array';
+        logger.error({args: args}, msg);
+        cb({'code': 400, 'message': msg});
+    }
+    if(args.services.length === 0) {
+        var msg = 'set_pipeline: args.services must not be empty';
+        logger.error({args: args}, msg);
+        cb({'code': 400, 'message': msg});
+    }
+    for(s in args.services) {
+        if(!(s in services)) {
+            var msg = 'set_pipeline: no service with that name';
+            logger.error({service: s}, msg);
+            cb({'code': 400, 'message': msg});
+        }
+    }
+
     pipelines[args.name] = args.services;
     cb(null, {'message': 'ok'});
 }
