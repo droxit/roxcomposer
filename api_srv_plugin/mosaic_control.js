@@ -173,7 +173,7 @@ function set_pipeline(args, cb) {
     }
 
     pipelines[args.name] = args.services;
-    cb(null, {'message': 'ok'});
+    cb(null, {'message': `pipeline [${args.name}] created`});
 }
 
 // args = { 'name': "..." }
