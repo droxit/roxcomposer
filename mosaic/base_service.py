@@ -106,6 +106,9 @@ class BaseService:
                 msg_received = mosaic_message.Utils.deserialize(data)
                 try:
                     self.mosaic_message = mosaic_message.Message(msg_received)
+                    if self.mosaic_message.is_empty_pipeline():
+                        self.monitoring.msg_reached_final_destination()
+
                     self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
                 except exceptions.InvalidMosaicMessage as e:
                     self.logger.error(e)
