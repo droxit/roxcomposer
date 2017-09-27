@@ -67,6 +67,7 @@ class BaseService:
             return
 
         me = self.mosaic_message.pop_service()
+        message_id = self.mosaic_message.get_message_id()
 
         next_service = self.mosaic_message.get_services_as_dict()['services'][0]
         next_service_id = next_service['id'].split(':')
@@ -77,7 +78,10 @@ class BaseService:
         try:
             connection = socket.create_connection(address_tuple)
             connection.send(self.mosaic_message)
-            self.monitoring.msg_dispatched(id=self.get_service_id())
+            self.monitoring.msg_dispatched(
+                service_id=self.get_service_id(),
+                message_id=message_id
+            )
 
             resp = connection.recv(self.BUFFER_SIZE)
             self.logger.debug(resp)
@@ -106,13 +110,21 @@ class BaseService:
                 connection, sender_address = s.accept()
                 self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
                 data = connection.recv(self.BUFFER_SIZE)
-                self.monitoring.msg_received(id=self.get_service_id())
 
                 msg_received = mosaic_message.Utils.deserialize(data)
                 try:
                     self.mosaic_message = mosaic_message.Message(msg_received)
+
+                    self.monitoring.msg_received(
+                        service_id=self.get_service_id(),
+                        message_id=self.mosaic_message.get_message_id()
+                    )
+
                     if self.mosaic_message.is_empty_pipeline():
-                        self.monitoring.msg_reached_final_destination(id=self.get_service_id())
+                        self.monitoring.msg_reached_final_destination(
+                            service_id=self.get_service_id(),
+                            message_id=self.mosaic_message.get_message_id()
+                        )
 
                     self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
                 except exceptions.InvalidMosaicMessage as e:
