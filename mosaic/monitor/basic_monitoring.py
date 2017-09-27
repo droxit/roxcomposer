@@ -10,3 +10,5 @@ class BasicMonitoring:
     def msg_received(self):
         print('MosaicMessage received at', time.time())
 
+    def msg_dispatched(self):
+        print('MosaicMessage dispatched at', time.time())

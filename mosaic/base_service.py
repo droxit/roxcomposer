@@ -72,6 +72,7 @@ class BaseService:
         try:
             connection = socket.create_connection(address_tuple)
             connection.send(self.mosaic_message)
+            self.monitoring.msg_dispatched()
 
             resp = connection.recv(self.BUFFER_SIZE)
             self.logger.debug(resp)
