@@ -35,6 +35,24 @@ class SentMail(base_service.BaseService):
                 "logging": {
                     "filename": "pipeline.log",
                     "level": "INFO"
+                },
+                # declaration of the default mail settings
+                #
+                # mail address of the sender
+                # fully qualified domain name of the mail server
+                # username for the SMTP authentication
+                # password for the SMTP authentication
+                # use TLS encryption for the connection
+                "smtp": {
+                  "sender" : "villarroya@droxit.de",
+                  "smtpserver": "smtp.office365.com",
+                  "smtpusername": "villarroya@droxit.de",
+                  "smtppassword": "XXXXXXXXX",
+                  "usetls": True
+                },
+                "mail": {
+                  "subject" : "Mosaic-Demo: Test",
+                  "recipient": "info@droxit.de"
                 }
             }
         super().__init__(params)
@@ -44,7 +62,6 @@ class SentMail(base_service.BaseService):
 
     def on_message(self, msg):
             self.msg = msg
-            # self.logger.info('######msg received: ' + msg)
             self.sendmail('marta@villarroya.info','Mosaic-Demo: Test', msg)
 
     #
@@ -53,47 +70,27 @@ class SentMail(base_service.BaseService):
     #    def sendmail(recipient, subject, content):
     def sendmail(self, recipient, subject, content):
 
-        #
-        # declaration of the default mail settings
-        #
-
-        # mail address of the sender
-        sender = 'villarroya@droxit.de'
-
-        # fully qualified domain name of the mail server
-        smtpserver = 'smtp.office365.com'
-
-        # username for the SMTP authentication
-        smtpusername = 'villarroya@droxit.de'
-
-        # password for the SMTP authentication
-        smtppassword = 'XXXXXX'
-
-        # use TLS encryption for the connection
-        usetls = True
-
-
         # generate a RFC 2822 message
         msg = MIMEText(content)
-        msg['From'] = sender
+        msg['From'] = self.params['smtp']['sender']
         msg['To'] = recipient
         msg['Subject'] = subject
 
         # open SMTP connection
-        server = smtplib.SMTP(smtpserver)
+        server = smtplib.SMTP(self.params['smtp']['smtpserver'])
 
         # start TLS encryption
-        if usetls:
+        if self.params['smtp']['usetls']:
             server.starttls()
 
         # login with specified account
-        if smtpusername and smtppassword:
-            server.login(smtpusername, smtppassword)
+        if self.params['smtp']['smtpusername'] and self.params['smtp']['smtppassword']:
+            server.login(self.params['smtp']['smtpusername'], self.params['smtp']['smtppassword'])
 
-        self.logger.info('###################### sent Mail: ' + content + 'from: ' + sender + ' to:' + recipient)
+        self.logger.info('msg sented: ' + content + 'from: ' + self.params['smtp']['sender'] + ' to:' + recipient)
 
         # send generated message
-        server.sendmail(sender, recipient, msg.as_string())
+        server.sendmail(self.params['smtp']['sender'], recipient, msg.as_string())
 
         # close SMTP connection
         server.quit()

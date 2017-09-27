@@ -9,11 +9,15 @@
       "level": "INFO"
     },
     "smtp": {
-      "sender" : "villarroya@droxit.de",
+      "sender": "villarroya@droxit.de",
       "smtpserver": "smtp.office365.com",
       "smtpusername": "villarroya@droxit.de",
       "smtppassword": "XXXXXXXX",
       "usetls": true
+    },
+    "mail": {
+      "subject": "Mosaic-Demo: Test",
+      "recipient": "info@droxit.de"
     }
   }
 }

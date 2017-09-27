@@ -7,7 +7,7 @@ if __name__ == '__main__':
     mosaic_msg = mosaic_message.Message()
     mosaic_msg.add_service('127.0.0.1', 6001)
     mosaic_msg.add_service('127.0.0.1', 5001)
-    # mosaic_msg.add_service('127.0.0.1', 4001)
+    mosaic_msg.add_service('127.0.0.1', 4001)
     mosaic_msg.add_service('127.0.0.1', 7001)
 
     address_tuple = ('127.0.0.1', 6001)

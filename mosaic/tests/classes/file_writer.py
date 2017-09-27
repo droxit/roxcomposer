@@ -32,6 +32,7 @@ class FileWriter(base_service.BaseService):
         f = open('index.html', 'w')
         f.write(html_string)
         f.close()
+        return self.dispatch(html_string)
 
 
 if __name__ == '__main__':
