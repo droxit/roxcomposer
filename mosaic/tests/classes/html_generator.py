@@ -14,7 +14,7 @@ class HtmlGenerator(base_service.BaseService):
                 "name": "html_generator",
                 "logging": {
                     "filename": "pipeline.log",
-                    "level": "INFO"
+                    "level": "DEBUG"
                 }
             }
         super().__init__(params)
@@ -48,7 +48,6 @@ class HtmlGenerator(base_service.BaseService):
                 </html>
         """
 
-        self.logger.info('Msg sent: ' + html_string)
         return self.dispatch(html_string)
 
 
