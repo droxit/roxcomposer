@@ -1,0 +1,27 @@
+{
+  "name": "mosaic-control",
+  "version": "0.2.0-alpha1",
+  "description": "plugin for droxIT impress - to control the mosaic framework",
+  "main": "droxitApi.js",
+  "dependencies": {
+    "bunyan": "latest",
+    "google-protobuf": "latest"
+  },
+  "devDependencies": {
+    "mocha": "latest",
+    "expect.js": "latest"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/droxit/mosaic.git"
+  },
+  "author": "",
+  "license": "None - don't use it",
+  "bugs": {
+    "url": "https://github.com/droxit/mosaic/issues"
+  },
+  "homepage": "https://github.com/droxit/mosaic#readme"
+}
