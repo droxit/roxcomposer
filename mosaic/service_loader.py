@@ -5,6 +5,7 @@ import importlib
 import inspect
 from mosaic import exceptions
 
+
 def load_class(classpath):
     if classpath is None:
         raise exceptions.ParameterMissing("classpath is empty")
@@ -20,8 +21,10 @@ def load_class(classpath):
 
     return c
 
+
 def make_service_instance(classpath, args):
     c = load_class(classpath)
+    c.listen()
 
     return c(args)
 
