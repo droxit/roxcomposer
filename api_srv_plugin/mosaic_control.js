@@ -145,7 +145,7 @@ function get_pipelines(args, cb) {
 
 // args = { 'name': "...", 'pipeline': [ ... service names ... ] }
 function set_pipeline(args, cb) {
-    if(!(services in args)) {
+    if(!('services' in args)) {
         var msg = 'set_pipeline: service array missing from arguments';
         logger.error({args: args}, msg);
         cb({'code': 400, 'message': msg});
