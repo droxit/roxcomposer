@@ -5,7 +5,7 @@ import logging
 # the logging configuration. If the specified logfile already exists logs will get appended to the file.
 class BasicLogger:
     def __init__(self, servicename, **kwargs):
-        kwargs['format'] = '[%(levelname)s] service:' + servicename + ' - %(message)s'
+        kwargs['format'] = '[%(asctime)-15s][%(created)s][%(levelname)s] service:' + servicename + ' - %(message)s'
         logging.basicConfig(**kwargs)
 
     # log a message for information
