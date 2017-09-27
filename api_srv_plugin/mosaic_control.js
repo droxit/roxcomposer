@@ -1,3 +1,4 @@
+var fs = require('fs');
 var bunyan = require('bunyan');
 var spawn = require('child_process').spawn;
 var net = require('net');
@@ -28,7 +29,7 @@ function init(args) {
     if(args && 'logger' in args)
         logger = args.logger;
     else
-        logger = bunyan({name: 'mosaic_control'});
+        logger = bunyan.createLogger({name: 'mosaic_control'});
 }
 
 /**
@@ -36,6 +37,7 @@ function init(args) {
  * args need to contain the name of the service and the path to the service module
  **/
 function start_service(args, cb) {
+    logger.debug({args: args}, 'start_service called');
     var opt;
 
     if (args === undefined)
@@ -44,24 +46,31 @@ function start_service(args, cb) {
         throw TypeError("start_service: 'cb' must be a function");
 
     if ('path' in args) {
-        opt = [args.path];
+        if(fs.exists(args.path)) 
+            opt = [args.path];
+        else {
+            cb({'code': 400, 'message': 'start_service: path does not exist'});
+            return;
+        }
     } else if('classpath' in args) {
         opt = ['plugins/service_container.py', args.classpath];
     } else {
-        cb({'code': 400, 'message': 'either a module path or a service class must be specified'});
+        cb({'code': 400, 'message': 'start_service: either a module path or a service class must be specified'});
         return;
     }
 
-    if (!('params' in args))
-        cb({'code': 400, 'message': 'params must be given - even if they are empty'});
+    if (!('params' in args)) {
+        cb({'code': 400, 'message': 'start_service: params must be given - even if they are empty'});
         return;
+    }
 
-    if (!('name' in args.params))
-        cb({'code': 400, 'message': 'a service name must be given'});
+    if (!('name' in args.params)) {
+        cb({'code': 400, 'message': 'start_service: a service name must be given'});
         return;
+    }
 
     if(name in services) {
-        cb({'code': 400, 'message': 'a service with that name already exists'});
+        cb({'code': 400, 'message': 'start_service: a service with that name already exists'});
         return;
     }
 
@@ -72,6 +81,9 @@ function start_service(args, cb) {
     services[name] = {};
     services[name].path = args.path;
     services[name].params = args.params;
+
+    logger.debug({opts: opt}, 'spawning process');
+
     processes[name] = spawn('python3', opt, {stdio: 'inherit'})
         .on('exit', (code, signal) => {
             logger.info({service: name, exit_code: code}, "service exited");
@@ -172,6 +184,6 @@ function shutdown(args, cb) {
         proc.kill('SIGTERM');
         cb(null, {'message': 'service stopped'});
     } else {
-        cb({'code': 400, 'message': "service unknown"});
+        cb({'code': 400, 'message': "shutdown: service unknown"});
     }
 }
