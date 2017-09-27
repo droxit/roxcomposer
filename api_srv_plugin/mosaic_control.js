@@ -137,22 +137,26 @@ function set_pipeline(args, cb) {
         var msg = 'set_pipeline: service array missing from arguments';
         logger.error({args: args}, msg);
         cb({'code': 400, 'message': msg});
+        return;
     }
     if(!Array.isArray(args.services)) {
         var msg = 'set_pipeline: args.services must be an array';
         logger.error({args: args}, msg);
         cb({'code': 400, 'message': msg});
+        return;
     }
     if(args.services.length === 0) {
         var msg = 'set_pipeline: args.services must not be empty';
         logger.error({args: args}, msg);
         cb({'code': 400, 'message': msg});
+        return;
     }
     for(s in args.services) {
         if(!(s in services)) {
             var msg = 'set_pipeline: no service with that name';
             logger.error({service: s}, msg);
             cb({'code': 400, 'message': msg});
+            return;
         }
     }
 
