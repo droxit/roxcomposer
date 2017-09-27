@@ -96,3 +96,7 @@ class Message:
     # get current message id
     def get_message_id(self):
         return self.id
+
+    # override str method, to get a string representaion of the message
+    def __str__(self):
+        return str(self.get_protobuf_msg_as_dict())
