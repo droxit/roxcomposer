@@ -73,7 +73,7 @@ function start_service(args, cb) {
             logger.error({error: e, args: args}, "unable to spawn service");
         });
 
-    cb(null, {'message': 'service created'});
+    cb(null, {'message': `service [${name}] created`});
 }
 
 // args = { 'name': pipeline_name, 'data': "..." }
