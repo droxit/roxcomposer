@@ -38,22 +38,31 @@ function init(args) {
 function start_service(args, cb) {
     var opt;
 
+    if (args === undefined)
+        throw TypeError("start_service: 'args' must to be a dictionary");
+    if (typeof cb !== 'function')
+        throw TypeError("start_service: 'cb' must be a function");
+
     if ('path' in args) {
         opt = [args.path];
     } else if('classpath' in args) {
         opt = ['plugins/service_container.py', args.classpath];
     } else {
         cb({'code': 400, 'message': 'either a module path or a service class must be specified'});
+        return;
     }
 
     if (!('params' in args))
         cb({'code': 400, 'message': 'params must be given - even if they are empty'});
+        return;
 
     if (!('name' in args.params))
         cb({'code': 400, 'message': 'a service name must be given'});
+        return;
 
     if(name in services) {
         cb({'code': 400, 'message': 'a service with that name already exists'});
+        return;
     }
 
     var name = args.params.name;
