@@ -75,22 +75,22 @@ jobs:
 
     working_directory: ~/repo/api_srv_plugin/
     steps:
-        - checkout
-        - run:
-            name: update-npm
-            command: 'sudo npm install -g npm@latest'
-        - restore-cache:
-            key: dependency-cache-{{ checksum "package.json" }}
-        - run:
-            name: install-npm
-            command: npm install
-        - save_cache:
-            key: dependency-cache-{{ checksum "package.json" }}
-            paths:
-                - ./node_modules
-        - run:
-            name: test-mosaic-plugin
-            command: npm test
+      - checkout
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
+      - restore-cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+              - ./node_modules
+      - run:
+          name: test-mosaic-plugin
+          command: npm test
 
 
   deploy_all:
@@ -128,16 +128,16 @@ jobs:
 workflows:
     version: 2
     build_test_deploy:
-      filters:
-        branches:
-          only:
-            - dev
-            - master
-        jobs:
-            - build_python
+      jobs:
+        - build_python:
+            filters:
+              branches:
+                only:
+                  - dev
+                  - master
             - test_node
             - deploy_all:
                 requires:
-                    - build_python
-                    - test_node
+                  - build_python
+                  - test_node
 
