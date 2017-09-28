@@ -7,11 +7,11 @@ server="localhost:7475"
 function usage {
     echo "usage: mosaic-cli <COMMAND> [ARGUMENTS]"
     echo "commands:"
-    echo "  deploy <SERVICE>"
-    echo "  list_services"
+    echo "  start_service <SERVICE>"
+    echo "  services"
     echo "  set_pipeline <NAME> <SERVICE> [...]"
-    echo "  list_pipelines"
-    echo "  post_message <PIPELINE> <MESSAGE>"
+    echo "  pipelines"
+    echo "  post_to_pipeline <PIPELINE> <MESSAGE>"
     exit 0
 }
 
@@ -89,7 +89,7 @@ if [[ ($# -lt 1) ]]
 fi
 
 case "$1" in
-    "deploy")
+    "start_service")
         shift
         deploy $@
         ;;
@@ -97,17 +97,17 @@ case "$1" in
         shift
         set_pipeline $@
         ;;
-    "list_services")
+    "services")
         shift
         curl_get "services"
         echo ""
         ;;
-    "list_pipelines")
+    "pipelines")
         shift
         curl_get "pipelines"
         echo ""
         ;;
-    "post_message")
+    "post_to_pipeline")
         shift
         post_message $@
         echo ""

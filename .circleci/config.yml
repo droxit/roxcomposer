@@ -4,12 +4,7 @@
 #
 version: 2
 jobs:
-  build:
-    branches:
-      only:
-        - dev
-        - master
-
+  build_python:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
@@ -68,22 +63,81 @@ jobs:
       - run:
           name: create demo package
           command: |
-              cd .circleci/mosaic-deploy
-              ./build_mosaic.sh ../../../dist/*.tar.gz ../../../api_srv_plugin
-              cp mosaic-demo.tar.gz ../../test-reports/
+            cd .circleci/mosaic-deploy
+            ./build_mosaic.sh ../../../dist/*.tar.gz ../../../api_srv_plugin
+            cp mosaic-demo-*.tar.gz ../../test-reports/
+      - persist_to_workspace:
+          root: .
+          paths:
+              - test-reports
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+  test_impress_plugin:
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/node:8.5.0
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    steps:
+      - checkout
+        #- run:
+        #  name: update-npm
+        #  command: 'sudo npm install -g npm@latest'
+      - restore-cache:
+          key: dependency-cache-{{ checksum "api_srv_plugin/package.json" }}
+      - run:
+          working_directory: api_srv_plugin
+          name: install-npm
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "api_srv_plugin/package.json" }}
+          paths:
+              - ./node_modules
+      - run:
+          working_directory: api_srv_plugin
+          name: test-mosaic-plugin
+          command: npm test
+
+
+  deploy_all:
+
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
       - deploy:
           name: deploy to gru
           command: |
-            . venv/bin/activate
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/workspace/test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
             ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
-#          dev:
-#            branch: dev
-#            commands: |
-#              . venv/bin/activate
-#              scp ./test-reports/pip_package.tar.gz 176.9.144.37:/tmp
-#              ssh devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi upload --index droxit/dev /tmp/pip_package.tar.gz; devpi logoff'
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/workspace/test-reports/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+
+workflows:
+    version: 2
+    build_test_deploy:
+      jobs:
+        - build_python
+        - test_impress_plugin
+        - deploy_all:
+            requires:
+              - build_python
+              - test_impress_plugin
+

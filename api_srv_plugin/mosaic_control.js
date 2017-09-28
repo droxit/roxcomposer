@@ -1,3 +1,4 @@
+var fs = require('fs');
 var bunyan = require('bunyan');
 var spawn = require('child_process').spawn;
 var net = require('net');
@@ -25,10 +26,10 @@ module.exports = function(container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
-    address = args.address;
-    port = args.port;
-    portrange = args.portrange_start;
-    logger = args.logger;
+    if(args && 'logger' in args)
+        logger = args.logger;
+    else
+        logger = bunyan.createLogger({name: 'mosaic_control'});
 }
 
 /**
@@ -36,24 +37,41 @@ function init(args) {
  * args need to contain the name of the service and the path to the service module
  **/
 function start_service(args, cb) {
+    logger.debug({args: args}, 'start_service called');
     var opt;
 
+    if (args === undefined)
+        throw TypeError("start_service: 'args' must to be a dictionary");
+    if (typeof cb !== 'function')
+        throw TypeError("start_service: 'cb' must be a function");
+
     if ('path' in args) {
-        opt = [args.path];
+        if(fs.exists(args.path)) 
+            opt = [args.path];
+        else {
+            cb({'code': 400, 'message': 'start_service: path does not exist'});
+            return;
+        }
     } else if('classpath' in args) {
         opt = ['plugins/service_container.py', args.classpath];
     } else {
-        cb({'code': 400, 'message': 'either a module path or a service class must be specified'});
+        cb({'code': 400, 'message': 'start_service: either a module path or a service class must be specified'});
+        return;
     }
 
-    if (!('params' in args))
-        cb({'code': 400, 'message': 'params must be given - even if they are empty'});
+    if (!('params' in args)) {
+        cb({'code': 400, 'message': 'start_service: params must be given - even if they are empty'});
+        return;
+    }
 
-    if (!('name' in args.params))
-        cb({'code': 400, 'message': 'a service name must be given'});
+    if (!('name' in args.params)) {
+        cb({'code': 400, 'message': 'start_service: a service name must be given'});
+        return;
+    }
 
     if(name in services) {
-        cb({'code': 400, 'message': 'a service with that name already exists'});
+        cb({'code': 400, 'message': 'start_service: a service with that name already exists'});
+        return;
     }
 
     var name = args.params.name;
@@ -63,6 +81,9 @@ function start_service(args, cb) {
     services[name] = {};
     services[name].path = args.path;
     services[name].params = args.params;
+
+    logger.debug({opts: opt}, 'spawning process');
+
     processes[name] = spawn('python3', opt, {stdio: 'inherit'})
         .on('exit', (code, signal) => {
             logger.info({service: name, exit_code: code}, "service exited");
@@ -73,7 +94,7 @@ function start_service(args, cb) {
             logger.error({error: e, args: args}, "unable to spawn service");
         });
 
-    cb(null, {'message': 'service created'});
+    cb(null, {'message': `service [${name}] created`});
 }
 
 // args = { 'name': pipeline_name, 'data': "..." }
@@ -124,8 +145,35 @@ function get_pipelines(args, cb) {
 
 // args = { 'name': "...", 'pipeline': [ ... service names ... ] }
 function set_pipeline(args, cb) {
+    if(!('services' in args)) {
+        var msg = 'set_pipeline: service array missing from arguments';
+        logger.error({args: args}, msg);
+        cb({'code': 400, 'message': msg});
+        return;
+    }
+    if(!Array.isArray(args.services)) {
+        var msg = 'set_pipeline: args.services must be an array';
+        logger.error({args: args}, msg);
+        cb({'code': 400, 'message': msg});
+        return;
+    }
+    if(args.services.length === 0) {
+        var msg = 'set_pipeline: args.services must not be empty';
+        logger.error({args: args}, msg);
+        cb({'code': 400, 'message': msg});
+        return;
+    }
+    for(s in args.services) {
+        if(!(args.services[s] in services)) {
+            var msg = `set_pipeline: no service with name [${args.services[s]}]`;
+            logger.error(msg);
+            cb({'code': 400, 'message': msg});
+            return;
+        }
+    }
+
     pipelines[args.name] = args.services;
-    cb(null, {'message': 'ok'});
+    cb(null, {'message': `pipeline [${args.name}] created`});
 }
 
 // args = { 'name': "..." }
@@ -136,6 +184,6 @@ function shutdown(args, cb) {
         proc.kill('SIGTERM');
         cb(null, {'message': 'service stopped'});
     } else {
-        cb({'code': 400, 'message': "service unknown"});
+        cb({'code': 400, 'message': "shutdown: service unknown"});
     }
 }
