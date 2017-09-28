@@ -74,9 +74,9 @@ jobs:
 
     steps:
       - checkout
-      - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@latest'
+        #- run:
+        #  name: update-npm
+        #  command: 'sudo npm install -g npm@latest'
       - restore-cache:
           key: dependency-cache-{{ checksum "api_srv_plugin/package.json" }}
       - run:
