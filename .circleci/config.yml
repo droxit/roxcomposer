@@ -65,7 +65,7 @@ jobs:
           command: |
             cd .circleci/mosaic-deploy
             ./build_mosaic.sh ../../../dist/*.tar.gz ../../../api_srv_plugin
-            cp mosaic-demo.tar.gz ../../test-reports/
+            cp mosaic-demo-*.tar.gz ../../test-reports/
       - persist_to_workspace:
           root: .
           paths:
