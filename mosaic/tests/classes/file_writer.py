@@ -31,6 +31,7 @@ class FileWriter(base_service.BaseService):
         f = open('index.html', 'w')
         f.write(html_string)
         f.close()
+        return self.dispatch(html_string)
 
 
 if __name__ == '__main__':
@@ -38,4 +39,4 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         params = json.loads(sys.argv[1])
 
-    fw = FileWriter(params)
+    service = FileWriter(params)
