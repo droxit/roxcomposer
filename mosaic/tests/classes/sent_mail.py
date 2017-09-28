@@ -24,7 +24,6 @@ import json
 from mosaic import base_service
 
 
-
 class SentMail(base_service.BaseService):
     def __init__(self, params=None):
         if params is None:
@@ -44,15 +43,15 @@ class SentMail(base_service.BaseService):
                 # password for the SMTP authentication
                 # use TLS encryption for the connection
                 "smtp": {
-                  "sender" : "villarroya@droxit.de",
-                  "smtpserver": "smtp.office365.com",
-                  "smtpusername": "villarroya@droxit.de",
-                  "smtppassword": "XXXXXXXXX",
-                  "usetls": True
+                    "sender": "villarroya@droxit.de",
+                    "smtpserver": "smtp.office365.com",
+                    "smtpusername": "villarroya@droxit.de",
+                    "smtppassword": "XXXXXXXXX",
+                    "usetls": True
                 },
                 "mail": {
-                  "subject" : "Mosaic-Demo: Test",
-                  "recipient": "info@droxit.de"
+                    "subject": "Mosaic-Demo: Test",
+                    "recipient": "info@droxit.de"
                 }
             }
         super().__init__(params)
@@ -61,8 +60,8 @@ class SentMail(base_service.BaseService):
         self.listen()
 
     def on_message(self, msg):
-            self.msg = msg
-            self.sendmail(self.params['mail']['recipient'], self.params['mail']['subject'], msg)
+        self.msg = msg
+        self.sendmail(self.params['mail']['recipient'], self.params['mail']['subject'], msg)
 
     #
     # function to send a mail
@@ -96,12 +95,9 @@ class SentMail(base_service.BaseService):
         server.quit()
 
 
-
-
 if __name__ == '__main__':
     params = None
     if len(sys.argv) > 1:
         params = json.loads(sys.argv[1])
 
     service = SentMail(params)
-
