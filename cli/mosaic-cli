@@ -7,11 +7,11 @@ server="localhost:7475"
 function usage {
     echo "usage: mosaic-cli <COMMAND> [ARGUMENTS]"
     echo "commands:"
-    echo "  deploy <SERVICE>"
-    echo "  list_services"
+    echo "  start_service <SERVICE>"
+    echo "  services"
     echo "  set_pipeline <NAME> <SERVICE> [...]"
-    echo "  list_pipelines"
-    echo "  post_message <PIPELINE> <MESSAGE>"
+    echo "  pipelines"
+    echo "  post_to_pipeline <PIPELINE> <MESSAGE>"
     exit 0
 }
 
