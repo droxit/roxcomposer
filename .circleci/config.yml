@@ -67,8 +67,9 @@ jobs:
             ./build_mosaic.sh ../../../dist/*.tar.gz ../../../api_srv_plugin
             cp mosaic-demo.tar.gz ../../test-reports/
       - persist_to_workspace:
+          root: .
           paths:
-              test-reports
+              - test-reports
       - store_artifacts:
           path: test-reports
           destination: test-reports
