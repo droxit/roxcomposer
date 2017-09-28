@@ -74,7 +74,7 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  test_node:
+  test_impress_plugin:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
