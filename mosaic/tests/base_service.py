@@ -26,6 +26,27 @@ class TestBaseService(unittest.TestCase):
 
         self.dummy_service_id = '127.0.0.1:1234'
 
+        self.test_sent_mail = {
+            "ip": "127.0.0.1",
+            "port": 7001,
+            "name": "sent_mail",
+            "logging": {
+                "filename": "pipeline.log",
+                "level": "INFO"
+            },
+            'smtp': {
+                'sender': 'mosaic@droxit.de',
+                'smtpserver': 'smtp.server.de',
+                'smtpusername': 'usernamee',
+                'smtppassword': 'XXXXXXXXX',
+                'usetls': True
+            },
+            'mail': {
+                'subject': 'Mosaic-Demo: Test',
+                'recipient': 'info@droxit.de'
+            }
+        }
+
     def test_init(self):
         # test initiatiaton without parameters
         self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, None)
@@ -49,6 +70,29 @@ class TestBaseService(unittest.TestCase):
             'name': 'fancy-service'
         })
         self.assertDictEqual(bs_with_params.params, self.test_params_1)
+
+        # test initiation with params for a sent_mail service
+        sent_mail_with_params = base_service.BaseService({
+            "ip": "127.0.0.1",
+            "port": 7001,
+            "name": "sent_mail",
+            "logging": {
+                "filename": "pipeline.log",
+                "level": "INFO"
+            },
+            'smtp': {
+                'sender': 'mosaic@droxit.de',
+                'smtpserver': 'smtp.server.de',
+                'smtpusername': 'usernamee',
+                'smtppassword': 'XXXXXXXXX',
+                'usetls': True
+            },
+            'mail': {
+                'subject': 'Mosaic-Demo: Test',
+                'recipient': 'info@droxit.de'
+            }
+        })
+        self.assertDictEqual(sent_mail_with_params.params, self.test_sent_mail)
 
     def test_get_service_id(self):
         s = base_service.BaseService(params={
