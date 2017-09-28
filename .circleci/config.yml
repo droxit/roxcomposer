@@ -126,7 +126,6 @@ jobs:
       - deploy:
           name: deploy to gru
           command: |
-            . venv/bin/activate
             scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/workspace/test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
             ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
             scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/workspace/test-reports/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
