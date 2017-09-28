@@ -60,8 +60,20 @@ jobs:
             . venv/bin/activate
             python setup.py sdist
             cp ./dist/*.tar.gz ./test-reports/
-  test_node:
+      - run:
+          name: create demo package
+          command: |
+            cd .circleci/mosaic-deploy
+            ./build_mosaic.sh ../../../dist/*.tar.gz ../../../api_srv_plugin
+            cp mosaic-demo.tar.gz ../../test-reports/
+      - persist_to_workspace:
+          paths:
+              test-reports
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
 
+  test_node:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
@@ -108,22 +120,15 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - run:
-          name: create demo package
-          command: |
-              cd .circleci/mosaic-deploy
-              ./build_mosaic.sh ../../../dist/*.tar.gz ../../../api_srv_plugin
-              cp mosaic-demo.tar.gz ../../test-reports/
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
+      - attach_work_space:
+          at: /tmp/workspace
       - deploy:
           name: deploy to gru
           command: |
             . venv/bin/activate
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/workspace/mosaic*.tar.gz devpi@176.9.144.37:/tmp
             ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/workspace/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
 
 workflows:
     version: 2
