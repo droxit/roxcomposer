@@ -135,7 +135,7 @@ workflows:
     build_test_deploy:
       jobs:
         - build_python
-        - test_node
+        - test_impress_plugin
         - deploy_all:
             requires:
               - build_python
