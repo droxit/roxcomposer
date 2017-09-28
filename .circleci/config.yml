@@ -134,7 +134,7 @@ workflows:
                 only:
                   - dev
                   - master
-        - test_node
+        - test_node:
             filters:
               branches:
                 only:
