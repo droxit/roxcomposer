@@ -128,24 +128,9 @@ workflows:
     version: 2
     build_test_deploy:
       jobs:
-        - build_python:
-            filters:
-              branches:
-                only:
-                  - dev
-                  - master
-        - test_node:
-            filters:
-              branches:
-                only:
-                  - dev
-                  - master
+        - build_python
+        - test_node
         - deploy_all:
-            filters:
-              branches:
-                only:
-                  - dev
-                  - master
             requires:
               - build_python
               - test_node
