@@ -62,7 +62,7 @@ class SentMail(base_service.BaseService):
 
     def on_message(self, msg):
             self.msg = msg
-            self.sendmail('marta@villarroya.info','Mosaic-Demo: Test', msg)
+            self.sendmail(self.params['mail']['recipient'], self.params['mail']['subject'], msg)
 
     #
     # function to send a mail
