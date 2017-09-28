@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  build-python:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
@@ -134,9 +134,19 @@ workflows:
                 only:
                   - dev
                   - master
-            - test_node
-            - deploy_all:
-                requires:
-                  - build_python
-                  - test_node
+        - test_node
+            filters:
+              branches:
+                only:
+                  - dev
+                  - master
+        - deploy_all:
+            filters:
+              branches:
+                only:
+                  - dev
+                  - master
+            requires:
+              - build_python
+              - test_node
 
