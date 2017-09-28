@@ -72,22 +72,23 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
 
-    working_directory: ~/repo/api_srv_plugin/
     steps:
       - checkout
       - run:
           name: update-npm
           command: 'sudo npm install -g npm@latest'
       - restore-cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "api_srv_plugin/package.json" }}
       - run:
+          working_directory: api_srv_plugin
           name: install-npm
           command: npm install
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "api_srv_plugin/package.json" }}
           paths:
               - ./node_modules
       - run:
+          working_directory: api_srv_plugin
           name: test-mosaic-plugin
           command: npm test
 
