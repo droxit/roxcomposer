@@ -117,6 +117,20 @@ class TestMosaicMessage(unittest.TestCase):
         self.assertEqual(popped_service['id'], '127.0.0.1:1234')
         self.assertTrue(len(dummy_message.get_services_as_dict()) is 0)
 
+    def test_is_empty_pipeline(self):
+        dummy_message = mosaic_message.Message(self.dummy_protobuf_msg)
+        dummy_message.add_service('127.0.0.1', 1111)
+
+        self.assertFalse(dummy_message.is_empty_pipeline())
+        self.assertFalse(mosaic_message.Message.is_empty_pipeline(dummy_message))
+
+        # remove dummy services
+        dummy_message.pop_service()
+        dummy_message.pop_service()
+
+        self.assertTrue(dummy_message.is_empty_pipeline())
+        self.assertTrue(mosaic_message.Message.is_empty_pipeline(dummy_message))
+
 
 if __name__ == '__main__':
     unittest.main()

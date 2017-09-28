@@ -49,5 +49,6 @@ class TestBaseService(unittest.TestCase):
         # test initiation with a missing parameter
         # TODO test missing parameters (start child process and test output)
 
+
 if __name__ == '__main__':
     unittest.main()
