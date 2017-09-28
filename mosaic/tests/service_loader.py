@@ -4,6 +4,7 @@ import unittest
 from mosaic import service_loader
 from mosaic import exceptions
 
+
 class TestBaseService(unittest.TestCase):
     def test_load_class(self):
         self.assertRaises(exceptions.ParameterMissing, service_loader.load_class, None)
@@ -14,6 +15,7 @@ class TestBaseService(unittest.TestCase):
         param = {'blub': 2, 'blorp': "yeah"}
         c = service_loader.make_service_instance('mosaic.tests.classes.service_loader_test.DummyClass', param)
         self.assertEqual(param,c.get_args())
+
 
 if __name__ == '__main__':
     unittest.main()

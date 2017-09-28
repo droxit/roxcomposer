@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import sys
 import importlib
 import inspect
 from mosaic import exceptions
+
 
 def load_class(classpath):
     if classpath is None:
@@ -19,6 +19,7 @@ def load_class(classpath):
         raise exceptions.NotAClass(classpath)
 
     return c
+
 
 def make_service_instance(classpath, args):
     c = load_class(classpath)

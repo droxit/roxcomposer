@@ -14,7 +14,7 @@ class ImageAdder(base_service.BaseService):
                 "name": "image_adder",
                 "logging": {
                     "filename": "pipeline.log",
-                    "level": "INFO"
+                    "level": "DEBUG"
                 }
             }
         super().__init__(params)
@@ -35,7 +35,6 @@ class ImageAdder(base_service.BaseService):
         if self.image is not None:
             html_string = "\n<img src=\"" + self.image + "\">"
 
-        self.logger.info('Msg sent: ' + received_text + '<br/>' + html_string)
         return self.dispatch(received_text + '<br/>' + html_string)
 
 

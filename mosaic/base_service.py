@@ -2,6 +2,7 @@
 
 from mosaic.communication import mosaic_message
 from mosaic.log import basic_logger
+from mosaic.monitor import basic_monitoring
 import socket
 import sys
 from mosaic import exceptions
@@ -34,10 +35,21 @@ class BaseService:
                 raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
 
         # initialize logger
-        logger_params = {}
+        logger_params = {
+            'filename': 'pipeline.log',
+            'level': 'INFO'
+        }
         if 'logging' in self.params:
             logger_params = params['logging']
         self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
+
+        # initialize monitoring
+        monitoring_params = {
+            'filename': 'monitoring.log'
+        }
+        if 'monitoring' in self.params:
+            monitoring_params = params['monitoring']
+        self.monitoring = basic_monitoring.BasicMonitoring(**monitoring_params)
 
         self.mosaic_message = mosaic_message.Message()
 
@@ -55,6 +67,7 @@ class BaseService:
             return
 
         me = self.mosaic_message.pop_service()
+        message_id = self.mosaic_message.get_message_id()
 
         next_service = self.mosaic_message.get_services_as_dict()['services'][0]
         next_service_id = next_service['id'].split(':')
@@ -65,6 +78,10 @@ class BaseService:
         try:
             connection = socket.create_connection(address_tuple)
             connection.send(self.mosaic_message)
+            self.monitoring.msg_dispatched(
+                service_id=self.get_service_id(),
+                message_id=message_id
+            )
 
             resp = connection.recv(self.BUFFER_SIZE)
             self.logger.debug(resp)
@@ -97,6 +114,19 @@ class BaseService:
                 msg_received = mosaic_message.Utils.deserialize(data)
                 try:
                     self.mosaic_message = mosaic_message.Message(msg_received)
+
+                    self.monitoring.msg_received(
+                        service_id=self.get_service_id(),
+                        message_id=self.mosaic_message.get_message_id()
+                    )
+
+                    if self.mosaic_message.is_empty_pipeline():
+                        self.monitoring.msg_reached_final_destination(
+                            service_id=self.get_service_id(),
+                            message_id=self.mosaic_message.get_message_id()
+                        )
+
+                    self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
                 except exceptions.InvalidMosaicMessage as e:
                     self.logger.error(e)
                     continue
@@ -137,3 +167,7 @@ class BaseService:
     # get the currently handled message as a python dictionary
     def get_protobuf_message_as_dict(self):
         return mosaic_message.Message.get_protobuf_msg_as_dict(self.mosaic_message)
+
+    # get current service id
+    def get_service_id(self):
+        return self.params['ip'] + ':' + str(self.params['port'])

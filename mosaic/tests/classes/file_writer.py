@@ -14,7 +14,7 @@ class FileWriter(base_service.BaseService):
                 "name": "file_writer",
                 "logging": {
                     "filename": "pipeline.log",
-                    "level": "INFO"
+                    "level": "DEBUG"
                 }
             }
         super().__init__(params)
@@ -24,7 +24,6 @@ class FileWriter(base_service.BaseService):
 
     def on_message(self, msg):
         self.msg = msg
-        self.logger.info('msg received: ' + msg)
         self.write_file()
 
     def write_file(self):
