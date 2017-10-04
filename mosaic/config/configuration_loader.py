@@ -5,7 +5,7 @@ import os
 import json
 
 config_identifier = 'DROXIT_MOSAIC_CONFIG'
-default_config = 'config_services.json'
+default_config = 'services.json'
 
 # This class yields a basic exception implementation, in this case to warn if a parameter is missing that is asked for
 # in the config

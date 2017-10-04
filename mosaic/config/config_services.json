@@ -1,12 +1,14 @@
 {
-  "services": [
-    {
-      "name": "file_writer",
-      "params_path": "../services/file_writer.json"
-    },
-    {
-      "name": "sent_mail",
-      "params_path": "../services/sent_mail.json"
-    }
-  ]
+  "file_writer": {
+    "config_path": "../services/file_writer.json"
+  },
+  "html_generator": {
+    "config_path": "../services/html_generator.json"
+  },
+  "image_adder": {
+    "config_path": "../services/image_adder.json"
+  },
+  "sent_mail": {
+    "config_path": "../services/sent_mail.json"
+  }
 }
