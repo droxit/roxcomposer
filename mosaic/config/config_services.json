@@ -1,0 +1,12 @@
+{
+  "services": [
+    {
+      "name": "file_writer",
+      "params_path": "../services/file_writer.json"
+    },
+    {
+      "name": "sent_mail",
+      "params_path": "../services/sent_mail.json"
+    }
+  ]
+}
