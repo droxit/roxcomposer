@@ -1,8 +1,8 @@
 #!/usr/bin/env python3.6
 
 from mosaic.communication import mosaic_message
-from mosaic.log import basic_logger
 from mosaic.monitor import basic_monitoring
+from mosaic.service_loader import load_class
 import socket
 import sys
 from mosaic import exceptions
@@ -41,7 +41,8 @@ class BaseService:
         }
         if 'logging' in self.params:
             logger_params = params['logging']
-        self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
+        LoggingClass = load_class('mosaic.log.basic_logger.BasicLogger')
+        self.logger = LoggingClass(self.params['name'], **logger_params)
 
         # initialize monitoring
         monitoring_params = {
