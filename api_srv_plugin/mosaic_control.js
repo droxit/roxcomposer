@@ -178,7 +178,7 @@ function shutdown(args, cb) {
 	if (args.name in services) {
 		let proc = services[args.name].proc;
 		delete services[args.name];
-		proc.kill('SIGTERM');
+		proc.kill(proc.pid, 'SIGTERM');
 		cb(null, {'message': 'service stopped'});
 	} else {
 		cb({'code': 400, 'message': "shutdown: service unknown"});
