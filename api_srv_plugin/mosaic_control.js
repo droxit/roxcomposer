@@ -43,9 +43,10 @@ function start_service(args, cb) {
 		throw TypeError("start_service: 'cb' must be a function");
 
 	if ('path' in args) {
-		if (fs.exists(args.path)) {
+		try {
+			fs.accessSync(args.path);
 			opt = [args.path];
-		} else {
+		} catch (e) {
 			cb({'code': 400, 'message': 'start_service: path does not exist'});
 			return;
 		}
@@ -73,7 +74,6 @@ function start_service(args, cb) {
 
 	let name = args.params.name;
 	let params = args.params;
-
 	opt.push(JSON.stringify(params));
 	services[name] = {};
 	services[name].path = args.path;
@@ -104,8 +104,8 @@ function post_to_pipeline(args, cb) {
 	let pline = pipelines[args.name];
 	let msg = new mosaic_message.MosaicMessage();
 	let arr = [];
-	for (let s in pline) {
-		let p = pline[s];
+	for (let serviceInstance in pline['services']) {
+		let p = pline[serviceInstance];
 		let service = new mosaic_message.Service();
 		service.setId(services[p]['params'].ip + ":" + services[p]['params'].port);
 		arr.push(service);
@@ -169,7 +169,11 @@ function set_pipeline(args, cb) {
 		}
 	}
 
-	pipelines[args.name] = args.services;
+	let pipeline_services = args.services;
+	pipelines[args.name] = {
+		'services': pipeline_services,
+		'active': true
+	};
 	cb(null, {'message': `pipeline [${args.name}] created`});
 }
 
