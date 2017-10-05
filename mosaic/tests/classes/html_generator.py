@@ -56,4 +56,8 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         params = json.loads(sys.argv[1])
 
-    service = HtmlGenerator(params)
+    #service = HtmlGenerator('html_generator.params')
+
+    #use service_key
+    dict = {'service_key':'html_generatpr.params'}
+    service = HtmlGenerator(dict)

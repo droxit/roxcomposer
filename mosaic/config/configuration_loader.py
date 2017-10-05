@@ -30,8 +30,6 @@ class MosaicConfig:
     # the config item passed with item_as_string
     def get_item(self, item_as_string):
 
-        print(item_as_string)
-
         path = item_as_string.split('.')
         conf = self.config
         for p in path:

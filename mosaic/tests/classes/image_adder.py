@@ -43,4 +43,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         params = json.loads(sys.argv[1])
 
-    service = ImageAdder(params)
+    #service = ImageAdder(params)
+        # use service_key
+        dict = {'service_key': 'image_adder.params'}
+        service = ImageAdder(dict)

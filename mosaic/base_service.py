@@ -18,17 +18,14 @@ class BaseService:
     def __init__(self, params):
 
         #load config
-        if isinstance(params, str) :
+        if 'service_key' in params:
             # service name as param
             # load the config from services.json
             cfg = MosaicConfig()
-            self.params = cfg.get_item(params)
-        elif isinstance(params, dict):
+            self.params = cfg.get_item(params['service_key'])
+        else:
             # it's a dictionary
             self.params = params
-        else:
-            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
-
 
         if self.params is None:
             raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
@@ -54,7 +51,7 @@ class BaseService:
             'level': 'INFO'
         }
         if 'logging' in self.params:
-            logger_params = params['logging']
+            logger_params = self.params['logging']
         self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
 
         # initialize monitoring
@@ -62,7 +59,7 @@ class BaseService:
             'filename': 'monitoring.log'
         }
         if 'monitoring' in self.params:
-            monitoring_params = params['monitoring']
+            monitoring_params = self.params['monitoring']
         self.monitoring = basic_monitoring.BasicMonitoring(**monitoring_params)
 
         self.mosaic_message = mosaic_message.Message()
