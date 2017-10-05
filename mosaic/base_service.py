@@ -6,6 +6,7 @@ from mosaic.monitor import basic_monitoring
 import socket
 import sys
 from mosaic import exceptions
+from mosaic.config.configuration_loader import MosaicConfig
 
 
 # The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
@@ -15,7 +16,20 @@ from mosaic import exceptions
 # the defined direction.
 class BaseService:
     def __init__(self, params):
-        self.params = params
+
+        #load config
+        if isinstance(params, str) :
+            # service name as param
+            # load the config from services.json
+            cfg = MosaicConfig()
+            self.params = cfg.get_item(params)
+        elif isinstance(params, dict):
+            # it's a dictionary
+            self.params = params
+        else:
+            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
+
+
         if self.params is None:
             raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
 

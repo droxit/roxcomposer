@@ -1,0 +1,61 @@
+{
+  "file_writer": {
+    "path": "../services/file_writer.py",
+    "params": {
+      "ip": "127.0.0.1",
+      "port": 4001,
+      "name": "file_writer",
+      "logging": {
+        "filename": "pipeline.log",
+        "level": "INFO"
+      }
+    }
+  },
+  "html_generator": {
+    "path": "../services/html_generator.py",
+    "params": {
+      "ip": "127.0.0.1",
+      "port": 6001,
+      "name": "html_generator",
+      "logging": {
+        "filename": "pipeline.log",
+        "level": "INFO"
+      }
+    }
+  },
+  "image_adder": {
+    "path": "../services/image_adder.py",
+    "params": {
+      "ip": "127.0.0.1",
+      "port": 5001,
+      "name": "image_adder",
+      "logging": {
+        "filename": "pipeline.log",
+        "level": "INFO"
+      }
+    }
+  },
+  "sent_mail": {
+    "path": "../services/sent_mail.py",
+    "params": {
+      "ip": "127.0.0.1",
+      "port": 7001,
+      "name": "sent_mail",
+      "logging": {
+        "filename": "pipeline.log",
+        "level": "INFO"
+      },
+      "smtp": {
+        "sender": "villarroya@droxit.de",
+        "smtpserver": "smtp.office365.com",
+        "smtpusername": "villarroya@droxit.de",
+        "smtppassword": "XXXXXXXX",
+        "usetls": true
+      },
+      "mail": {
+        "subject": "Mosaic-Demo: Test",
+        "recipient": "info@droxit.de"
+      }
+    }
+  }
+}

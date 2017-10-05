@@ -5,8 +5,10 @@ import os
 import json
 from mosaic import exceptions
 
+
 config_identifier = 'DROXIT_MOSAIC_CONFIG'
-default_config = 'services.json'
+# FixMe : path variable. Where's the config file? default_config = $PATH + '/services.json'
+default_config = '/home/marta/dev/mosaic/mosaic/example/services.json'
 
 
 # This class builds the core system config. It loads a json file, where the config parameters are set. You can access
@@ -27,6 +29,9 @@ class MosaicConfig:
     # because you don't know the exact location of the item in the config this function will return the right value of
     # the config item passed with item_as_string
     def get_item(self, item_as_string):
+
+        print(item_as_string)
+
         path = item_as_string.split('.')
         conf = self.config
         for p in path:
