@@ -12,6 +12,7 @@ function usage {
     echo "  set_pipeline <NAME> <SERVICE> [...]"
     echo "  pipelines"
     echo "  post_to_pipeline <PIPELINE> <MESSAGE>"
+    echo "  shutdown_service <SERVICE>"
     exit 0
 }
 
