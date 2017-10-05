@@ -103,7 +103,7 @@ class BaseService:
             s.bind((ip, port))
             s.listen()
         except OSError as e:
-            self.logger.fatal(e)
+            self.logger.critical(e)
             sys.exit(1)
 
         try:
