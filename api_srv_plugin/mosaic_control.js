@@ -11,7 +11,7 @@ let logger;
 module.exports = function (container) {
 	container['init'] = init;
 	container['start_service'] = start_service;
-	container['shutdown'] = shutdown;
+	container['shutdown_service'] = shutdown_service;
 	container['get_services'] = get_services;
 	container['get_pipelines'] = get_pipelines;
 	container['set_pipeline'] = set_pipeline;
@@ -191,7 +191,7 @@ function set_pipeline(args, cb) {
 }
 
 // args = { 'name': "..." }
-function shutdown(args, cb) {
+function shutdown_service(args, cb) {
 	if (args === undefined)
 		throw TypeError("shutdown: 'args' must be a dictionary");
 	if (typeof cb !== 'function')

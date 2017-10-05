@@ -123,16 +123,16 @@ describe('mosaic_control', function () {
 	});
 	describe('shutdown()', function () {
 		it('should raise an exception if invoked without proper arguments', function () {
-			expect(mc.shutdown).to.throwError();
+			expect(mc.shutdown_service).to.throwError();
 		});
 		it('should raise an exception if invoked without a callback function', function () {
-			expect(mc.shutdown).withArgs({}).to.throwError();
+			expect(mc.shutdown_service).withArgs({}).to.throwError();
 		});
 		it('should raise an exception if cb is not a function', function () {
-			expect(mc.shutdown).withArgs({}, {}).to.throwError();
+			expect(mc.shutdown_service).withArgs({}, {}).to.throwError();
 		});
 		it('should return an error code >= 400 when invoked with a non-existent service', function (done) {
-			mc.shutdown({'name': 'blurblurb'}, function (err) {
+			mc.shutdown_service({'name': 'blurblurb'}, function (err) {
 				if (err && err.code >= 400) {
 					done();
 				} else {
@@ -141,7 +141,7 @@ describe('mosaic_control', function () {
 			});
 		});
 		it('should shutdown a test service', function (done) {
-			mc.shutdown({'name': 'html_generator'}, function (err) {
+			mc.shutdown_service({'name': 'html_generator'}, function (err) {
 				if (err && err.code >= 400) {
 					done(err);
 				} else {
@@ -150,7 +150,7 @@ describe('mosaic_control', function () {
 			});
 		});
 		it('should shutdown the last test service and set its\' pipeline state to inactive', function (done) {
-			mc.shutdown({'name': 'file_writer'}, function (err) {
+			mc.shutdown_service({'name': 'file_writer'}, function (err) {
 				if (err && err.code >= 400) {
 					done(err);
 				} else {
