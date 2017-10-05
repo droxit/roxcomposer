@@ -54,6 +54,7 @@ class SentMail(base_service.BaseService):
                     "recipient": "info@droxit.de"
                 }
             }
+
         super().__init__(params)
 
         self.msg = ''
@@ -100,4 +101,9 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         params = json.loads(sys.argv[1])
 
-    service = SentMail(params)
+    #no parameters use default params
+    #service = SentMail(params)
+
+    #use service_key
+    dict = {'service_key':'sent_mail.params'}
+    service = SentMail(dict)
