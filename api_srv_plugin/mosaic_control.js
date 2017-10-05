@@ -88,12 +88,11 @@ function start_service(args, cb) {
 			if (signal === 'SIGTERM') {
 				logger.info({service: name, exit_code: code}, "service terminated by user");
 				for (let pl in pipelines) {
-					console.log(name);
-					console.log(pipelines[pl]);
-					console.log(name in pipelines[pl]['services']);
-					if (name in pipelines[pl]['services']) {
-						console.log(name);
-						pipelines[pl]['active'] = false;
+					for (let i=0; pipelines[pl]['services'].length-1; i++) {
+						if (pipelines[pl]['services'][i] === name) {
+							pipelines[pl]['active'] = false;
+							break;
+						}
 					}
 				}
 			}
