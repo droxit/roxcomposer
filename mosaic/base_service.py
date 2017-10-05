@@ -17,8 +17,10 @@ from mosaic.config.configuration_loader import MosaicConfig
 class BaseService:
     def __init__(self, params):
 
+        if params is None:
+            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
         #load config
-        if 'service_key' in params:
+        elif 'service_key' in params:
             # service name as param
             # load the config from services.json
             cfg = MosaicConfig()
