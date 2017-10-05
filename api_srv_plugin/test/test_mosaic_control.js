@@ -83,7 +83,6 @@ describe('mosaic_control', function () {
 					done(err);
 			});
 		});
-
 		it('should contain an active state when a pipeline is created', function (done) {
 			mc.start_service({
 				'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
@@ -121,5 +120,49 @@ describe('mosaic_control', function () {
 				}
 			})
 		});
+	});
+	describe('shutdown()', function () {
+		it('should raise an exception if invoked without proper arguments', function () {
+			expect(mc.shutdown).to.throwError();
+		});
+		it('should raise an exception if invoked without a callback function', function () {
+			expect(mc.shutdown).withArgs({}).to.throwError();
+		});
+		it('should raise an exception if cb is not a function', function () {
+			expect(mc.shutdown).withArgs({}, {}).to.throwError();
+		});
+		it('should return an error code >= 400 when invoked with a non-existent service', function (done) {
+			mc.shutdown({'name': 'blurblurb'}, function (err) {
+				if (err && err.code >= 400) {
+					done();
+				} else {
+					done(err)
+				}
+			});
+		});
+		it('should shutdown a test service', function (done) {
+			mc.shutdown({'name': 'html_generator'}, function (err) {
+				if (err && err.code >= 400) {
+					done(err);
+				} else {
+					done();
+				}
+			});
+		});
+		it('should shutdown the last test service and set its\' pipeline state to inactive', function (done) {
+			mc.shutdown({'name': 'file_writer'}, function (err) {
+				if (err && err.code >= 400) {
+					done(err);
+				} else {
+					mc.get_pipelines({}, (args, pipelines) => {
+						if (!pipelines['blorbblub']['active']) {
+							done();
+						} else {
+							done('Pipeline was not set to inactive');
+						}
+					});
+				}
+			});
+		})
 	});
 });

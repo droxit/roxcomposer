@@ -38,7 +38,7 @@ function start_service(args, cb) {
 	let opt;
 
 	if (args === undefined)
-		throw TypeError("start_service: 'args' must to be a dictionary");
+		throw TypeError("start_service: 'args' must be a dictionary");
 	if (typeof cb !== 'function')
 		throw TypeError("start_service: 'cb' must be a function");
 
@@ -84,6 +84,20 @@ function start_service(args, cb) {
 	processes[name] = spawn('python3', opt, {stdio: 'inherit'})
 		.on('exit', (code, signal) => {
 			logger.info({service: name, exit_code: code}, "service exited");
+
+			if (signal === 'SIGTERM') {
+				logger.info({service: name, exit_code: code}, "service terminated by user");
+				for (let pl in pipelines) {
+					console.log(name);
+					console.log(pipelines[pl]);
+					console.log(name in pipelines[pl]['services']);
+					if (name in pipelines[pl]['services']) {
+						console.log(name);
+						pipelines[pl]['active'] = false;
+					}
+				}
+			}
+
 			delete processes[name];
 			delete services[name];
 		})
@@ -179,10 +193,15 @@ function set_pipeline(args, cb) {
 
 // args = { 'name': "..." }
 function shutdown(args, cb) {
+	if (args === undefined)
+		throw TypeError("shutdown: 'args' must be a dictionary");
+	if (typeof cb !== 'function')
+		throw TypeError("shutdown: 'cb' must be a function");
+
 	if (args.name in services) {
-		let proc = services[args.name].proc;
+		let proc = processes[args.name];
 		delete services[args.name];
-		proc.kill(proc.pid, 'SIGTERM');
+		proc.kill('SIGTERM');
 		cb(null, {'message': 'service stopped'});
 	} else {
 		cb({'code': 400, 'message': "shutdown: service unknown"});
