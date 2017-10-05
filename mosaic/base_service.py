@@ -41,7 +41,11 @@ class BaseService:
         }
         if 'logging' in self.params:
             logger_params = params['logging']
-        LoggingClass = load_class('mosaic.log.basic_logger.BasicLogger')
+
+        logger_class = 'mosaic.log.basic_logger.BasicLogger'
+        if 'logger_class' in logger_params:
+            logger_class = logger_params['logger_class']
+        LoggingClass = load_class(logger_class)
         self.logger = LoggingClass(self.params['name'], **logger_params)
 
         # initialize monitoring
