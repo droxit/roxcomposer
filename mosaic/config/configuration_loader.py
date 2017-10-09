@@ -36,7 +36,7 @@ class MosaicConfig:
             if p in conf:
                 conf = conf[p]
             else:
-                raise exceptions.ParameterMissingException("%s not present in the configuration" % item_as_string)
+                raise exceptions.ParameterMissing("%s not present in the configuration" % item_as_string)
 
         return conf
 
