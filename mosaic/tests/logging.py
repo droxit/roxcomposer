@@ -76,10 +76,10 @@ class TestLogging(unittest.TestCase):
             }
 
             lt = LogTest(params)
-            f = open(log_path, "r")
 
             msg = 'simple message'
             lt.logdebug(msg)
+            f = open(log_path, "r")
             logline = f.readline()
             self.assertEqual(msg, logline, "wrong log output")
             f.close()
