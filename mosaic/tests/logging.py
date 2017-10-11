@@ -4,8 +4,7 @@ import unittest
 import re
 from os.path import join
 from tempfile import TemporaryDirectory
-from mosaic.tests.classes.test_logging import LogTest
-from mosaic import exceptions
+from mosaic.tests.classes import test_logging
 
 
 class TestLogging(unittest.TestCase):
@@ -25,7 +24,7 @@ class TestLogging(unittest.TestCase):
                 }
             }
 
-            lt = LogTest(params)
+            lt = test_logging.LogTest(params)
             f = open(log_path, "r")
 
             msg = 'simple message' 
@@ -75,7 +74,7 @@ class TestLogging(unittest.TestCase):
                 }
             }
 
-            lt = LogTest(params)
+            lt = test_logging.LogTest(params)
 
             msg = 'simple message'
             lt.logdebug(msg)
@@ -83,6 +82,7 @@ class TestLogging(unittest.TestCase):
             logline = f.readline()
             self.assertEqual(msg, logline, "wrong log output")
             f.close()
+
 
 if __name__ == '__main__':
     unittest.main()
