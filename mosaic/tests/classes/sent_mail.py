@@ -105,5 +105,5 @@ if __name__ == '__main__':
     #service = SentMail(params)
 
     #use service_key
-    dict = {'service_key':'sent_mail.params'}
-    service = SentMail(dict)
+    serv_params = {'service_key':'sent_mail.params'}
+    service = SentMail(serv_params)

@@ -45,5 +45,5 @@ if __name__ == '__main__':
 
     #service = ImageAdder(params)
         # use service_key
-        dict = {'service_key': 'image_adder.params'}
-        service = ImageAdder(dict)
+        serv_params = {'service_key': 'image_adder.params'}
+        service = ImageAdder(serv_params)

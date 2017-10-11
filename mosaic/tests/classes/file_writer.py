@@ -42,5 +42,5 @@ if __name__ == '__main__':
     #Sservice = FileWriter(params)
 
     #use service_key
-    dict = {'service_key':'file_writer.params'}
-    service = FileWriter(dict)
+    serv_params = {'service_key':'file_writer.params'}
+    service = FileWriter(serv_params)
