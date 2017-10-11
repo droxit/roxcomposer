@@ -25,5 +25,5 @@ class BasicLogger:
         logging.error(msg)
 
     # log a message for fatal issues
-    def fatal(self, msg):
-        logging.fatal(msg)
+    def critical(self, msg):
+        logging.critical(msg)
