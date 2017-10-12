@@ -1,8 +1,8 @@
 #!/usr/bin/env python3.6
 
 from mosaic.communication import mosaic_message
-from mosaic.log import basic_logger
 from mosaic.monitor import basic_monitoring
+from mosaic.service_loader import load_class
 import socket
 import sys
 from mosaic import exceptions
@@ -55,7 +55,12 @@ class BaseService:
         }
         if 'logging' in self.params:
             logger_params = self.params['logging']
-        self.logger = basic_logger.BasicLogger(self.params['name'], **logger_params)
+
+        logger_class = 'mosaic.log.basic_logger.BasicLogger'
+        if 'logger_class' in logger_params:
+            logger_class = logger_params['logger_class']
+        LoggingClass = load_class(logger_class)
+        self.logger = LoggingClass(self.params['name'], **logger_params)
 
         # initialize monitoring
         monitoring_params = {
@@ -116,7 +121,7 @@ class BaseService:
             s.bind((ip, port))
             s.listen()
         except OSError as e:
-            self.logger.fatal(e)
+            self.logger.critical(e)
             sys.exit(1)
 
         try:
