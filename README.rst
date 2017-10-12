@@ -39,3 +39,9 @@ Build Config
 ------------
 To configure builds along the the Continuous Integration pipeline please have a look at the 
 `.circleci/config.yml`. 
+
+
+Deploy Config
+------------
+
+ENV VAR 'DROXIT_MOSAIC_CONFIG' to configure service's params
