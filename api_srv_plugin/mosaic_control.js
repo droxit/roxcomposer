@@ -83,8 +83,11 @@ function start_service(args, cb) {
 
 	processes[name] = spawn('python3', opt, {stdio: 'inherit'})
 		.on('exit', (code, signal) => {
+			// service exit callback
 			logger.info({service: name, exit_code: code}, "service exited");
 
+			// if a service receives the signal to shudtdown - set all pipelines to inactive if it conains the service
+			// that shuts down
 			if (signal === 'SIGTERM') {
 				logger.info({service: name, exit_code: code}, "service terminated by user");
 				for (let pl in pipelines) {
