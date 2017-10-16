@@ -5,6 +5,7 @@
   "main": "droxitApi.js",
   "dependencies": {
     "bunyan": "latest",
+    "dtrace-provider": "^0.8.5",
     "google-protobuf": "latest"
   },
   "devDependencies": {

@@ -12,6 +12,7 @@ function usage {
     echo "  set_pipeline <NAME> <SERVICE> [...]"
     echo "  pipelines"
     echo "  post_to_pipeline <PIPELINE> <MESSAGE>"
+    echo "  shutdown_service <SERVICE>"
     exit 0
 }
 
@@ -82,7 +83,6 @@ function post_message {
     curl_post_data "post_to_pipeline" "{\"name\":\"$pname\",\"data\":\"$message\"}"
 }
 
-
 ### EXECUTION ###
 if [[ ($# -lt 1) ]]
     then usage
@@ -111,6 +111,11 @@ case "$1" in
         shift
         post_message $@
         echo ""
+        ;;
+    "shutdown_service")
+        shift
+		curl_post_data "shutdown_service" "{\"name\": \"$1\"}"
+		echo ""
         ;;
     *)
         usage

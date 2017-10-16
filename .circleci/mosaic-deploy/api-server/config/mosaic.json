@@ -47,6 +47,13 @@
                 "name": "mosaic",
                 "function": "post_to_pipeline"
             }
+        },
+        "shutdown_service": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "shutdown_service"
+            }
         }
     }
   }
