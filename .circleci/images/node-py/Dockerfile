@@ -13,5 +13,3 @@ ADD . /opt/app
 
 RUN node -v
 RUN python3 --version
-
-CMD ["node", "app.js"]
