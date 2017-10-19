@@ -83,44 +83,43 @@ describe('mosaic_control', function () {
 					done(err);
 			});
 		});
-		// TODO comment in if circleCi container can handle python and node at once
-		// it('should contain an active state when a pipeline is created', function (done) {
-		// 	mc.start_service({
-		// 		'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
-		// 		'params': {
-		// 			'name': 'html_generator',
-		// 			'ip': '127.0.0.1',
-		// 			'port': 1234
-		// 		}
-		// 	}, function (err) {
-		// 		if (err && err.code === 400) {
-		// 			done(err);
-		// 		}
-		// 	});
-		// 	mc.start_service({
-		// 		'path': path.resolve(__dirname, '../../mosaic/tests/classes/file_writer.py'),
-		// 		'params': {
-		// 			'name': 'file_writer',
-		// 			'ip': '127.0.0.1',
-		// 			'port': 2345
-		// 		}
-		// 	}, function (err) {
-		// 		if (err && err.code === 400) {
-		// 			done(err);
-		// 		}
-		// 	});
-		// 	mc.set_pipeline({name: 'blorbblub', services: ['html_generator', 'file_writer']}, function (err) {
-		// 		if (err === null) {
-		// 			mc.get_pipelines({}, (args, pipelines) => {
-		// 				if (pipelines['blorbblub']['active']) {
-		// 					done();
-		// 				}
-		// 			});
-		// 		} else {
-		// 			done(err);
-		// 		}
-		// 	})
-		// });
+		it('should contain an active state when a pipeline is created', function (done) {
+			mc.start_service({
+				'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
+				'params': {
+					'name': 'html_generator',
+					'ip': '127.0.0.1',
+					'port': 1234
+				}
+			}, function (err) {
+				if (err && err.code === 400) {
+					done(err);
+				}
+			});
+			mc.start_service({
+				'path': path.resolve(__dirname, '../../mosaic/tests/classes/file_writer.py'),
+				'params': {
+					'name': 'file_writer',
+					'ip': '127.0.0.1',
+					'port': 2345
+				}
+			}, function (err) {
+				if (err && err.code === 400) {
+					done(err);
+				}
+			});
+			mc.set_pipeline({name: 'blorbblub', services: ['html_generator', 'file_writer']}, function (err) {
+				if (err === null) {
+					mc.get_pipelines({}, (args, pipelines) => {
+						if (pipelines['blorbblub']['active']) {
+							done();
+						}
+					});
+				} else {
+					done(err);
+				}
+			})
+		});
 	});
 	describe('shutdown()', function () {
 		it('should raise an exception if invoked without proper arguments', function () {
@@ -132,39 +131,38 @@ describe('mosaic_control', function () {
 		it('should raise an exception if cb is not a function', function () {
 			expect(mc.shutdown_service).withArgs({}, {}).to.throwError();
 		});
-		// TODO comment in if services started above are running
-		// it('should return an error code >= 400 when invoked with a non-existent service', function (done) {
-		// 	mc.shutdown_service({'name': 'blurblurb'}, function (err) {
-		// 		if (err && err.code >= 400) {
-		// 			done();
-		// 		} else {
-		// 			done(err)
-		// 		}
-		// 	});
-		// });
-		// it('should shutdown a test service', function (done) {
-		// 	mc.shutdown_service({'name': 'html_generator'}, function (err) {
-		// 		if (err && err.code >= 400) {
-		// 			done(err);
-		// 		} else {
-		// 			done();
-		// 		}
-		// 	});
-		// });
-		// it('should shutdown the last test service and set its\' pipeline state to inactive', function (done) {
-		// 	mc.shutdown_service({'name': 'file_writer'}, function (err) {
-		// 		if (err && err.code >= 400) {
-		// 			done(err);
-		// 		} else {
-		// 			mc.get_pipelines({}, (args, pipelines) => {
-		// 				if (!pipelines['blorbblub']['active']) {
-		// 					done();
-		// 				} else {
-		// 					done('Pipeline was not set to inactive');
-		// 				}
-		// 			});
-		// 		}
-		// 	});
-		// })
+		it('should return an error code >= 400 when invoked with a non-existent service', function (done) {
+			mc.shutdown_service({'name': 'blurblurb'}, function (err) {
+				if (err && err.code >= 400) {
+					done();
+				} else {
+					done(err)
+				}
+			});
+		});
+		it('should shutdown a test service', function (done) {
+			mc.shutdown_service({'name': 'html_generator'}, function (err) {
+				if (err && err.code >= 400) {
+					done(err);
+				} else {
+					done();
+				}
+			});
+		});
+		it('should shutdown the last test service and set its\' pipeline state to inactive', function (done) {
+			mc.shutdown_service({'name': 'file_writer'}, function (err) {
+				if (err && err.code >= 400) {
+					done(err);
+				} else {
+					mc.get_pipelines({}, (args, pipelines) => {
+						if (!pipelines['blorbblub']['active']) {
+							done();
+						} else {
+							done('Pipeline was not set to inactive');
+						}
+					});
+				}
+			});
+		})
 	});
 });
