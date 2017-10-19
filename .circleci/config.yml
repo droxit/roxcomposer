@@ -25,7 +25,7 @@ jobs:
       - run:
           name: install python dependencies
           command: |
-            python -m venv venv
+            python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
 
@@ -51,7 +51,7 @@ jobs:
           name: run python tests
           command: |
             . venv/bin/activate
-            python setup.py test
+            python3 setup.py test
 
       # node
       - run:
@@ -73,7 +73,7 @@ jobs:
           name: create pip package
           command: |
             . venv/bin/activate
-            python setup.py sdist
+            python3 setup.py sdist
             cp ./dist/*.tar.gz ./packages/
       # build demo package
       - run:
