@@ -78,8 +78,8 @@ jobs:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/node:8.5.0
-
+#      - image: circleci/node:8.5.0
+      - image: droxops/mosaic-node-py:0.0.1
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -93,7 +93,7 @@ jobs:
       - restore-cache:
           key: dependency-cache-{{ checksum "api_srv_plugin/package.json" }}
       - run:
-          working_directory: api_srv_plugin
+          working_directory: impress_plugin
           name: install-npm
           command: npm install
       - save_cache:
@@ -101,7 +101,7 @@ jobs:
           paths:
               - ./node_modules
       - run:
-          working_directory: api_srv_plugin
+          working_directory: impress_plugin
           name: test-mosaic-plugin
           command: npm test
 
