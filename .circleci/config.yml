@@ -50,7 +50,7 @@ jobs:
       ### run automatic tests
       # python
       - run:
-          working_directory: ~/repo
+#          working_directory: ~/repo
           name: run python tests
           command: |
             . venv/bin/activate
@@ -62,11 +62,10 @@ jobs:
           name: run node tests
           command: npm test
 
-      working_directory: ~/repo
-
       ### building
       # build package
       - run:
+#          working_directory: ~/repo
           name: build archive
           command: |
             . venv/bin/activate
