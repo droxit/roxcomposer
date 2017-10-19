@@ -1,0 +1,148 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+
+
+#########################################################
+#                     DEPRECATED                        #
+#########################################################
+version: 2
+jobs:
+  build_python:
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      # run tests!
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            python setup.py test
+
+      # build package
+      - run:
+          name: build package
+          command: |
+            . venv/bin/activate
+            mkdir ./test-reports;
+            tar cz --exclude venv -f ./test-reports/build.tar.gz *;
+      # create pip package
+      - run:
+          name: create pip package
+          command: |
+            . venv/bin/activate
+            python setup.py sdist
+            cp ./dist/*.tar.gz ./test-reports/
+      - run:
+          name: create demo package
+          command: |
+            cd .circleci/mosaic-deploy
+            ./build_mosaic.sh ../../../dist/*.tar.gz ../../../api_srv_plugin
+            cp mosaic-demo-*.tar.gz ../../test-reports/
+      - persist_to_workspace:
+          root: .
+          paths:
+              - test-reports
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  test_impress_plugin:
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+#      - image: circleci/node:8.5.0
+      - image: droxops/mosaic-node-py:0.0.1
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    steps:
+      - checkout
+        #- run:
+        #  name: update-npm
+        #  command: 'sudo npm install -g npm@latest'
+      - restore-cache:
+          key: dependency-cache-{{ checksum "impress_plugin/package.json" }}
+      - run:
+          working_directory: impress_plugin
+          name: install-npm
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "impress_plugin/package.json" }}
+          paths:
+              - ./node_modules
+      - run:
+          working_directory: impress_plugin
+          name: test-mosaic-plugin
+          command: npm test
+
+
+  deploy_all:
+
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - deploy:
+          name: deploy to gru
+          command: |
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/workspace/test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/workspace/test-reports/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+
+workflows:
+    version: 2
+    build_test_deploy:
+      jobs:
+        - build_python
+        - test_impress_plugin
+        - deploy_all:
+            requires:
+              - build_python
+              - test_impress_plugin
+
