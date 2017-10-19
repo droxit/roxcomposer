@@ -61,13 +61,13 @@ jobs:
 
       ### building
       # build package
-      - run:
-#          working_directory: ~/repo
-          name: build archive
-          command: |
-            . venv/bin/activate
-            mkdir ./packages;
-            tar cz --exclude venv -f ./packages/build.tar.gz *;
+#      - run:
+##          working_directory: ~/repo
+#          name: build archive
+#          command: |
+#            . venv/bin/activate
+#            mkdir ./packages;
+#            tar cz --exclude venv -f ./packages/build.tar.gz *;
       # build pip package
       - run:
           name: create pip package
