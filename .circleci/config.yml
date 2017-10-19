@@ -4,100 +4,100 @@
 #
 version: 2
 jobs:
-  build:
+  build_mosaic:
     docker:
-      - image: droxops/mosaic-node-py:0.0.1
+        - image: droxops/mosaic-node-py:0.0.1
+
+    working_directory: ~/repo
+
+    steps:
+      # checkout the code of the branch from github, which triggers the build
+      - checkout
+
+      - restore_python_cache:
+          keys:
+            - python-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - python-dependencies-
+
+      - run:
+          name: install python dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_python_cache:
+          paths:
+          - ./venv
+          key: python-dependencies-{{ checksum "requirements.txt" }}
+
+      - restore_node_cache:
+          keys:
+            - node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
+            - node-dependency-cache-
+
+      - run:
+          name: install node dependencies
+          working_directory: impress_plugin
+          command: npm install
+
+      - save_node_cache:
+          key: dependency-cache-{{ checksum "impress_plugin/package.json" }}
+          paths:
+            - ./node_modules
+
+      ### run automatic tests
+      # python
+      - run:
+          working_directory: ~/repo
+          name: run python tests
+          command: |
+            . venv/bin/activate
+            python setup.py test
+
+      # node
+      - run:
+          working_directory: impress_plugin
+          name: run node tests
+          command: npm test
 
       working_directory: ~/repo
 
-      steps:
-        # checkout the code of the branch from github, which triggers the build
-        - checkout
+      ### building
+      # build package
+      - run:
+          name: build archive
+          command: |
+            . venv/bin/activate
+            mkdir ./packages;
+            tar cz --exclude venv -f ./packages/build.tar.gz *;
+      # build pip package
+      - run:
+          name: create pip package
+          command: |
+            . venv/bin/activate
+            python setup.py sdist
+            cp ./dist/*.tar.gz ./packages/
+      # build demo package
+      - run:
+          name: create demo package
+          command: |
+            cd .circleci/mosaic-deploy
+            ./build_mosaic.sh ../../../dist/*.tar.gz ../../../impress_plugin
+            cp mosaic-demo-*.tar.gz ../../packages/
 
-        - restore_python_cache:
-            keys:
-              - python-dependencies-{{ checksum "requirements.txt" }}
-              # fallback to using the latest cache if no exact match is found
-              - python-dependencies-
+      ### artifacts
+      # store artifact
+      - store_artifacts:
+          path: packages
+          destination: packages
 
-        - run:
-            name: install python dependencies
-            command: |
-              python -m venv venv
-              . venv/bin/activate
-              pip install -r requirements.txt
-
-        - save_python_cache:
-            paths:
-            - ./venv
-            key: python-dependencies-{{ checksum "requirements.txt" }}
-
-        - restore_node_cache:
-            keys:
-              - node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
-              - node-dependency-cache-
-
-        - run:
-            name: install node dependencies
-            working_directory: impress_plugin
-            command: npm install
-
-        - save_node_cache:
-            key: dependency-cache-{{ checksum "impress_plugin/package.json" }}
-            paths:
-              - ./node_modules
-
-        ### run automatic tests
-        # python
-        - run:
-            working_directory: ~/repo
-            name: run python tests
-            command: |
-              . venv/bin/activate
-              python setup.py test
-
-        # node
-        - run:
-            working_directory: impress_plugin
-            name: run node tests
-            command: npm test
-
-        working_directory: ~/repo
-
-        ### building
-        # build package
-        - run:
-            name: build archive
-            command: |
-              . venv/bin/activate
-              mkdir ./packages;
-              tar cz --exclude venv -f ./packages/build.tar.gz *;
-        # build pip package
-        - run:
-            name: create pip package
-            command: |
-              . venv/bin/activate
-              python setup.py sdist
-              cp ./dist/*.tar.gz ./packages/
-        # build demo package
-        - run:
-            name: create demo package
-            command: |
-              cd .circleci/mosaic-deploy
-              ./build_mosaic.sh ../../../dist/*.tar.gz ../../../impress_plugin
-              cp mosaic-demo-*.tar.gz ../../packages/
-
-        ### artifacts
-        # store artifact
-        - store_artifacts:
-            path: packages
-            destination: packages
-
-        ### deployment
-        # deploy to gru
-        - deploy:
-            name: deploy to gru
-            command: |
-              scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/tmp
-              ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
-              scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+      ### deployment
+      # deploy to gru
+      - deploy:
+          name: deploy to gru
+          command: |
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/tmp
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
