@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: droxops/mosaic-node-py:0.0.1
+      - image: droxops/mosaic-node-py:0.0.2
 
     working_directory: ~/repo
 
