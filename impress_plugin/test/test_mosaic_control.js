@@ -3,6 +3,7 @@ let describe = require('mocha').describe;
 let bunyan = require('bunyan');
 let it = require('mocha').it;
 let path = require('path');
+let sleep = require('system-sleep');
 let mc = {};
 require('../mosaic_control.js')(mc);
 
@@ -155,6 +156,7 @@ describe('mosaic_control', function () {
 					done(err);
 				} else {
 					mc.get_pipelines({}, (args, pipelines) => {
+						sleep(1000);
 						if (!pipelines['blorbblub']['active']) {
 							done();
 						} else {
