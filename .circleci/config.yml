@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build_mosaic:
+  build:
     docker:
       - image: droxops/mosaic-node-py:0.0.1
 
