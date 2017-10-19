@@ -95,7 +95,7 @@ jobs:
 
         ### deployment
         # deploy to gru
-         - deploy:
+        - deploy:
             name: deploy to gru
             command: |
               scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/tmp
