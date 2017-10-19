@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: droxops/mosaic-node-py:0.0.2
+      - image: droxops/mosaic-node-py:0.0.3
 
     working_directory: ~/repo
 
@@ -25,9 +25,9 @@ jobs:
       - run:
           name: install python dependencies
           command: |
-            python3 -m venv venv
+            python3.6 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip3 install -r requirements.txt
 
       - run:
           name: install node dependencies
@@ -51,7 +51,7 @@ jobs:
           name: run python tests
           command: |
             . venv/bin/activate
-            python3 setup.py test
+            python3.6 setup.py test
 
       # node
       - run:
@@ -73,7 +73,7 @@ jobs:
           name: create pip package
           command: |
             . venv/bin/activate
-            python3 setup.py sdist
+            python3.6 setup.py sdist
             cp ./dist/*.tar.gz ./packages/
       # build demo package
       - run:
