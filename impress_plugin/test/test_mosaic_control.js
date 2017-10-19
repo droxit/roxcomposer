@@ -156,7 +156,7 @@ describe('mosaic_control', function () {
 					done(err);
 				} else {
 					mc.get_pipelines({}, (args, pipelines) => {
-						sleep(1000);
+						sleep(100);
 						if (!pipelines['blorbblub']['active']) {
 							done();
 						} else {
