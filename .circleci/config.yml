@@ -91,13 +91,13 @@ jobs:
         #  name: update-npm
         #  command: 'sudo npm install -g npm@latest'
       - restore-cache:
-          key: dependency-cache-{{ checksum "api_srv_plugin/package.json" }}
+          key: dependency-cache-{{ checksum "impress_plugin/package.json" }}
       - run:
           working_directory: impress_plugin
           name: install-npm
           command: npm install
       - save_cache:
-          key: dependency-cache-{{ checksum "api_srv_plugin/package.json" }}
+          key: dependency-cache-{{ checksum "impress_plugin/package.json" }}
           paths:
               - ./node_modules
       - run:
