@@ -2,7 +2,7 @@
 
 import unittest
 from mosaic import base_service
-from mosaic import errors
+from mosaic import exceptions
 
 
 class TestBaseService(unittest.TestCase):
@@ -49,19 +49,19 @@ class TestBaseService(unittest.TestCase):
 
     def test_init(self):
         # test initiatiaton without parameters
-        # self.assertRaises(errors.ParameterMissing, base_service.BaseService, None)
-        #
-        # # test initiation with at least 1 param missing
-        # self.assertRaises(errors.ParameterMissing, base_service.BaseService, {
-        #     'ip': '127.0.0.1',
-        #     'name': 'fancy-service'
-        # })
-        #
-        # self.assertRaises(errors.ParameterMissing, base_service.BaseService, {
-        #     'ip': '127.0.0.1'
-        # })
-        #
-        # self.assertRaises(errors.ParameterMissing, base_service.BaseService, self.test_params_2)
+        self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, None)
+
+        # test initiation with at least 1 param missing
+        self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, {
+            'ip': '127.0.0.1',
+            'name': 'fancy-service'
+        })
+
+        self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, {
+            'ip': '127.0.0.1'
+        })
+
+        self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, self.test_params_2)
 
         # test initiation with params
         bs_with_params = base_service.BaseService({
