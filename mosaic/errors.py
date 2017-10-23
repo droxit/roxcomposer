@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+from mosaic.error import basic_error
 
-
-class ParameterMissing(Exception):
+class ParameterMissing(basic_error.BasicError):
     def __init__(self, value):
         self.value = value
 
@@ -9,7 +9,7 @@ class ParameterMissing(Exception):
         return repr(self.value)
 
 
-class InvalidMosaicMessage(Exception):
+class InvalidMosaicMessage(basic_error.BasicError):
     def __init__(self, value):
         self.value = value
 
@@ -17,7 +17,7 @@ class InvalidMosaicMessage(Exception):
         return repr(self.value)
 
 
-class NotAClass(Exception):
+class NotAClass(basic_error.BasicError):
     def __init__(self, value):
         self.value = value
 
