@@ -2,12 +2,12 @@
 
 import importlib
 import inspect
-from mosaic import exceptions
+from mosaic import errors
 
 
 def load_class(classpath):
     if classpath is None:
-        raise exceptions.ParameterMissing("classpath is empty")
+        raise errors.ParameterMissing("classpath is empty")
 
     components = classpath.split('.')
     modpath = ".".join(components[:-1])
@@ -16,7 +16,7 @@ def load_class(classpath):
     c = getattr(mod, classname)
 
     if not inspect.isclass(c):
-        raise exceptions.NotAClass(classpath)
+        raise errors.NotAClass(classpath)
 
     return c
 

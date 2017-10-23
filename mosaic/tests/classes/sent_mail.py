@@ -102,8 +102,8 @@ if __name__ == '__main__':
         params = json.loads(sys.argv[1])
 
     #no parameters use default params
-    #service = SentMail(params)
+    service = SentMail(params)
 
     #use service_key
-    serv_params = {'service_key':'sent_mail.params'}
-    service = SentMail(serv_params)
+    #serv_params = {'service_key':'sent_mail.params'}
+    #service = SentMail(serv_params)

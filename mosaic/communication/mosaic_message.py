@@ -5,7 +5,7 @@ from google.protobuf import json_format
 import urllib.parse
 import uuid
 import json
-from mosaic import exceptions
+from mosaic import errors
 
 
 # This class offers serialization and deserialization functions to parse a protobuf message directly after it has been
@@ -32,13 +32,13 @@ class Message:
                 self.protobuf_msg = service_com_pb2.MosaicMessage()
                 self.protobuf_msg.id = str(uuid.uuid4())
             except Exception:
-                raise exceptions.InvalidMosaicMessage('Message.__init__() - failed at creating a new MosaicMessage.')
+                raise errors.InvalidMosaicMessage('Message.__init__() - failed at creating a new MosaicMessage.')
         else:
             try:
                 self.protobuf_msg = service_com_pb2.MosaicMessage()
                 self.protobuf_msg.CopyFrom(protobuf_msg)
             except TypeError:
-                raise exceptions.InvalidMosaicMessage('Message.__init__() - ' + str(protobuf_msg) + ' is not a valid '
+                raise errors.InvalidMosaicMessage('Message.__init__() - ' + str(protobuf_msg) + ' is not a valid '
                                                                                                     'MosaicMessage.')
 
         self.pipeline = self.protobuf_msg.pipeline
