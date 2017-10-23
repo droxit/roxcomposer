@@ -1,12 +1,13 @@
 #!/usr/bin/env python3.6
+import socket
+import sys
 
 from mosaic.communication import mosaic_message
 from mosaic.monitor import basic_monitoring
 from mosaic.service_loader import load_class
-import socket
-import sys
-from mosaic import exceptions
+from mosaic import errors
 from mosaic.config import configuration_loader
+from mosaic.exception import basic_exception
 
 
 # The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
@@ -18,7 +19,7 @@ class BaseService:
     def __init__(self, params):
 
         if params is None:
-            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
+            raise errors.ParameterMissing('BaseService.__init__() - params is None.')
         #load config f
         elif 'service_key' in params:
             # service name as param
@@ -31,22 +32,13 @@ class BaseService:
             self.params = params
 
         if self.params is None:
-            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
+            raise errors.ParameterMissing('BaseService.__init__() - params is None.')
 
         # buffer size to read a msg in specified byte chunks
         self.BUFFER_SIZE = 1024
 
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
-
-        required_params = [
-            'ip',
-            'port',
-            'name'
-        ]
-        for param in required_params:
-            if param not in self.params:
-                raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
 
         # initialize logger
         logger_params = {
@@ -61,6 +53,15 @@ class BaseService:
             logger_class = logger_params['logger_class']
         LoggingClass = load_class(logger_class)
         self.logger = LoggingClass(self.params['name'], **logger_params)
+
+        required_params = [
+            'ip',
+            'port',
+            'name'
+        ]
+        for param in required_params:
+            if param not in self.params:
+                raise errors.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
 
         # initialize monitoring
         monitoring_params = {
@@ -106,8 +107,9 @@ class BaseService:
             self.logger.debug(resp)
             connection.close()
         except OSError as e:
-            self.logger.error(e)
-            return False
+            raise basic_exception(e)
+         #   self.logger.error(e)
+         #   return False
 
         return resp
 
@@ -121,7 +123,7 @@ class BaseService:
             s.bind((ip, port))
             s.listen()
         except OSError as e:
-            self.logger.critical(e)
+            raise basic_exception(e)
             sys.exit(1)
 
         try:
@@ -146,8 +148,8 @@ class BaseService:
                         )
 
                     self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
-                except exceptions.InvalidMosaicMessage as e:
-                    self.logger.error(e)
+                except errors.InvalidMosaicMessage as e:
+                    raise errors.InvalidMosaicMessage(self.logger, e.message)
                     continue
 
                 self.on_message(self.mosaic_message.get_content_as_dict()['body'])
@@ -157,7 +159,7 @@ class BaseService:
                 if not data:
                     break
         except OSError as e:
-            self.logger.error(e)
+            raise basic_exception(e)
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the mosaic protobuf message.
