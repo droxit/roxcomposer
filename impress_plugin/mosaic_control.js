@@ -138,6 +138,12 @@ function post_to_pipeline(args, cb) {
 	}
 
 	let pline = pipelines[args.name];
+
+    if (pline.active === false) {
+		cb({'code': 400, 'message': `pipeline ${args.name} is inactive`});
+		return;
+    }
+
 	let msg = new mosaic_message.MosaicMessage();
 	let arr = [];
 	for (let serviceInstance in pline['services']) {
