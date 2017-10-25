@@ -31,8 +31,16 @@ function init(args) {
 
     if (args && ('service_container' in args))
         service_container_path = args.service_container;
-    else
-        service_container_path = 'plugins/service_container.py';
+
+    if (service_container_path) {
+        try {
+            fs.accessSync(service_container_path);
+        } catch (e) {
+            let msg = `unable to access service container module at ${service_container_path} - ${e.message}`;
+            throw new Error(msg);
+        }
+    }
+
 }
 
 /**
@@ -57,7 +65,12 @@ function start_service(args, cb) {
 			return;
 		}
 	} else if ('classpath' in args) {
-		opt = [service_container_path, args.classpath];
+        if (service_container_path) {
+		    opt = [service_container_path, args.classpath];
+        } else {
+		    cb({'code': 400, 'message': 'start_service: classpath argument given but path to service loader is not configured'});
+		    return;
+        }
 	} else {
 		cb({'code': 400, 'message': 'start_service: either a module path or a service class must be specified'});
 		return;
