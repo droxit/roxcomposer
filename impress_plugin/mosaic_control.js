@@ -123,6 +123,7 @@ function start_service(args, cb) {
 			delete services[name];
 		})
 		.on('error', (e) => {
+            delete services[name];
 			logger.error({error: e, args: args}, "unable to spawn service");
 		});
 
