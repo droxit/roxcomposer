@@ -5,7 +5,6 @@ class BasicException(Exception):
     def __init__(self, args):
         self.args = args
         self.message = '[%(asctime)-15s][%(created)s]: ' + args.message + ' - ' + args.trace
-        self.logger.critical(args.message)
 
     def __str__(self):
         return repr(self.message)

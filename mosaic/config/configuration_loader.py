@@ -3,7 +3,7 @@
 
 import os
 import json
-from mosaic import errors
+from mosaic import exceptions
 
 
 config_identifier = 'DROXIT_MOSAIC_CONFIG'
@@ -36,7 +36,8 @@ class MosaicConfig:
             if p in conf:
                 conf = conf[p]
             else:
-                raise errors.ParameterMissing(self.logger, "%s not present in the configuration" % item_as_string)
+                self.logger.error("%s not present in the configuration" % item_as_string)
+                raise exceptions.ParameterMissing("%s not present in the configuration" % item_as_string)
 
         return conf
 
