@@ -146,10 +146,10 @@ function post_to_pipeline(args, cb) {
 
 	let msg = new mosaic_message.MosaicMessage();
 	let arr = [];
-	for (let serviceInstance in pline['services']) {
-		let p = pline[serviceInstance];
+	for (let s in pline.services) {
+		let sname = pline.services[s];
 		let service = new mosaic_message.Service();
-		service.setId(services[p]['params'].ip + ":" + services[p]['params'].port);
+		service.setId(services[sname]['params'].ip + ":" + services[sname]['params'].port);
 		arr.push(service);
 	}
 	let pipeline = new mosaic_message.Pipeline();
@@ -160,7 +160,7 @@ function post_to_pipeline(args, cb) {
 	msg.setPayload(payload);
 
 	let socket = new net.Socket();
-	let start = services[pline[0]];
+	let start = services[pline.services[0]];
 	socket.connect({port: start.params.port, host: start.params.ip}, () => {
 		let packet = msg.serializeBinary();
 		socket.end(String.fromCharCode.apply(null, packet));
