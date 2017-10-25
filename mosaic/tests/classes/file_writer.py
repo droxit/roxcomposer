@@ -7,6 +7,7 @@ from mosaic import base_service
 
 class FileWriter(base_service.BaseService):
     def __init__(self, params=None):
+        self.filepath = "index.html"
         if params is None:
             params = {
                 "ip": "127.0.0.1",
@@ -18,6 +19,8 @@ class FileWriter(base_service.BaseService):
                 }
             }
         super().__init__(params)
+        if 'filepath' in params:
+            self.filepath = params['filepath']
 
         self.msg = ''
         self.listen()
@@ -28,7 +31,7 @@ class FileWriter(base_service.BaseService):
 
     def write_file(self):
         html_string = self.msg
-        f = open('index.html', 'w')
+        f = open(self.filepath, 'w')
         f.write(html_string)
         f.close()
         return self.dispatch(html_string)
