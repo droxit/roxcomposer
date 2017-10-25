@@ -40,6 +40,14 @@ describe('mosaic_control', function () {
 					done(err);
 			});
 		});
+		it('should should return an error code >= 400 when invoked with a classpath without initializing a class loader path', function (done) {
+			mc.start_service({classpath: 'not_important'}, function (err) {
+				if (err.code >= 400)
+					done();
+				else
+					done(err);
+			});
+		});
 		it('should should return an error code >= 400 when invoked without a non-existing path in args', function (done) {
 			mc.start_service({path: '/bogus/path/from/hell', params: {}}, function (err) {
 				if (err.code >= 400)
