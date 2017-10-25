@@ -7,6 +7,7 @@ let processes = {};
 let services = {};
 let pipelines = {};
 let logger;
+let service_container_path;
 
 module.exports = function (container) {
 	container['init'] = init;
@@ -23,10 +24,15 @@ module.exports = function (container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
-	if (args && 'logger' in args)
+	if (args && ('logger' in args))
 		logger = args.logger;
 	else
 		logger = bunyan.createLogger({name: 'mosaic_control'});
+
+    if (args && ('service_container' in args))
+        service_container_path = args.service_container;
+    else
+        service_container_path = 'plugins/service_container.py';
 }
 
 /**
@@ -51,7 +57,7 @@ function start_service(args, cb) {
 			return;
 		}
 	} else if ('classpath' in args) {
-		opt = ['plugins/service_container.py', args.classpath];
+		opt = [service_container_path, args.classpath];
 	} else {
 		cb({'code': 400, 'message': 'start_service: either a module path or a service class must be specified'});
 		return;
