@@ -6,7 +6,8 @@
   },
   "PLUGINS": {
       "mosaic": {
-          "path": "./plugins/mosaic_control.js"
+          "path": "./plugins/mosaic_control.js",
+          "params": { "service_container_path": "plugins/service_container.py" }
       }
   },
   "REST": {
