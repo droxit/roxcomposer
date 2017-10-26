@@ -57,7 +57,7 @@ jobs:
           name: locally install python package
           command: |
             . venv/bin/activate
-            pip3.6 install --user -e .
+            pip3.6 install -e .
 
       # run node tests
       - run:
