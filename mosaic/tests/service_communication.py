@@ -1,8 +1,7 @@
 import unittest
-import os
 import socket
-import signal
 import time
+
 from multiprocessing import Process
 from mosaic import base_service
 from mosaic.communication import mosaic_message

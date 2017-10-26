@@ -5,6 +5,8 @@ from mosaic import exceptions
 
 def load_class(classpath):
     if classpath is None:
+        #FixMe: how is it to be logged here?
+        #self.logger.critical('_classpath: ' + classpath)
         raise exceptions.ParameterMissing("classpath is empty")
 
     components = classpath.split('.')
@@ -14,6 +16,8 @@ def load_class(classpath):
     c = getattr(mod, classname)
 
     if not inspect.isclass(c):
+        #FixMe: how is it to be logged here?
+        #self.logger.critical('_classpath: ' + classpath)
         raise exceptions.NotAClass(classpath)
 
     return c

@@ -12,7 +12,7 @@ class TestBaseService(unittest.TestCase):
 
         param = {'blub': 2, 'blorp': "yeah"}
         c = service_loader.make_service_instance('mosaic.tests.classes.service_loader_test.DummyClass', param)
-        self.assertEqual(param,c.get_args())
+        self.assertEqual(param, c.get_args())
 
 
 if __name__ == '__main__':

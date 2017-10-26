@@ -1,10 +1,15 @@
+import socket
+import sys
+
 from mosaic.communication import mosaic_message
 from mosaic.monitor import basic_monitoring
 from mosaic.service_loader import load_class
-import socket
-import sys
 from mosaic import exceptions
 from mosaic.config import configuration_loader
+from mosaic.exception import basic_exception
+
+
+# from mosaic.exception import basic_exception
 
 
 # The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
@@ -17,7 +22,7 @@ class BaseService:
 
         if params is None:
             raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
-        #load config f
+        # load config f
         elif 'service_key' in params:
             # service name as param
             # load the config from services.json
@@ -28,23 +33,22 @@ class BaseService:
             # the config will be loaded by the passed params directly
             self.params = params
 
-        if self.params is None:
-            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
+        # if self.params is None:
+        #     #logger need the service name
+        #     self.params.name = 'not defined'
+        #     self.logger.critical('BaseService.__init__() - params is None.')
+        #     raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
+        # elif 'name' not in self.params:
+        #     # service name as param
+        #     # load the config from services.json
+        #     self.params['name'] = 'not defined'
+        #     self.logger.critical('BaseService.__init__() - name is undefined')
 
         # buffer size to read a msg in specified byte chunks
         self.BUFFER_SIZE = 1024
 
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
-
-        required_params = [
-            'ip',
-            'port',
-            'name'
-        ]
-        for param in required_params:
-            if param not in self.params:
-                raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
 
         # initialize logger
         logger_params = {
@@ -58,7 +62,33 @@ class BaseService:
         if 'logger_class' in logger_params:
             logger_class = logger_params['logger_class']
         LoggingClass = load_class(logger_class)
+
+        if 'name' not in self.params:
+            # service name as param
+            # load the config from services.json
+            self.params['name'] = 'not defined'
+            self.logger = LoggingClass(self.params['name'], **logger_params)
+            self.logger.critical('BaseService.__init__() - name is undefined')
+            raise exceptions.ParameterMissing('BaseService.__init__() - service name is missing.')
+
         self.logger = LoggingClass(self.params['name'], **logger_params)
+
+        if self.params is None:
+            # logger need the service name
+            self.params.name = 'not defined'
+            self.logger.critical('BaseService.__init__() - params is None.')
+            raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
+
+
+        required_params = [
+            'ip',
+            'port',
+            'name'
+        ]
+        for param in required_params:
+            if param not in self.params:
+                self.logger.critical('BaseService.__init__() - "' + param + '" is required in params.')
+                raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
 
         # initialize monitoring
         monitoring_params = {
@@ -104,8 +134,8 @@ class BaseService:
             self.logger.debug(resp)
             connection.close()
         except OSError as e:
-            self.logger.error(e)
-            return False
+            self.logger.critical(e.strerror + ' - ' + e.__traceback__)
+            raise basic_exception(e)
 
         return resp
 
@@ -119,8 +149,8 @@ class BaseService:
             s.bind((ip, port))
             s.listen()
         except OSError as e:
-            self.logger.critical(e)
-            sys.exit(1)
+            self.logger.critical(e.strerror + ' - ' + e.__traceback__)
+            raise basic_exception(e)
 
         try:
             while 1:
@@ -145,7 +175,8 @@ class BaseService:
 
                     self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
                 except exceptions.InvalidMosaicMessage as e:
-                    self.logger.error(e)
+                    self.logger.error(e.value + ' - ' + e.__traceback__)
+                    raise exceptions.InvalidMosaicMessage(e)
                     continue
 
                 self.on_message(self.mosaic_message.get_content_as_dict()['body'])
@@ -155,7 +186,8 @@ class BaseService:
                 if not data:
                     break
         except OSError as e:
-            self.logger.error(e)
+            self.logger.critical(e.strerror + ' - ' + e.__traceback__)
+            raise basic_exception(e)
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the mosaic protobuf message.
