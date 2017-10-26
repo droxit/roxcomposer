@@ -64,7 +64,7 @@ jobs:
           working_directory: impress_plugin
           name: run node tests
           command: |
-            . venv/bin/activate
+            . ../venv/bin/activate
             npm test
 
       ### building
