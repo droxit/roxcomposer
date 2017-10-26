@@ -55,7 +55,7 @@ jobs:
 
       # make python package locally available
       - run:
-          pip3 install --user -e .
+          pip3.6 install --user -e .
 
       # run node tests
       - run:
