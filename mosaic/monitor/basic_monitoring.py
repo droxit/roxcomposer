@@ -13,19 +13,16 @@ class BasicMonitoring:
     # monitors msg receiving acitvities
     def msg_received(self, **kwargs):
         msg = '[' + str(kwargs) + ']' + ' MosaicMessage received at' + ' ' + str(time.time())
-        print(msg)
         self.write_to_file(msg)
 
     # monitors msg dispatching acitvities
     def msg_dispatched(self, **kwargs):
         msg = '[' + str(kwargs) + ']' + ' MosaicMessage dispatched at' + ' ' + str(time.time())
-        print(msg)
         self.write_to_file(msg)
 
     # monitors msgs which reached their final destination
     def msg_reached_final_destination(self, **kwargs):
         msg = '[' + str(kwargs) + ']' + ' MosaicMessage reached final destination at' + ' ' + str(time.time())
-        print(msg)
         self.write_to_file(msg)
 
     # a helper function to write to a file
