@@ -22,4 +22,4 @@ cp ../services/*.json ./services
 cd ..
 
 # create package archive
-tar -czf mosaic-demo-0.1.1.tar.gz $BUILD_DIR
+tar -czf mosaic-demo-0.1.3.tar.gz $BUILD_DIR

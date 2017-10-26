@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.6
-
 import sys
 import json
 from mosaic import base_service
@@ -7,6 +5,7 @@ from mosaic import base_service
 
 class FileWriter(base_service.BaseService):
     def __init__(self, params=None):
+        self.filepath = "index.html"
         if params is None:
             params = {
                 "ip": "127.0.0.1",
@@ -18,6 +17,8 @@ class FileWriter(base_service.BaseService):
                 }
             }
         super().__init__(params)
+        if 'filepath' in params:
+            self.filepath = params['filepath']
 
         self.msg = ''
         self.listen()
@@ -28,7 +29,7 @@ class FileWriter(base_service.BaseService):
 
     def write_file(self):
         html_string = self.msg
-        f = open('index.html', 'w')
+        f = open(self.filepath, 'w')
         f.write(html_string)
         f.close()
         return self.dispatch(html_string)
@@ -39,8 +40,4 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         params = json.loads(sys.argv[1])
 
-    #Sservice = FileWriter(params)
-
-    #use service_key
-    serv_params = {'service_key':'file_writer.params'}
-    service = FileWriter(serv_params)
+    service = FileWriter(params)

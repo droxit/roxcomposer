@@ -7,6 +7,7 @@ let processes = {};
 let services = {};
 let pipelines = {};
 let logger;
+let service_container_path;
 
 module.exports = function (container) {
 	container['init'] = init;
@@ -23,10 +24,23 @@ module.exports = function (container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
-	if (args && 'logger' in args)
+	if (args && ('logger' in args))
 		logger = args.logger;
 	else
 		logger = bunyan.createLogger({name: 'mosaic_control'});
+
+    if (args && ('service_container' in args))
+        service_container_path = args.service_container;
+
+    if (service_container_path) {
+        try {
+            fs.accessSync(service_container_path);
+        } catch (e) {
+            let msg = `unable to access service container module at ${service_container_path} - ${e.message}`;
+            throw new Error(msg);
+        }
+    }
+
 }
 
 /**
@@ -51,7 +65,12 @@ function start_service(args, cb) {
 			return;
 		}
 	} else if ('classpath' in args) {
-		opt = ['plugins/service_container.py', args.classpath];
+        if (service_container_path) {
+		    opt = [service_container_path, args.classpath];
+        } else {
+		    cb({'code': 400, 'message': 'start_service: classpath argument given but path to service loader is not configured'});
+		    return;
+        }
 	} else {
 		cb({'code': 400, 'message': 'start_service: either a module path or a service class must be specified'});
 		return;
@@ -104,6 +123,7 @@ function start_service(args, cb) {
 			delete services[name];
 		})
 		.on('error', (e) => {
+            delete services[name];
 			logger.error({error: e, args: args}, "unable to spawn service");
 		});
 
@@ -118,12 +138,18 @@ function post_to_pipeline(args, cb) {
 	}
 
 	let pline = pipelines[args.name];
+
+    if (pline.active === false) {
+		cb({'code': 400, 'message': `pipeline ${args.name} is inactive`});
+		return;
+    }
+
 	let msg = new mosaic_message.MosaicMessage();
 	let arr = [];
-	for (let serviceInstance in pline['services']) {
-		let p = pline[serviceInstance];
+	for (let s in pline.services) {
+		let sname = pline.services[s];
 		let service = new mosaic_message.Service();
-		service.setId(services[p]['params'].ip + ":" + services[p]['params'].port);
+		service.setId(services[sname]['params'].ip + ":" + services[sname]['params'].port);
 		arr.push(service);
 	}
 	let pipeline = new mosaic_message.Pipeline();
@@ -134,7 +160,7 @@ function post_to_pipeline(args, cb) {
 	msg.setPayload(payload);
 
 	let socket = new net.Socket();
-	let start = services[pline[0]];
+	let start = services[pline.services[0]];
 	socket.connect({port: start.params.port, host: start.params.ip}, () => {
 		let packet = msg.serializeBinary();
 		socket.end(String.fromCharCode.apply(null, packet));

@@ -1,7 +1,6 @@
-#!/usr/bin/env python3.5
-
 import unittest
 import re
+import time
 from os.path import join
 from tempfile import TemporaryDirectory
 from mosaic.tests.classes import test_logging

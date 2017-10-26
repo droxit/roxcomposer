@@ -1,6 +1,3 @@
-#
-#!/usr/bin/env python3
-
 import os
 import json
 from mosaic import exceptions
@@ -8,7 +5,7 @@ from mosaic import exceptions
 
 config_identifier = 'DROXIT_MOSAIC_CONFIG'
 # FixMe : path variable. Where's the config file? default_config = $PATH + '/services.json'
-default_config = '/home/marta/dev/mosaic/mosaic/example/services.json'
+default_config = 'services.json'
 
 
 # This class builds the core system config. It loads a json file, where the config parameters are set. You can access

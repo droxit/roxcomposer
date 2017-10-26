@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 class ParameterMissing(Exception):
     def __init__(self, value):
         self.value = value
