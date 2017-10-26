@@ -53,18 +53,13 @@ jobs:
             . venv/bin/activate
             python3.6 setup.py test
 
-      - run:
-          name: locally install python package
-          command: |
-            . venv/bin/activate
-            pip3.6 install -e .
-
       # run node tests
       - run:
           working_directory: impress_plugin
           name: run node tests
           command: |
             . ../venv/bin/activate
+            pip3.6 install -e ..
             npm test
 
       ### building
