@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.6
-
 import sys
 import json
 from mosaic import base_service

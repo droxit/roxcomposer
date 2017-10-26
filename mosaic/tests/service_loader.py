@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.5
-
 import unittest
 from mosaic import service_loader
 from mosaic import exceptions

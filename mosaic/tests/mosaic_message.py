@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.5
-
 import unittest
 from mosaic.communication import mosaic_message
 from mosaic.communication import service_com_pb2

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.6
-
 from mosaic.communication import mosaic_message
 import socket
 

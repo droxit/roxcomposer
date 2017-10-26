@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.6
-
 from mosaic.communication import service_com_pb2
 from google.protobuf import json_format
 import urllib.parse

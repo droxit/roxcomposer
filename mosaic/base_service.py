@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.6
-
 from mosaic.communication import mosaic_message
 from mosaic.monitor import basic_monitoring
 from mosaic.service_loader import load_class
