@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3.6
 
 import unittest
 from mosaic import service_loader
@@ -14,7 +14,7 @@ class TestBaseService(unittest.TestCase):
 
         param = {'blub': 2, 'blorp': "yeah"}
         c = service_loader.make_service_instance('mosaic.tests.classes.service_loader_test.DummyClass', param)
-        self.assertEqual(param,c.get_args())
+        self.assertEqual(param, c.get_args())
 
 
 if __name__ == '__main__':
