@@ -18,7 +18,7 @@ Dependencies
 ----------
 Please execute 
 
->>> pip3.5 install -r requirements.txt
+>>> pip3.6 install -r requirements.txt
 
 to install all python requirements.
 
@@ -26,7 +26,7 @@ Setup
 -----
 To setup the framework and to use it, you can use our local pip package on gru. Please execute the following command
 
->>> pip3.5 install -i http://localhost:4040/droxit/dev mosaic
+>>> pip3.6 install -i http://localhost:4040/droxit/dev mosaic
 
 Remember that you need to open an ssh tunnel to gru, to use this command.
 
@@ -40,6 +40,15 @@ Build Config
 To configure builds along the the Continuous Integration pipeline please have a look at the 
 `.circleci/config.yml`. 
 
+Running Tests
+-------------
+In order to run tests, please use
+
+python3 setup.py test
+
+and
+
+cd impress_plugin && npm test
 
 Deploy Config
 ------------
