@@ -2,6 +2,7 @@
 
 import unittest
 import re
+import time
 from os.path import join
 from tempfile import TemporaryDirectory
 from mosaic.tests.classes import test_logging
@@ -12,6 +13,7 @@ class TestLogging(unittest.TestCase):
     def test_basic_logger(self):
 
         with TemporaryDirectory() as tdir:
+            time.sleep(0.5)
             log_path = join(tdir, 'logtest.log')
 
             params = {
@@ -61,6 +63,7 @@ class TestLogging(unittest.TestCase):
 
     def test_logging_injection(self):
         with TemporaryDirectory() as tdir:
+            time.sleep(0.5)
             log_path = join(tdir, 'logtest.log')
 
             params = {
