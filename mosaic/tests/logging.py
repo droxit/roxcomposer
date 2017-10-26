@@ -13,7 +13,6 @@ class TestLogging(unittest.TestCase):
     def test_basic_logger(self):
 
         with TemporaryDirectory() as tdir:
-            time.sleep(0.5)
             log_path = join(tdir, 'logtest.log')
 
             params = {
@@ -63,7 +62,6 @@ class TestLogging(unittest.TestCase):
 
     def test_logging_injection(self):
         with TemporaryDirectory() as tdir:
-            time.sleep(0.5)
             log_path = join(tdir, 'logtest.log')
 
             params = {
