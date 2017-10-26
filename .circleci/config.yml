@@ -53,8 +53,10 @@ jobs:
             . venv/bin/activate
             python3.6 setup.py test
 
-      # make python package locally available
       - run:
+          name: locally install python package
+          command: |
+          . venv/bin/activate
           pip3.6 install --user -e .
 
       # run node tests
