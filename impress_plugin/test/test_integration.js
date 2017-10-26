@@ -47,7 +47,7 @@ describe('mosaic control integration tests', function () {
 			});
 		});
         it('should be able to post a message to the pipeline', function () {
-            sleep(300);
+            sleep(400);
 			mc.post_to_pipeline({name: 'pipe', data: test_msg}, function (err, msg) {
                 expect(err).to.be(null);
 			});
@@ -59,6 +59,23 @@ describe('mosaic control integration tests', function () {
         it('should be able to shutdown the service', function () {
             mc.shutdown_service({name: 'fwriter'}, function(err, msg) {
                 expect(err).to.be(null);
+            });
+		});
+        it('services should now be empty', function () {
+            mc.get_services(null, function(err, msg) {
+                expect(err).to.be(null);
+                expect(msg).to.eql({});
+            });
+		});
+        it('the pipeline should be inactive', function () {
+            mc.get_pipelines(null, function(err, msg) {
+                expect(err).to.be(null);
+                expect(msg.pipe.active).to.be(false);
+            });
+		});
+        it('posting to the pipeline should return an error', function () {
+            mc.post_to_pipeline({name: 'pipe', data: 'alfkajdf'}, function(err, msg) {
+                expect(err.code).to.be.greaterThan(399);
             });
 		});
 	});
