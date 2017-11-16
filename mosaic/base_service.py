@@ -176,7 +176,6 @@ class BaseService:
                 except exceptions.InvalidMosaicMessage as e:
                     self.logger.error(e.value + ' - ' + e.__traceback__)
                     raise exceptions.InvalidMosaicMessage(e)
-                    continue
 
                 self.on_message(self.mosaic_message.get_content_as_dict()['body'])
                 connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
@@ -186,7 +185,7 @@ class BaseService:
                     break
         except OSError as e:
             self.logger.critical(e.strerror + ' - ' + e.__traceback__)
-            raise basic_exception(e)
+            raise basic_exception.BasicException(e)
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the mosaic protobuf message.
