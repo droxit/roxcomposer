@@ -79,7 +79,6 @@ class BaseService:
             self.logger.critical('BaseService.__init__() - params is None.')
             raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
 
-
         required_params = [
             'ip',
             'port',
@@ -135,7 +134,7 @@ class BaseService:
             connection.close()
         except OSError as e:
             self.logger.critical(e.strerror + ' - ' + e.__traceback__)
-            raise basic_exception(e)
+            raise basic_exception.BasicException(e)
 
         return resp
 
@@ -150,7 +149,7 @@ class BaseService:
             s.listen()
         except OSError as e:
             self.logger.critical(e.strerror + ' - ' + e.__traceback__)
-            raise basic_exception(e)
+            raise basic_exception.BasicException(e)
 
         try:
             while 1:
