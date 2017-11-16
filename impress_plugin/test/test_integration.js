@@ -20,7 +20,7 @@ describe('mosaic control integration tests', function () {
         let filepath = tmpdir + "/file_writer.out";
         let filewriter_params = {name: 'fwriter', ip: '127.0.0.1', port: 6789, filepath: filepath};
         let filewriter_module_path = '../mosaic/tests/classes/file_writer.py';
-        let test_msg = 'test _mesage from hell'
+        let test_msg = 'test _mesage from hell';
 		it('should return no error when starting FileWriter with proper arguments', function (done) {
 			mc.start_service({path: filewriter_module_path, params: filewriter_params}, function (err, msg) {
 				if (err)
@@ -69,6 +69,7 @@ describe('mosaic control integration tests', function () {
 		});
         it('the pipeline should be inactive', function () {
             mc.get_pipelines(null, function(err, msg) {
+            	sleep(100);
                 expect(err).to.be(null);
                 expect(msg.pipe.active).to.be(false);
             });
