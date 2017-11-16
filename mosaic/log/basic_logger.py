@@ -6,6 +6,7 @@ import logging
 class BasicLogger:
     def __init__(self, servicename, **kwargs):
         kwargs['format'] = '[%(asctime)-15s][%(created)s][%(levelname)s] service:' + servicename + ' - %(message)s'
+        kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S%z'
         logging.basicConfig(**kwargs)
 
     # log a message for information
