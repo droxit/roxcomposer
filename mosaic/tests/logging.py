@@ -24,7 +24,6 @@ class TestLogging(unittest.TestCase):
             }
 
             lt = test_logging.LogTest(params)
-            time.sleep(0.4)
             f = open(log_path, "r")
 
             msg = 'simple message' 
