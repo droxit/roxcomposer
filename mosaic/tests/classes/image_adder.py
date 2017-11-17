@@ -23,8 +23,13 @@ class ImageAdder(base_service.BaseService):
         self.msg = ''
         self.listen()
 
-    def on_message(self, msg):
-        self.msg = msg
+    # def on_message(self, msg):
+    #     self.msg = msg
+    #     self.to_html()
+
+    def on_message_ext(self, extended_msg):
+        print(extended_msg)
+        self.msg = extended_msg.get_content_as_dict()['body']
         self.to_html()
 
     def to_html(self):

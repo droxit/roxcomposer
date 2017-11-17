@@ -79,7 +79,6 @@ class BaseService:
             self.logger.critical('BaseService.__init__() - params is None.')
             raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
 
-
         required_params = [
             'ip',
             'port',
@@ -102,6 +101,11 @@ class BaseService:
 
     # need to be overwritten by inhertied classes.
     def on_message(self, msg):
+        pass
+
+    # need to be overwritten by inherited classes. This funciton gets the whole message object as a MosaicMessage.
+    # If you just need the payload's message, please user on_message instead.
+    def on_message_ext(self, extended_msg):
         pass
 
     # send a mosaic protobuf message to the next service in the pipeline.
@@ -134,8 +138,8 @@ class BaseService:
             self.logger.debug(resp)
             connection.close()
         except OSError as e:
-            self.logger.critical(e.strerror + ' - ' + e.__traceback__)
-            raise basic_exception(e)
+            self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
+            raise basic_exception.BasicException(e)
 
         return resp
 
@@ -149,8 +153,8 @@ class BaseService:
             s.bind((ip, port))
             s.listen()
         except OSError as e:
-            self.logger.critical(e.strerror + ' - ' + e.__traceback__)
-            raise basic_exception(e)
+            self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
+            raise basic_exception.BasicException(e)
 
         try:
             while 1:
@@ -177,17 +181,17 @@ class BaseService:
                 except exceptions.InvalidMosaicMessage as e:
                     self.logger.error(e.value + ' - ' + e.__traceback__)
                     raise exceptions.InvalidMosaicMessage(e)
-                    continue
 
                 self.on_message(self.mosaic_message.get_content_as_dict()['body'])
+                self.on_message_ext(self.mosaic_message)
                 connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
                 connection.close()
 
                 if not data:
                     break
         except OSError as e:
-            self.logger.critical(e.strerror + ' - ' + e.__traceback__)
-            raise basic_exception(e)
+            self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
+            raise basic_exception.BasicException(e)
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the mosaic protobuf message.
