@@ -1,17 +1,17 @@
 import logging
-from datetime import datetime
-from datetime import timezone
+import time
 
 
 # This class provided a standard logging feature. It takes arguments like the {'path': './service.log'} to specify
 # the logging configuration. If the specified logfile already exists logs will get appended to the file.
 class BasicLogger:
     def __init__(self, servicename, **kwargs):
-        tz = datetime.now(timezone.utc).astimezone().tzinfo
-        timestamp_iso = datetime.now(tz=tz)
-        now = timestamp_iso.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-        kwargs['format'] = '[' + now + '][%(created)s][%(levelname)s] service:' + servicename + ' - %(message)s'
-        # kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S%z'
+        time.tzset()
+        # tz = datetime.now(timezone.utc).astimezone().tzinfo
+        kwargs['format'] = '[%(asctime)-15s.%(msecs)d' + time.strftime('%z') + '][%(created)s][%(levelname)s] service:' + servicename + ' - %(message)s'
+        # kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S.%f%z'
+        # %(msecs)
+        kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S'
         logging.basicConfig(**kwargs)
 
     # log a message for information
