@@ -14,13 +14,13 @@ jobs:
       # checkout the code of the branch from github, which triggers the build
       - checkout
 
-#      - restore_cache:
-#          keys:
-#            - python-dependencies-{{ checksum "requirements.txt" }}
-#            # fallback to using the latest cache if no exact match is found
-#            - python-dependencies-
-#            - node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
-#            - node-dependency-cache-
+      - restore_cache:
+          keys:
+            - python-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - python-dependencies-
+            - node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
+            - node-dependency-cache-
 
       - run:
           name: relink python3 binaries
