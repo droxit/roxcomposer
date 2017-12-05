@@ -84,11 +84,10 @@ jobs:
           name: create packages
           command: |
             . venv/bin/activate
+            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n')-dev-$(git log --pretty=format:'%H' -n 1 | tr -d '\n') > VERSION; fi
             python3.6 setup.py sdist
             mkdir ./packages
             cp ./dist/*.tar.gz ./packages/
-            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n')-dev-$(git log --pretty=format:'%H' -n 1 | tr -d '\n') > VERSION; fi
-            python3.6 setup.py sdist
       # build demo package
       - run:
           name: create demo package
