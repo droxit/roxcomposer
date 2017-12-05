@@ -70,18 +70,8 @@ jobs:
             ln -s /usr/bin/python3.6 /usr/bin/python3
             npm test
 
-      ### building
-      # build package
-#      - run:
-##          working_directory: ~/repo
-#          name: build archive
-#          command: |
-#            . venv/bin/activate
-#            mkdir ./packages;
-#            tar cz --exclude venv -f ./packages/build.tar.gz *;
-      # build pip packages with and without build number
       - run:
-          name: create packages
+          name: create python package
           command: |
             . venv/bin/activate
             if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n')-dev-$(git log --pretty=format:'%H' -n 1 | tr -d '\n') > VERSION; fi
@@ -106,10 +96,7 @@ jobs:
       # deploy to gru
       - deploy:
           name: deploy to gru
-          command: |
-              #scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/tmp
-              #ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+          command: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
 
 workflows:
   version: 2
