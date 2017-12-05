@@ -5,8 +5,8 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: droxops/mosaic-node-py:0.0.4
+  docker:
+    - image: droxops/mosaic-node-py:0.0.4
 
     working_directory: ~/repo
 
@@ -79,20 +79,22 @@ jobs:
 #            . venv/bin/activate
 #            mkdir ./packages;
 #            tar cz --exclude venv -f ./packages/build.tar.gz *;
-      # build pip package
+      # build pip packages with and without build number
       - run:
-          name: create pip package
+          name: create packages
           command: |
             . venv/bin/activate
             python3.6 setup.py sdist
             mkdir ./packages
             cp ./dist/*.tar.gz ./packages/
+            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n')-dev-$(git log --pretty=format:'%H' -n 1 | tr -d '\n') > VERSION; fi
+            python3.6 setup.py sdist
       # build demo package
       - run:
           name: create demo package
           command: |
             cd .circleci/mosaic-deploy
-            ./build_mosaic.sh ../../../dist/*.tar.gz ../../../impress_plugin
+            ./build_mosaic.sh ../../../dist/mosaic-*.tar.gz ../../../impress_plugin
             cp mosaic-demo-*.tar.gz ../../packages/
 
       ### artifacts
@@ -106,6 +108,7 @@ jobs:
       - deploy:
           name: deploy to gru
           command: |
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/tmp
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
+              #scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/tmp
+              #ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
             scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+
