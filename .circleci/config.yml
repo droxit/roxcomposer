@@ -23,9 +23,17 @@ jobs:
             - node-dependency-cache-
 
       - run:
+          name: relink python3 binaries
+          command: |
+            rm /usr/bin/python3
+            ln -s /usr/bin/python3.6 /usr/bin/python3
+            rm /usr/bin/pip3
+            ln -s /usr/bin/pip3.6 /usr/bin/pip3
+
+      - run:
           name: install python dependencies
           command: |
-            python3.6 -m venv venv
+            python3 -m venv venv
             . venv/bin/activate
             pip3 install -r requirements.txt
 
@@ -51,14 +59,14 @@ jobs:
           name: run python tests
           command: |
             . venv/bin/activate
-            python3.6 setup.py test
+            python3 setup.py test
 
       - run:
 #          working_directory: ~/repo
           name: install mosaic locally
           command: |
             . venv/bin/activate
-            pip3.6 install -e .
+            pip3 install -e .
 
       # run node tests
       - run:
@@ -66,8 +74,6 @@ jobs:
           name: run node tests
           command: |
             . ../venv/bin/activate
-            rm /usr/bin/python3
-            ln -s /usr/bin/python3.6 /usr/bin/python3
             npm test
 
       - run:
@@ -75,7 +81,7 @@ jobs:
           command: |
             . venv/bin/activate
             if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n')-dev-$(git log --pretty=format:'%H' -n 1 | tr -d '\n') > VERSION; fi
-            python3.6 setup.py sdist
+            python3 setup.py sdist
             mkdir ./packages
             cp ./dist/*.tar.gz ./packages/
       # build demo package
