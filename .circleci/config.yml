@@ -25,9 +25,9 @@ jobs:
       - run:
           name: relink python3 binaries
           command: |
-            rm /usr/bin/python3
+            rm -f /usr/bin/python3
             ln -s /usr/bin/python3.6 /usr/bin/python3
-            rm /usr/bin/pip3
+            rm -f /usr/bin/pip3
             ln -s /usr/bin/pip3.6 /usr/bin/pip3
 
       - run:
