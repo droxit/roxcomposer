@@ -80,7 +80,7 @@ jobs:
           name: create python package
           command: |
             . venv/bin/activate
-            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n')-dev-$CIRCLE_SHA1 > VERSION; fi
+            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n').dev$CIRCLE_BUILD_NUM > VERSION; fi
             python3 setup.py sdist
             mkdir ./packages
             cp ./dist/*.tar.gz ./packages/
