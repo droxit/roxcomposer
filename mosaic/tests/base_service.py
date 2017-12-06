@@ -102,3 +102,22 @@ class TestBaseService(unittest.TestCase):
             'name': 'dummy-service'
         })
         self.assertEqual(s.get_service_id(), self.dummy_service_id)
+
+    @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
+    def test_config_loading(self):
+        os.environ['DROXIT_MOSAIC_CONFIG'] = '/bogus/path/from/hell.json'
+        self.assertRaises(OSError, base_service.BaseService, { "service_key": "nevermind" })
+
+        with TemporaryDirectory() as tdir:
+            confname = os.path.join(tdir, "config.json")
+            f = open(confname, "w")
+            json.dump({"service": {"dummy": self.test_params_1}}, f)
+            f.close()
+            os.environ['DROXIT_MOSAIC_CONFIG'] = confname
+            self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, { "service_key": "nevermind" })
+            s = base_service.BaseService({"service_key": "service.dummy"})
+            self.assertDictEqual(s.params, self.test_params_1)
+
+
+if __name__ == '__main__':
+    unittest.main()
