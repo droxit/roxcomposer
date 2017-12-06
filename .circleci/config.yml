@@ -89,7 +89,7 @@ jobs:
           name: create demo package
           command: |
             cd .circleci/mosaic-deploy
-            ./build_mosaic.sh ../../../dist/mosaic-*.tar.gz ../../../impress_plugin
+            ./build_mosaic.sh ../../dist/mosaic-*.tar.gz ../../impress_plugin
             cp mosaic-demo-*.tar.gz ../../packages/
 
       ### artifacts

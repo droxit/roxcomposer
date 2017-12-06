@@ -15,11 +15,11 @@ mkdir services
 cp ../../../cli/mosaic-cli .
 cp ../scripts/* .
 cp -r ../api-server/ .
-cp $API_PLUGIN_PATH/*.js ./api-server/plugins
-cp $MOSAIC_PACKAGE ./packages/
+cp ../$API_PLUGIN_PATH/*.js ./api-server/plugins
+cp ../$MOSAIC_PACKAGE ./packages/
 cp ../services/*.json ./services
 
 cd ..
 
 # create package archive
-tar -czf $(echo ${MOSAIC_PACKAGE##*/} | sed -e 's/mosaic-/mosaic-demo-/').tar.gz $BUILD_DIR
+tar -czf $(echo ${MOSAIC_PACKAGE##*/} | sed -e 's/mosaic-/mosaic-demo-/') $BUILD_DIR
