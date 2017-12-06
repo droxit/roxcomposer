@@ -25,7 +25,12 @@ class BaseService:
         elif 'service_key' in params:
             # service name as param
             # load the config from services.json
-            cfg = configuration_loader.MosaicConfig()
+
+            config_file = None
+            if 'config_file' in params:
+                config_file = params['config_file']
+
+            cfg = configuration_loader.MosaicConfig(config_file)
             self.params = cfg.get_item(params['service_key'])
         else:
             # there isn't a configuration file

@@ -113,6 +113,8 @@ class TestBaseService(unittest.TestCase):
             f = open(confname, "w")
             json.dump({"service": {"dummy": self.test_params_1}}, f)
             f.close()
+            s = base_service.BaseService({"service_key": "service.dummy", "config_file": confname})
+            self.assertDictEqual(s.params, self.test_params_1)
             os.environ['DROXIT_MOSAIC_CONFIG'] = confname
             self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, { "service_key": "nevermind" })
             s = base_service.BaseService({"service_key": "service.dummy"})
