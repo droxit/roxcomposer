@@ -6,7 +6,6 @@ from mosaic.monitor import basic_monitoring
 from mosaic.service_loader import load_class
 from mosaic import exceptions
 from mosaic.config import configuration_loader
-from mosaic.exception import basic_exception
 
 
 # from mosaic.exception import basic_exception

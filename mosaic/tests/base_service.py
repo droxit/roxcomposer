@@ -1,4 +1,7 @@
 import unittest
+import os
+import json
+from tempfile import TemporaryDirectory
 from mosaic import base_service
 from mosaic import exceptions
 
@@ -99,7 +102,3 @@ class TestBaseService(unittest.TestCase):
             'name': 'dummy-service'
         })
         self.assertEqual(s.get_service_id(), self.dummy_service_id)
-
-
-if __name__ == '__main__':
-    unittest.main()
