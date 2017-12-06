@@ -5,7 +5,7 @@ from mosaic import exceptions
 
 config_identifier = 'DROXIT_MOSAIC_CONFIG'
 # FixMe : path variable. Where's the config file? default_config = $PATH + '/services.json'
-default_config = 'services.json'
+default_config = 'config.json'
 
 
 # This class builds the core system config. It loads a json file, where the config parameters are set. You can access
@@ -33,7 +33,6 @@ class MosaicConfig:
             if p in conf:
                 conf = conf[p]
             else:
-                self.logger.error("%s not present in the configuration" % item_as_string)
                 raise exceptions.ParameterMissing("%s not present in the configuration" % item_as_string)
 
         return conf
