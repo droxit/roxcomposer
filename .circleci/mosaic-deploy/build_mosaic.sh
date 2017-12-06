@@ -22,4 +22,4 @@ cp ../services/*.json ./services
 cd ..
 
 # create package archive
-tar -czf $(echo ${MOSAIC_PACKGE##*/} | sed -e 's/mosaic-/mosaic-demo-/').tar.gz $BUILD_DIR
+tar -czf $(echo ${MOSAIC_PACKAGE##*/} | sed -e 's/mosaic-/mosaic-demo-/').tar.gz $BUILD_DIR
