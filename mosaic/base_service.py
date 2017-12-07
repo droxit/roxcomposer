@@ -39,7 +39,7 @@ class BaseService:
 
         # if self.params is None:
         #     #logger need the service name
-        #     self.params.name = 'not defined'
+        #     self.params['name'] = 'not defined'
         #     self.logger.critical('BaseService.__init__() - params is None.')
         #     raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
         # elif 'name' not in self.params:
@@ -79,7 +79,7 @@ class BaseService:
 
         if self.params is None:
             # logger need the service name
-            self.params.name = 'not defined'
+            self.params['name'] = 'not defined'
             self.logger.critical('BaseService.__init__() - params is None.')
             raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
 
@@ -134,8 +134,9 @@ class BaseService:
             connection = socket.create_connection(address_tuple)
             connection.send(self.mosaic_message)
             self.monitoring.msg_dispatched(
-                service_id=self.get_service_id(),
-                message_id=message_id
+                service_name=self.params['name'],
+                message_id=message_id,
+                destination=next_service['id']
             )
 
             resp = connection.recv(self.BUFFER_SIZE)
@@ -171,13 +172,13 @@ class BaseService:
                     self.mosaic_message = mosaic_message.Message(msg_received)
 
                     self.monitoring.msg_received(
-                        service_id=self.get_service_id(),
+                        service_name=self.params['name'],
                         message_id=self.mosaic_message.get_message_id()
                     )
 
                     if self.mosaic_message.is_empty_pipeline():
                         self.monitoring.msg_reached_final_destination(
-                            service_id=self.get_service_id(),
+                            service_name=self.params['name'],
                             message_id=self.mosaic_message.get_message_id()
                         )
 
