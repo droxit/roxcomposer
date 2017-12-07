@@ -8,7 +8,7 @@ from mosaic.monitor import basic_monitoring
 from mosaic import exceptions
 
 
-class TestLogging(unittest.TestCase):
+class TestMonitoring(unittest.TestCase):
  
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_basic_monitoring(self):
