@@ -1,4 +1,5 @@
 import time
+from mosaic import exceptions
 
 
 # This class yields a basic monitoring solution. It offers some functions to monitor service activities in a pipeline.
@@ -7,6 +8,8 @@ import time
 class BasicMonitoring:
     def __init__(self, **kwargs):
         self.arguments = kwargs
+        if 'filename' not in kwargs:
+            raise exceptions.ParameterMissing("BasicMonitoring needs a filename")
 
     # monitors msg receiving acitvities
     def msg_received(self, **kwargs):
