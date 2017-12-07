@@ -29,6 +29,20 @@ class TestMonitoring(unittest.TestCase):
             for k in ["time", "event", "status"]:
                 self.assertIn(k, o)
             f.close()
+            m_id = "prettycoolmessageid-adlkfjalsdfkj"
+            args = {"service_name": "serv1", "message_id": m_id}
+            mon.msg_received(**args)
+            mon.msg_reached_final_destination(**args)
+            self.assertRaises(exceptions.ParameterMissing, basic_monitoring.BasicReporting)
+            rep = basic_monitoring.BasicReporting(filename=mf)
+            self.assertEqual(rep.get_msg_history(message_id="invalidmsgid"), [])
+            hist = rep.get_msg_history(message_id=m_id)
+            self.assertEqual(len(hist), 2)
+            for h in hist:
+                self.assertEqual(h['args']['message_id'], m_id)
+            self.assertEqual(rep.get_msg_status(message_id=m_id)['status'], "finalized")
+
+
 
 if __name__ == '__main__':
     unittest.main()

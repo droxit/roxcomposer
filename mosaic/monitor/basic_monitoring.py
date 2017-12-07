@@ -39,3 +39,36 @@ class BasicMonitoring:
         fh = open(self.arguments['filename'], 'a')
         fh.write(repr(msg) + '\n')
         fh.close()
+
+
+class BasicReporting:
+    def __init__(self, **kwargs):
+        self.arguments = kwargs
+        if 'filename' not in kwargs:
+            raise exceptions.ParameterMissing("BasicReporting needs a filename")
+        fh = open(kwargs['filename'], 'a')
+        fh.close()
+
+    # ---- DO NOT USE IN PRODUCTION ---- can be memory intensive and is potentially unsafe because of eval
+    def get_msg_history(self, **kwargs):
+        check_args(kwargs, "message_id")
+        with open(self.arguments['filename']) as f:
+            lines = f.readlines()
+            content = [x for x in map(eval, lines)]
+        if len(content):
+            return [x for x in filter(lambda x: x['args']['message_id'] == kwargs['message_id'], content)]
+        else:
+            return []
+
+    # ---- DO NOT USE IN PRODUCTION ----
+    def get_msg_status(self, **kwargs):
+        check_args(kwargs, "message_id")
+        history = [x for x in reversed(self.get_msg_history(message_id=kwargs['message_id']))]
+        if len(history):
+            return history[0]
+        else:
+            return {"status": "message not found"}
+
+            
+        
+
