@@ -30,6 +30,13 @@ To setup the framework and to use it, you can use our local pip package on gru. 
 
 Remember that you need to open an ssh tunnel to gru, to use this command.
 
+Version
+-------
+The version is detailed in the VERSION file. setup.py will take the version from there in order to generate the package version.
+Development versions get the version that is intended for the later release suffixed with 'dev' and a build number. This is done
+automatically by CircleCI during deployment. If you wish to change the version locally either change the VERSION file or set the
+environment variable MOSAIC_VERSION before calling setup.py.
+
 Further documentation
 ---------------------
 For further documentation please consider reading the `Handbook
