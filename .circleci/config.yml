@@ -23,9 +23,17 @@ jobs:
             - node-dependency-cache-
 
       - run:
+          name: relink python3 binaries
+          command: |
+            rm -f /usr/bin/python3
+            ln -s /usr/bin/python3.6 /usr/bin/python3
+            rm -f /usr/bin/pip3
+            ln -s /usr/bin/pip3.6 /usr/bin/pip3
+
+      - run:
           name: install python dependencies
           command: |
-            python3.6 -m venv venv
+            python3 -m venv venv
             . venv/bin/activate
             pip3 install -r requirements.txt
 
@@ -51,14 +59,14 @@ jobs:
           name: run python tests
           command: |
             . venv/bin/activate
-            python3.6 setup.py test
+            python3 setup.py test
 
       - run:
 #          working_directory: ~/repo
           name: install mosaic locally
           command: |
             . venv/bin/activate
-            pip3.6 install -e .
+            pip3 install -e .
 
       # run node tests
       - run:
@@ -66,25 +74,14 @@ jobs:
           name: run node tests
           command: |
             . ../venv/bin/activate
-            rm /usr/bin/python3
-            ln -s /usr/bin/python3.6 /usr/bin/python3
             npm test
 
-      ### building
-      # build package
-#      - run:
-##          working_directory: ~/repo
-#          name: build archive
-#          command: |
-#            . venv/bin/activate
-#            mkdir ./packages;
-#            tar cz --exclude venv -f ./packages/build.tar.gz *;
-      # build pip package
       - run:
-          name: create pip package
+          name: create python package
           command: |
             . venv/bin/activate
-            python3.6 setup.py sdist
+            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n').dev$CIRCLE_BUILD_NUM > VERSION; fi
+            python3 setup.py sdist
             mkdir ./packages
             cp ./dist/*.tar.gz ./packages/
       # build demo package
@@ -92,7 +89,7 @@ jobs:
           name: create demo package
           command: |
             cd .circleci/mosaic-deploy
-            ./build_mosaic.sh ../../../dist/*.tar.gz ../../../impress_plugin
+            ./build_mosaic.sh ../../dist/mosaic-*.tar.gz ../../impress_plugin
             cp mosaic-demo-*.tar.gz ../../packages/
 
       ### artifacts
@@ -105,7 +102,10 @@ jobs:
       # deploy to gru
       - deploy:
           name: deploy to gru
-          command: |
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/tmp
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+          command: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
