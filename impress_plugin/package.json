@@ -7,7 +7,8 @@
     "bunyan": "latest",
     "dtrace-provider": "^0.8.5",
     "google-protobuf": "latest",
-    "system-sleep": "^1.3.6"
+    "system-sleep": "^1.3.6",
+    "uuid": "latest"
   },
   "devDependencies": {
     "mocha": "latest",
