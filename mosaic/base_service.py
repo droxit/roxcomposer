@@ -144,7 +144,7 @@ class BaseService:
             connection.close()
         except OSError as e:
             self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
-            raise basic_exception.BasicException(e)
+            raise e
 
         return resp
 
@@ -159,7 +159,7 @@ class BaseService:
             s.listen()
         except OSError as e:
             self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
-            raise basic_exception.BasicException(e)
+            raise e
 
         try:
             while 1:
@@ -196,7 +196,7 @@ class BaseService:
                     break
         except OSError as e:
             self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
-            raise basic_exception.BasicException(e)
+            raise e
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the mosaic protobuf message.
