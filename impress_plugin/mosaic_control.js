@@ -29,17 +29,17 @@ function init(args) {
 	else
 		logger = bunyan.createLogger({name: 'mosaic_control'});
 
-    if (args && ('service_container' in args))
-        service_container_path = args.service_container;
+	if (args && ('service_container' in args))
+		service_container_path = args.service_container;
 
-    if (service_container_path) {
-        try {
-            fs.accessSync(service_container_path);
-        } catch (e) {
-            let msg = `unable to access service container module at ${service_container_path} - ${e.message}`;
-            throw new Error(msg);
-        }
-    }
+	if (service_container_path) {
+		try {
+			fs.accessSync(service_container_path);
+		} catch (e) {
+			let msg = `unable to access service container module at ${service_container_path} - ${e.message}`;
+			throw new Error(msg);
+		}
+	}
 
 }
 
