@@ -3,6 +3,7 @@ from google.protobuf import json_format
 import urllib.parse
 import uuid
 import json
+import struct
 from mosaic import exceptions
 
 
@@ -11,12 +12,25 @@ from mosaic import exceptions
 class Utils:
     @staticmethod
     def serialize(protobuf_msg):
-        return service_com_pb2.MosaicMessage.SerializeToString(protobuf_msg)
+        binmsg = service_com_pb2.MosaicMessage.SerializeToString(protobuf_msg)
+        return struct.pack('>I', len(binmsg)) + binmsg
+
+    @staticmethod
+    def get_packet_len(binmsg):
+        return struct.unpack('>I', binmsg[:4])[0] + 4
+
+    @staticmethod
+    def get_msg_len(binmsg):
+        return struct.unpack('>I', binmsg[:4])[0]
 
     @staticmethod
     def deserialize(protobuf_msg_serialized):
+        msglen = Utils.get_msg_len(protobuf_msg_serialized)
+        msg = protobuf_msg_serialized[4:]
+        if len(msg) < msglen:
+            raise exceptions.InvalidMosaicMessage('message shorter than expected')
         protobuf_msg_received = service_com_pb2.MosaicMessage()
-        protobuf_msg_received.MergeFromString(protobuf_msg_serialized)
+        protobuf_msg_received.MergeFromString(msg)
         return protobuf_msg_received
 
 

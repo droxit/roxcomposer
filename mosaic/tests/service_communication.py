@@ -99,7 +99,6 @@ class TestPipeline(unittest.TestCase):
             conn, addr = s.accept()
             with conn:
                 msg = conn.recv(2048)
-                conn.send(b'OK')
 
         msg = mosaic_message.Utils.deserialize(msg)
         msg = mosaic_message.Message(msg)

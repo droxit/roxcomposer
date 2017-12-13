@@ -49,7 +49,7 @@ class BaseService:
         #     self.logger.critical('BaseService.__init__() - name is undefined')
 
         # buffer size to read a msg in specified byte chunks
-        self.BUFFER_SIZE = 1024
+        self.BUFFER_SIZE = 4096
 
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
@@ -140,25 +140,20 @@ class BaseService:
         ip = ':'.join(next_service_id)
         address_tuple = (ip, int(port))
 
-        self.mosaic_message = mosaic_message.Utils.serialize(self.mosaic_message.get_protobuf_msg())
+        wiremsg = mosaic_message.Utils.serialize(self.mosaic_message.get_protobuf_msg())
 
         try:
             connection = socket.create_connection(address_tuple)
-            connection.send(self.mosaic_message)
+            connection.sendall(wiremsg)
             self.monitoring.msg_dispatched(
                 service_name=self.params['name'],
                 message_id=message_id,
                 destination=next_service['id']
             )
-
-            resp = connection.recv(self.BUFFER_SIZE)
-            self.logger.debug(resp)
             connection.close()
         except OSError as e:
             self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
             raise e
-
-        return resp
 
     # receive mosaic protobuf messages sent to a socket running on the specified ip and port. To handle the received
     # message please implement the on_message funtion in your inherited service.
@@ -178,9 +173,13 @@ class BaseService:
                 connection, sender_address = s.accept()
                 self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
                 data = connection.recv(self.BUFFER_SIZE)
+                packetlen = mosaic_message.Utils.get_packet_len(data)
 
-                msg_received = mosaic_message.Utils.deserialize(data)
+                while len(data) < packetlen:
+                    data += connection.recv(self.BUFFER_SIZE)
+
                 try:
+                    msg_received = mosaic_message.Utils.deserialize(data)
                     self.mosaic_message = mosaic_message.Message(msg_received)
 
                     self.monitoring.msg_received(
@@ -197,12 +196,15 @@ class BaseService:
                     self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
                 except exceptions.InvalidMosaicMessage as e:
                     self.logger.error(e.value + ' - ' + e.__traceback__)
+                    self.monitoring.msg_error(
+                        service_name=self.params['name'],
+                        message_id='unknown',
+                        description=errmsg
+                    )
                     raise exceptions.InvalidMosaicMessage(e)
 
                 self.on_message(self.mosaic_message.get_content_as_dict()['body'])
                 self.on_message_ext(self.mosaic_message)
-                connection.send(self.MSG_RESPONSE_OK.to_bytes(1, sys.byteorder))
-                connection.close()
 
                 if not data:
                     break

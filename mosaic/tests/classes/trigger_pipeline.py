@@ -13,11 +13,10 @@ if __name__ == '__main__':
                            'ich am Ende als wunderschöne HTML Datei erscheinen. Ich erweitere den Text auch einfach.'
                            'obwohl die services noch laufen, haha! Und ein Bild: ')
 
-    print(mosaic_msg.get_protobuf_msg_as_dict())
-
     mosaic_msg = mosaic_message.Utils.serialize(mosaic_msg.get_protobuf_msg())
+    wiremsg = struct.pack('>I', len(mosaic_msg)) + mosaic_msg
     connection = socket.create_connection(address_tuple)
-    connection.send(mosaic_msg)
+    connection.send(wiremsg)
 
     # resp = connection.recv(1024)
     connection.close()
