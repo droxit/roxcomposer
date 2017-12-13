@@ -30,6 +30,7 @@ class TestLogging(unittest.TestCase):
 
             msg = 'simple message' 
             lt.logdebug(msg)
+            logline = f.readline() # skip startup message
             logline = f.readline()
             self.assertIn(msg, logline, "original message not contained in log line")
             self.assertIn('DEBUG', logline, "log level missing/or incorrect")
