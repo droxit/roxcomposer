@@ -101,6 +101,7 @@ class BaseService:
             monitoring_params = self.params['monitoring']
         self.monitoring = basic_monitoring.BasicMonitoring(**monitoring_params)
 
+        self.logger.info({'msg': 'started', 'effective_params': self.params})
         self.mosaic_message = mosaic_message.Message()
 
     # need to be overwritten by inhertied classes.
@@ -126,7 +127,18 @@ class BaseService:
 
         next_service = self.mosaic_message.get_services_as_dict()['services'][0]
         next_service_id = next_service['id'].split(':')
-        address_tuple = (next_service_id[0], next_service_id[1])
+        if len(next_service_id) < 2:
+            errmsg = 'broken pipeline, invalid service id: {}'.format(next_service)
+            self.logger.error(errmsg)
+            self.monitoring.msg_error(
+                service_name=self.params['name'],
+                message_id=message_id,
+                description=errmsg
+            )
+            return
+        port = next_service_id.pop()
+        ip = ':'.join(next_service_id)
+        address_tuple = (ip, int(port))
 
         self.mosaic_message = mosaic_message.Utils.serialize(self.mosaic_message.get_protobuf_msg())
 
