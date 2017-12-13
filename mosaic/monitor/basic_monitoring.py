@@ -33,6 +33,10 @@ class BasicMonitoring:
         check_args(kwargs, "service_name", "message_id")
         self.write_to_file("message_final_destination", "finalized", kwargs)
 
+    def msg_error(self, **kwargs):
+        check_args(kwargs, "service_name", "message_id", "description")
+        self.write_to_file("message_error", "error", kwargs)
+
     # a helper function to write to a file
     def write_to_file(self, event, status, args):
         msg = { "event": event, "status": status, "time": time.time(), "args": args }
