@@ -309,7 +309,6 @@ function post_to_report_service(mcp, funcname, args, cb) {
 
 			try {
 				let m = read_wire_msg(doc);
-				console.log(m);
 				let msg = read_mosaic_message(m.buffer);
 
 				let d = JSON.parse(msg);
