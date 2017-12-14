@@ -16,15 +16,23 @@ class BasicReportingService(base_service.BaseService):
             errormsg = "unable to parse message, expecting JSON. msg: {}".format(msg)
             self.logger.error(errormsg)
             self.dispatch('{"error": "{}"}'.format(errormsg))
+            return
 
-        basic_monitoring.check_args(m, "function", "args")
         try:
-            if args['function'] == "get_msg_status":
-                reply = self.reporter.get_msg_status(m['args'])
-            elif args['function'] == "get_msg_history":
-                reply = self.reporter.get_msg_history(m['args'])
+            basic_monitoring.check_args(m, "function", "args")
+        except Exception as e:
+            errmsg = "missing argument: {}".format(e)
+            self.logger.error(errmsg)
+            self.dispatch('{"error": "{}"}'.format(errmsg))
+            return
+
+        try:
+            if m['function'] == "get_msg_status":
+                reply = self.reporter.get_msg_status(**m['args'])
+            elif m['function'] == "get_msg_history":
+                reply = self.reporter.get_msg_history(**m['args'])
             else:
-                reply = {"error": "unsupported function: {}".format(args['function'])}
+                reply = {"error": "unsupported function: {}".format(m['function'])}
         except Exception as e:
             reply = {"error": str(e)}
 
