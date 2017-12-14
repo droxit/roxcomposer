@@ -12,7 +12,7 @@ from mosaic import exceptions
 class Utils:
     @staticmethod
     def serialize(protobuf_msg):
-        binmsg = service_com_pb2.MosaicMessage.SerializeToString(protobuf_msg)
+        binmsg = protobuf_msg.SerializeToString()
         return struct.pack('>I', len(binmsg)) + binmsg
 
     @staticmethod
