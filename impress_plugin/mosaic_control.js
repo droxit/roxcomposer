@@ -1,3 +1,4 @@
+const os = require('os');
 let fs = require('fs');
 let bunyan = require('bunyan');
 let spawn = require('child_process').spawn;
@@ -27,12 +28,11 @@ module.exports = function (container) {
 	container['get_msg_status'] = get_msg_status.bind(undefined, mcp);
 };
 
-function service_name2id(name) {
-	if (name in services) {
-		return `${services[name].params.ip}:${services[name].params.port}`;
-	}
-
-	return null;
+function service_name2id(mcp, name) {
+	if (name in mcp.services) {
+		return `${mcp.services[name].params.ip}:${mcp.services[name].params.port}`;
+	} else
+		throw(`service ${name} is missing from services`);
 }
 
 /**
@@ -50,9 +50,9 @@ function init(mcp, args) {
 
 	if (mcp.service_container_path) {
 		try {
-			fs.accessSync(service_container_path);
+			fs.accessSync(mcp.service_container_path);
 		} catch (e) {
-			let msg = `unable to access service container module at ${service_container_path} - ${e.message}`;
+			let msg = `unable to access service container module at ${mcp.service_container_path} - ${e.message}`;
 			throw new Error(msg);
 		}
 	}
@@ -143,7 +143,6 @@ function start_service(mcp, args, cb) {
 					}
 				}
 			}
-			console.log(`service ${name} exited`);
 
 			delete mcp.processes[name];
 			delete mcp.services[name];
@@ -156,13 +155,12 @@ function start_service(mcp, args, cb) {
 	cb(null, {'message': `service [${name}] created`});
 }
 
-function create_mosaic_message(mcp, pline, data) {
+function create_mosaic_message(pline, data) {
 	let msg = new mosaic_message.MosaicMessage();
 	let arr = [];
 	for (let s in pline) {
-		let sname = pline[s];
 		let service = new mosaic_message.Service();
-		service.setId(mcp.services[sname]['params'].ip + ":" + mcp.services[sname]['params'].port);
+		service.setId(pline[s]);
 		arr.push(service);
 	}
 	let pipeline = new mosaic_message.Pipeline();
@@ -176,6 +174,28 @@ function create_mosaic_message(mcp, pline, data) {
 	return msg;
 }
 
+function read_mosaic_message(msg) {
+	let m = mosaic_message.MosaicMessage.deserializeBinary(msg);
+	return m.getPayload().getBody();
+}
+
+function create_wire_msg(msg) {
+	let len = msg.length;
+	let buf = Buffer.allocUnsafe(4 + len);
+	buf.writeUInt32BE(len, 0);
+	Buffer.from(msg.buffer).copy(buf, 4);
+
+	return buf;
+}
+
+function read_wire_msg(msg) {
+	let len = Buffer.from(msg).readUInt32BE(0);
+	if(msg.length < len + 4)
+		throw('message incomplete');
+
+	return msg.slice(4);
+}
+
 // args = { 'name': pipeline_name, 'data': "..." }
 function post_to_pipeline(mcp, args, cb) {
 	if (!(args.name in mcp.pipelines)) {
@@ -185,22 +205,29 @@ function post_to_pipeline(mcp, args, cb) {
 
 	let pline = mcp.pipelines[args.name];
 
-    if (pline.active === false) {
+	if (pline.active === false) {
 		cb({'code': 400, 'message': `pipeline ${args.name} is inactive`});
 		return;
-    }
+	}
 
-	let msg = create_mosaic_message(mcp, pline.services, args.data);
+	try {
+		service_ids = pline.services.map( (x) => { service_name2id(mcp, x) } );
+	} catch (e) {
+		mcp.logger.error({error: e}, 'invalid service in pipeline');
+		cb({'code': 500, 'message': `pipeline is broken: ${e}`});
+	}
+	let msg = create_mosaic_message(service_ids, args.data);
 
 	let socket = new net.Socket();
 	let start = mcp.services[pline.services[0]];
+	mcp.logger.debug({name: pline.services[0], ip: start.params.ip, port: start.params.port}, 'attempting connection to service');
 	socket.connect({port: start.params.port, host: start.params.ip}, () => {
-		let packet = msg.serializeBinary();
-		socket.end(String.fromCharCode.apply(null, packet));
+		let packet = create_wire_msg(msg.serializeBinary());
+		socket.end(packet);
 		cb(null, {'message': 'pipeline initiated', 'message_id': msg.getId()});
 	});
 	socket.on('error', (e) => {
-		mcp.logger.error({error: e}, "unable to connect to service");
+		mcp.logger.error({error: e, service: { name: pline.services[0], ip: start.params.ip, port: start.params.port }}, 'unable to connect to service');
 		cb({'code': 500, 'message': 'internal server error'});
 	});
 }
@@ -273,51 +300,67 @@ function post_to_report_service(mcp, funcname, args, cb) {
 		// will only be closed when the last active connection has been closed
 		// but this way we don't have to do it later
 		server.close();
-		let doc = ""
+		let chunks = [];
 		c.on('data', (chunk) => {
-			doc += chunk;
+			chunks.push(chunk); 
 		});
 		c.on('end', () => {
+			let doc = Buffer.concat(chunks);
+
 			try {
-				let d = JSON.parse(doc);
+				let m = read_wire_msg(doc);
+				console.log(m);
+				let msg = read_mosaic_message(m.buffer);
+
+				let d = JSON.parse(msg);
 				cb(null, d);
 			} catch(e) {
-				logger.error({msg: doc}, 'unable to parse report service answer');
-				cb({'code': 500, 'message': 'internal server error'});
+				let errmsg = `unable to parse report service answer: ${e}`;
+				mcp.logger.error({msg: doc}, errmsg );
 			}
 		});
 	});
 	server.listen(() => {
-		let socket = net.createConnection( mcp.services[reporting_service].params.port, mcp.services[reporting_service].params.ip, () => {
+		let socket = net.createConnection( mcp.services[mcp.reporting_service].params.port, mcp.services[mcp.reporting_service].params.ip, () => {
 			let addr = socket.address();
-			let pline = [ service_name2id(reporting_service), `${server.address().address}:${server.address().port}` ]
-			let msg = create_mosaic_message(pline, JSON.stringify(args));
-			let packet = msg.serializeBinary();
-			socket.end(String.fromCharCode.apply(null, packet));
-			cb(null, {'message': 'pipeline initiated'});
+			let pline = [ service_name2id(mcp, mcp.reporting_service), `${server.address().address}:${server.address().port}` ]
+			let msg = create_mosaic_message(pline, JSON.stringify({'function': funcname, 'args': args}));
+			let packet = create_wire_msg(msg.serializeBinary());
+			socket.end(packet);
 		}).on('error', (e) => {
 			server.close();
-			mcp.logger.error({error: e}, "unable to connect to reporting service");
-			cb({'code': 500, 'message': 'internal server error'});
+			let errmsg = "unable to connect to reporting service";
+			mcp.logger.error({error: e}, errmsg);
+			throw(errmsg);
 		});
 	});
 	server.on('error', (e) => {
-		mcp.logger.error({error: e}, 'socket listening for report service answer encountered an error');
+		let errmsg = 'socket listening for report service answer encountered an error';
+		mcp.logger.error({error: e}, errmsg );
 		server.close();
-		cb({'code': 500, 'message': 'internal server error'});
+		throw(errmsg);
 	});
 }
 
 function get_msg_history(mcp, args, cb) {
 	if (mcp.reporting_service)
-		post_to_report_service(mcp, "get_msg_history", args, cb);
+		try {
+			post_to_report_service(mcp, "get_msg_history", args, cb);
+		} catch (e) {
+			cb({code: 500, message: e});
+		}
+
 	else
 		cb({'code': 400, 'message': 'no reporting service has been configured'});
 }
 
 function get_msg_status(mcp, args, cb) {
 	if (mcp.reporting_service)
-		post_to_report_service(mcp, "get_msg_status", args, cb);
+		try {
+			post_to_report_service(mcp, "get_msg_status", args, cb);
+		} catch (e) {
+			cb({code: 500, message: e});
+		}
 	else
 		cb({'code': 400, 'message': 'no reporting service has been configured'});
 }
