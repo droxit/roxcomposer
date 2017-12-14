@@ -4,16 +4,16 @@ let bunyan = require('bunyan');
 let it = require('mocha').it;
 let path = require('path');
 let sleep = require('system-sleep');
-let mc = {};
-require('../mosaic_control.js')(mc);
 
 describe('mosaic_control', function () {
-	describe('init()', function () {
+	let mc = {};
+	require('../mosaic_control.js')(mc);
+	describe('new mosaic_control()', function () {
 		it('should work without passing any arguments', function () {
 			mc.init();
 		});
 	});
-	describe('init()', function () {
+	describe('new mosaic_control()', function () {
 		it('should work with a bunyan logger', function () {
 			let logger = bunyan.createLogger({
 				name: 'mosaic-control-testing',
@@ -158,19 +158,12 @@ describe('mosaic_control', function () {
 				}
 			});
 		});
-		it('should shutdown the last test service and set its\' pipeline state to inactive', function (done) {
+		it('should shutdown the last test service', function (done) {
 			mc.shutdown_service({'name': 'file_writer'}, function (err) {
 				if (err && err.code >= 400) {
 					done(err);
 				} else {
-					mc.get_pipelines({}, (args, pipelines) => {
-						sleep(100);
-						if (!pipelines['blorbblub']['active']) {
-							done();
-						} else {
-							done('Pipeline was not set to inactive');
-						}
-					});
+					done();
 				}
 			});
 		})
