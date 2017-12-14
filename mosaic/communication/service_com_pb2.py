@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='service_com.proto',
   package='service_communication',
   syntax='proto3',
-  serialized_pb=_b('\n\x11service_com.proto\x12\x15service_communication\"\x7f\n\rMosaicMessage\x12\x31\n\x08pipeline\x18\x01 \x01(\x0b\x32\x1f.service_communication.Pipeline\x12/\n\x07payload\x18\x02 \x01(\x0b\x32\x1e.service_communication.Payload\x12\n\n\x02id\x18\x03 \x01(\t\"<\n\x08Pipeline\x12\x30\n\x08services\x18\x01 \x03(\x0b\x32\x1e.service_communication.Service\"K\n\x07Service\x12\n\n\x02id\x18\x01 \x01(\t\x12\x34\n\nparameters\x18\x02 \x03(\x0b\x32 .service_communication.Parameter\"\"\n\tParameter\x12\x15\n\rserviceParams\x18\x01 \x01(\t\"\x17\n\x07Payload\x12\x0c\n\x04\x62ody\x18\x01 \x01(\tb\x06proto3')
+  serialized_pb=_b('\n\x11service_com.proto\x12\x15service_communication\"\x7f\n\rMosaicMessage\x12\x31\n\x08pipeline\x18\x01 \x01(\x0b\x32\x1f.service_communication.Pipeline\x12/\n\x07payload\x18\x02 \x01(\x0b\x32\x1e.service_communication.Payload\x12\n\n\x02id\x18\x03 \x01(\t\"<\n\x08Pipeline\x12\x30\n\x08services\x18\x04 \x03(\x0b\x32\x1e.service_communication.Service\"K\n\x07Service\x12\n\n\x02id\x18\x01 \x01(\t\x12\x34\n\nparameters\x18\x05 \x03(\x0b\x32 .service_communication.Parameter\"\"\n\tParameter\x12\x15\n\rserviceParams\x18\x06 \x01(\t\"\x17\n\x07Payload\x12\x0c\n\x04\x62ody\x18\x07 \x01(\tb\x06proto3')
 )
 
 
@@ -79,7 +79,7 @@ _PIPELINE = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='services', full_name='service_communication.Pipeline.services', index=0,
-      number=1, type=11, cpp_type=10, label=3,
+      number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -117,7 +117,7 @@ _SERVICE = _descriptor.Descriptor(
       options=None),
     _descriptor.FieldDescriptor(
       name='parameters', full_name='service_communication.Service.parameters', index=1,
-      number=2, type=11, cpp_type=10, label=3,
+      number=5, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -148,7 +148,7 @@ _PARAMETER = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='serviceParams', full_name='service_communication.Parameter.serviceParams', index=0,
-      number=1, type=9, cpp_type=9, label=1,
+      number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -179,7 +179,7 @@ _PAYLOAD = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='body', full_name='service_communication.Payload.body', index=0,
-      number=1, type=9, cpp_type=9, label=1,
+      number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,

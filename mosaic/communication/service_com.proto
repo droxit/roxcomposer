@@ -9,18 +9,18 @@ message MosaicMessage {
 }
 
 message Pipeline {
-    repeated Service services = 1;
+    repeated Service services = 4;
 }
 
 message Service {
     string id = 1;
-    repeated Parameter parameters = 2;
+    repeated Parameter parameters = 5;
 }
 
 message Parameter {
-    string serviceParams = 1;
+    string serviceParams = 6;
 }
 
 message Payload {
-    string body = 1;
+    string body = 7;
 }
