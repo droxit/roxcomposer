@@ -1,6 +1,7 @@
 import unittest
 import re
 import time
+import os
 from os.path import join
 from tempfile import TemporaryDirectory
 from mosaic.tests.classes import test_logging
@@ -8,7 +9,7 @@ from mosaic.tests.classes import test_logging
 
 class TestLogging(unittest.TestCase):
  
-    @unittest.skip("skipped due to circleci issues")
+    @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_basic_logger(self):
 
         with TemporaryDirectory() as tdir:
@@ -59,7 +60,7 @@ class TestLogging(unittest.TestCase):
 
             f.close()
 
-    @unittest.skip("skipped due to circleci issues")
+    @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_logging_injection(self):
         with TemporaryDirectory() as tdir:
             log_path = join(tdir, 'logtest.log')

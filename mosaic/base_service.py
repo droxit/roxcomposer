@@ -6,7 +6,6 @@ from mosaic.monitor import basic_monitoring
 from mosaic.service_loader import load_class
 from mosaic import exceptions
 from mosaic.config import configuration_loader
-from mosaic.exception import basic_exception
 
 
 # from mosaic.exception import basic_exception
@@ -26,7 +25,12 @@ class BaseService:
         elif 'service_key' in params:
             # service name as param
             # load the config from services.json
-            cfg = configuration_loader.MosaicConfig()
+
+            config_file = None
+            if 'config_file' in params:
+                config_file = params['config_file']
+
+            cfg = configuration_loader.MosaicConfig(config_file)
             self.params = cfg.get_item(params['service_key'])
         else:
             # there isn't a configuration file
