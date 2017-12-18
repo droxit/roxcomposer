@@ -6,6 +6,11 @@ import json
 import struct
 from mosaic import exceptions
 
+def get_packet_len(msg):
+    if len(msg) >= 4:
+        return struct.unpack('>I', msg[:4])[0]
+    raise excepttions.InvalidArgument('the provided string was too short: {}'.format(msg))
+
 def frame_message(msg):
     return struct.pack('>I', len(msg)) + msg
 
