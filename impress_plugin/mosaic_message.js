@@ -139,7 +139,13 @@ function deserialize_from_protobuf(binmsg) {
 	let pmsg = proto.MosaicMessage.deserializeBinary(binmsg);
 	msg.set_payload(pmsg.getPayload().getBody());
 	msg.id = pmsg.getId()
-	pipe = pmsg.getPipeline().getServicesList();
+	let p = pmsg.getPipeline();
+	let pipe = [];
+
+	if (p) {
+		pipe = p.getServicesList();
+	}
+
 	for (let s in pipe) {
 		let addr = decodeId(pipe[s].getId());
 		msg.add_service(new Service(addr.ip, addr.port, pipe[s].getParametersList()));
