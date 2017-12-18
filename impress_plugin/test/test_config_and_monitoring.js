@@ -8,8 +8,7 @@ let tapSpec = require('tap-spec');
 test.createStream().pipe(tapSpec()).pipe(process.stdout);
 
 let filewriter_module_path = '../mosaic/tests/classes/file_writer.py';
-let tmpdir = fs.mkdtempSync('/tmp/mosaic_control_test_integration');
-console.log(`writing files to temporary directory: ${tmpdir}`);
+let tmpdir = fs.mkdtempSync('/tmp/mosaic_control_test_integration_');
 
 test('config and monitoring', function (assert) {
 	let service_file = tmpdir + "/config.json";
@@ -56,7 +55,7 @@ test('config and monitoring', function (assert) {
 	require('../mosaic_control.js')(mc);
 	mc.init(init_params);
 
-	assert.plan(12);
+	assert.plan(13);
 
 	// config key is not working atm, because impress needs to know the service's ip and the port 
 	// I'm replacing this with a regular call with explicit settings until things are fixed
@@ -78,13 +77,17 @@ test('config and monitoring', function (assert) {
 							assert.notOk('error' in msg, 'the reply should not be an error');
 							assert.equal(msg.length, 2, 'we expect to events in the message history');
 							assert.equal(msg[0].event, 'message_received', "first should be 'message_received'");
-							assert.equal(msg[1].event, 'message_dispatched', "second should be 'message_dispatched'");
+							assert.equal(msg[1].event, 'message_final_destination', "second should be 'message_final_destination'");
 							mc.get_msg_status({message_id: message_id}, function(err ,msg) {
 								assert.notOk(err, 'get_msg_status should not return an error');
 								assert.ok('status' in msg, 'the returned message should have a status');
-								assert.equal(msg.status, 'in_transit', "....which should be 'in_transit'");
-								mc.shutdown_service({name: 'file_writer'}, function(err, msg) {});
-								mc.shutdown_service({name: 'reporting_service'}, function(err, msg) {});
+								assert.equal(msg.status, 'finalized', "....which should be 'finalized'");
+								mc.shutdown_service({name: 'basic_reporting'}, function(err, msg) {
+									assert.notOk(err, 'we should get no error when shutting down the reporting service');
+								});
+								mc.shutdown_service({name: 'file_writer'}, function(err, msg) {
+									assert.notOk(err, 'we should get no error when shutting down file_writer');
+								});
 							});
 						});
 					}, 400);
