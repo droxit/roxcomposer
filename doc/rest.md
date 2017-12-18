@@ -33,6 +33,8 @@ In the default configuration the following endpoints are available:
 | pipelines | GET | | Show defined pipelines |
 | post\_to\_pipeline | POST | <ul><li>name (string) - the name of the pipeline that the data should put in</li><li>data (string) - the payload that should be transported</li><ul> | Send a message into a pipeline |
 | shutdown\_service | POST | name (string) - the services name in the pipeline | Shuts down a service with the SIGTERM os signal |
+| get\_msg\_history | POST | message\_id (string) - the message id of the message in question | Retrieves all monitoring information for this message |
+| get\_msg\_status | POST | message\_id (string) - the message id of the message in question | Retrieves the last known status for this message |
 
 
 ### Using the mosaic-cli

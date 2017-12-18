@@ -34,6 +34,8 @@ So how do we generate messages and define pipelines? If you want to generate you
 
 ## Config handling
 
+**This feature is at this point not compatible with the REST API controls**
+
 Since passing the configuration manually is cumbersome, services have a machanism to access their configuration via files:
 
 ```bash
@@ -135,5 +137,10 @@ There are several situations where the basic monitoring is creating messages. Cu
 If everything works as expected a monitoring message like the following should be generated:
 
 ```bash
-[{'service_id': '127.0.0.1:1234', 'message_id': 'e8XX80X3-38Xx-4xbX-xx5f-29XX68XX7X3x'}] MosaicMessage received at TIMESTAMP
+{'event': 'message_dispatched', 'status': 'in_transit', 'time': 1513596460.0961697, 'args': {'service_name': 'service1', 'message_id': 'dfa156e3-a8f6-4968-a255-ebd44e41d846', 'destination': '127.0.0.1:10000'}}
 ```
+
+### Reporting
+
+The basic monitoring class has a counterpart named `BasicReporting`. This class holds the functions to retrieve monitoring information on specific events. Either their whole monitoring history or only the last
+known status.
