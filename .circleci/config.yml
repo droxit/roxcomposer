@@ -111,8 +111,5 @@ workflows:
   build_and_deploy:
     jobs:
       - build
-        filters:
-          branches:
-            ignore: monitoring-api
 
 
