@@ -78,6 +78,9 @@ class Message():
     def add_service(self, service):
         self.pipeline.append(service)
 
+    def has_empty_pipeline(self):
+        return len(self.pipeline) == 0
+
     def serialize_to_protobuf(self):
         pmsg = proto.MosaicMessage()
         for p in self.pipeline:

@@ -80,10 +80,11 @@ class TestPipeline(unittest.TestCase):
         expected_payload = payload
         for serv in self.services:
             expected_payload += serv['msg']
-            mm.add_service(serv['args']['ip'], serv['args']['port'])
-        mm.add_service(ip, port)
-        mm.set_content(payload)
-        bin_msg = mosaic_message.Utils.serialize(mm.get_protobuf_msg())
+        for serv in self.services[1:]:
+            mm.add_service(mosaic_message.Service(serv['args']['ip'], serv['args']['port']))
+        mm.add_service(mosaic_message.Service(ip, port))
+        mm.set_payload(payload)
+        bin_msg = mm.serialize()
 
         msg = ""
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -100,11 +101,10 @@ class TestPipeline(unittest.TestCase):
             with conn:
                 msg = conn.recv(2048)
 
-        msg = mosaic_message.Utils.deserialize(msg)
-        msg = mosaic_message.Message(msg)
+        msg = mosaic_message.Message.deserialize(msg)
 
         # there should not be a pipeline cause it 
-        self.assertEqual(msg.get_content().body, expected_payload)
+        self.assertEqual(msg.payload, expected_payload)
 
 
 if __name__ == '__main__':

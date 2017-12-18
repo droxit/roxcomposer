@@ -115,32 +115,17 @@ class BaseService:
 
     # send a mosaic protobuf message to the next service in the pipeline.
     def dispatch(self, msg):
-        self.mosaic_message.set_content(msg)
+        self.mosaic_message.set_payload(msg)
 
-        if 'services' not in self.mosaic_message.get_services_as_dict():
-            return
-        elif len(self.mosaic_message.get_services_as_dict()['services']) <= 1:
+        if self.mosaic_message.has_empty_pipeline():
             return
 
-        me = self.mosaic_message.pop_service()
-        message_id = self.mosaic_message.get_message_id()
+        next_service = self.mosaic_message.pop_service()
+        message_id = self.mosaic_message.id
 
-        next_service = self.mosaic_message.get_services_as_dict()['services'][0]
-        next_service_id = next_service['id'].split(':')
-        if len(next_service_id) < 2:
-            errmsg = 'broken pipeline, invalid service id: {}'.format(next_service)
-            self.logger.error(errmsg)
-            self.monitoring.msg_error(
-                service_name=self.params['name'],
-                message_id=message_id,
-                description=errmsg
-            )
-            return
-        port = next_service_id.pop()
-        ip = ':'.join(next_service_id)
-        address_tuple = (ip, int(port))
+        address_tuple = (next_service.ip, next_service.port)
 
-        wiremsg = mosaic_message.Utils.serialize(self.mosaic_message.get_protobuf_msg())
+        wiremsg = self.mosaic_message.serialize()
 
         try:
             connection = socket.create_connection(address_tuple)
@@ -148,7 +133,7 @@ class BaseService:
             self.monitoring.msg_dispatched(
                 service_name=self.params['name'],
                 message_id=message_id,
-                destination=next_service['id']
+                destination=next_service.encodeId()
             )
             connection.close()
         except OSError as e:
@@ -173,37 +158,38 @@ class BaseService:
                 connection, sender_address = s.accept()
                 self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
                 data = connection.recv(self.BUFFER_SIZE)
-                packetlen = mosaic_message.Utils.get_packet_len(data)
+                packetlen = mosaic_message.get_packet_len(data)
 
                 while len(data) < packetlen:
                     data += connection.recv(self.BUFFER_SIZE)
 
                 try:
-                    msg_received = mosaic_message.Utils.deserialize(data)
-                    self.mosaic_message = mosaic_message.Message(msg_received)
-
-                    self.monitoring.msg_received(
-                        service_name=self.params['name'],
-                        message_id=self.mosaic_message.get_message_id()
-                    )
-
-                    if self.mosaic_message.is_empty_pipeline():
-                        self.monitoring.msg_reached_final_destination(
-                            service_name=self.params['name'],
-                            message_id=self.mosaic_message.get_message_id()
-                        )
-
-                    self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
-                except exceptions.InvalidMosaicMessage as e:
-                    self.logger.error(e.value + ' - ' + e.__traceback__)
+                    self.mosaic_message = mosaic_message.Message.deserialize(data)
+                except Exception as e:
+                    errmsg = 'unable to deserialize mosaic message {}'.format(e)
+                    self.logger.error(e)
                     self.monitoring.msg_error(
                         service_name=self.params['name'],
                         message_id='unknown',
                         description=errmsg
                     )
-                    raise exceptions.InvalidMosaicMessage(e)
+                    continue
 
-                self.on_message(self.mosaic_message.get_content_as_dict()['body'])
+
+                self.monitoring.msg_received(
+                    service_name=self.params['name'],
+                    message_id=self.mosaic_message.id
+                )
+
+                if self.mosaic_message.has_empty_pipeline():
+                    self.monitoring.msg_reached_final_destination(
+                        service_name=self.params['name'],
+                        message_id=self.mosaic_message.id
+                    )
+
+                self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
+
+                self.on_message(self.mosaic_message.payload)
                 self.on_message_ext(self.mosaic_message)
 
                 if not data:
@@ -216,29 +202,6 @@ class BaseService:
     # the mosaic protobuf message.
     def listen(self):
         self.listen_to(self.params['ip'], self.params['port'])
-
-    # set the content of the message currently handled by the service. @data should be a (json) string.
-    def set_content(self, data):
-        return mosaic_message.Message.set_content(self.mosaic_message, data)
-
-    # get the content of the message currently handled by the service in protobuf format. To get a more usable message
-    # use the get_contant_as_dict function.
-    def get_content(self):
-        return mosaic_message.Message.get_content_as_dict(self.mosaic_message)['body']
-
-    # get the content of the message curerntly handled by the service as a dicitionary. Remember that the dict only
-    # yields a representation of the actual message. So if you actually want to manipulate values in the message you
-    # have to set the changed values manually in the protobuf message.
-    def get_content_as_dict(self):
-        return mosaic_message.Message.get_content_as_dict(self.mosaic_message)
-
-    # get the currently handled message as a protobuf object
-    def get_protobuf_message(self):
-        return mosaic_message.Message.get_protobuf_msg(self.mosaic_message)
-
-    # get the currently handled message as a python dictionary
-    def get_protobuf_message_as_dict(self):
-        return mosaic_message.Message.get_protobuf_msg_as_dict(self.mosaic_message)
 
     # get current service id
     def get_service_id(self):
