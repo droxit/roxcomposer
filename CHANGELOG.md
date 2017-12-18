@@ -10,4 +10,5 @@
 * Added message monitoring endpoints to `mosaic_control`
 * mosaic now supports IPv6 addresses for services
 * `BaseService` now supports config loading by key via a `config_loader` module. This feature is at this point not compatible with the `mosaic_control` plugin, since it needs the services ip and port to communicate with it.
+* `mosaic_control` can now be required multiple times. Each time a new set of internal data structures is created so the instances can coexist.
 
