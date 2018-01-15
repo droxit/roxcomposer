@@ -11,9 +11,12 @@ def get_packet_len(msg):
         return struct.unpack('>I', msg[:4])[0]
     raise excepttions.InvalidArgument('the provided string was too short: {}'.format(msg))
 
+# prefixes msg with it's length as a 32bit big endian integer
 def frame_message(msg):
     return struct.pack('>I', len(msg)) + msg
 
+# remove the length prefix (see frame_message) from msg
+# throws an exception if len(msg) does not match the prefixed length
 def unframe_message(msg):
     l = struct.unpack('>I', msg[:4])[0]
     if l + 4 != len(msg):
