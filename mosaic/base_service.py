@@ -158,9 +158,9 @@ class BaseService:
                 connection, sender_address = s.accept()
                 self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
                 data = connection.recv(self.BUFFER_SIZE)
-                packetlen = mosaic_message.get_packet_len(data)
+                packet_len = mosaic_message.get_packet_len(data)
 
-                while len(data) < packetlen:
+                while len(data) < packet_len:
                     data += connection.recv(self.BUFFER_SIZE)
 
                 try:
