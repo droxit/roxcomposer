@@ -1,6 +1,6 @@
 # Obtaining the package
 
-You will need the mosaic installation package (a compressed tar archive) - which is obtainable only through the droxIT Lapteva & Baumgärtner GmbH
+You will need the mosaic installation package (a compressed tar archive) - which is obtainable only through the droxIT GmbH
 
 ## System prerequesites
 
