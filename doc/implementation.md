@@ -143,4 +143,5 @@ If everything works as expected a monitoring message like the following should b
 ### Reporting
 
 The basic monitoring class has a counterpart named `BasicReporting`. This class holds the functions to retrieve monitoring information on specific events. Either their whole monitoring history or only the last
-known status.
+known status. See the API [documentation](rest.md) for details on accessing the reporting functionionality.
+
