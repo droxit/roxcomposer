@@ -21,7 +21,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 	}
 
 	test('service startup and control', function (assert) {
-		let filepath = path.join(tmpdir, "/file_writer.out");
+		let filepath = path.join(tmpdir, "file_writer.out");
 		let filewriter_params = {name: 'fwriter', ip: '127.0.0.1', port: 6789, filepath: filepath};
 		let test_msg = 'test _mesage from hell';
 		let mc = {}
