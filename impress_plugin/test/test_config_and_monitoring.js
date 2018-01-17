@@ -36,7 +36,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 					name: 'basic_reporting',
 					filename: monitoring_file,
 					ip: '127.0.0.1',
-					port: 6690,
+					port: 7123,
 					monitoring: {
 						filename: monitoring_file
 					}
