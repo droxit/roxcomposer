@@ -9,7 +9,7 @@ const { sep } = require('path');
 
 test.createStream().pipe(tapSpec()).pipe(process.stdout);
 
-let filewriter_module_path = '../mosaic/tests/classes/file_writer.py';
+let filewriter_module_path = path.join('..', 'mosaic', 'tests', 'classes', 'file_writer.py');
 
 let tmp = os.tmpdir();
 fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
@@ -18,17 +18,17 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 	}
 
 	test('config and monitoring', function (assert) {
-		let service_file = tmpdir + "/config.json";
-		let monitoring_file = tmpdir + "/monitoring.log";
-		let impresslog_file = tmpdir + "/config_and_monitoring.log";
-		let servicelog_file = tmpdir + "/service.log";
+		let service_file = path.join(tmpdir, "config.json");
+		let monitoring_file = path.join(tmpdir, "monitoring.log");
+		let impresslog_file = path.join(tmpdir, "config_and_monitoring.log");
+		let servicelog_file = path.join(tmpdir, "service.log");
 		let logger = bunyan.createLogger({
 			name: 'mosaic-control-testing',
 			streams: [{level: 'debug', path: impresslog_file}]
 		});
 		let init_params = {
 			logger: logger,
-			service_container: '../util/service_container.py',
+			service_container: path.join('..', 'util', 'service_container.py'),
 			reporting_service: {
 				classpath: 'mosaic.monitor.basic_reporting_service.BasicReportingService',
 				params: {
@@ -47,7 +47,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 			services: {
 				file_writer: {
 					name: "file_writer",
-					filepath: tmpdir + "/blub.out",
+					filepath: path.join(tmpdir, "blub.out"),
 					ip: "127.0.0.1",
 					port: 6691,
 					monitoring: {
