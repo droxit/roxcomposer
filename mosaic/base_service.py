@@ -124,7 +124,6 @@ class BaseService:
         message_id = self.mosaic_message.id
 
         address_tuple = (next_service.ip, next_service.port)
-        print("address: {} {}".format(next_service.ip, next_service.port))
 
         wiremsg = self.mosaic_message.serialize()
 
