@@ -19,19 +19,22 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 	if (error) {
 		throw error;
 	}
-
 	test('service startup and control', function (assert) {
 		let filepath = path.join(tmpdir, "file_writer.out");
-		let filewriter_params = {name: 'fwriter', ip: '127.0.0.1', port: 6789, filepath: filepath};
+		let filewriter_params = {name: 'fwriter', ip: '127.0.0.1', port: 6889, filepath: filepath,
+			logging: {
+			"filename": "pipeline.log",
+				"level": "DEBUG"}
+	};
 		let test_msg = 'test _mesage from hell';
-		let mc = {}
+		let mc = {};
 		require('../mosaic_control.js')(mc);
 		mc.init({logger: logger});
 
 		assert.plan(12);
 		mc.start_service({path: filewriter_module_path, params: filewriter_params}, function (err, msg) {
 			assert.notOk(err, "start_service should not return an error");
-			sleep(200);
+			sleep(500);
 			mc.get_services(null, function(err, msg) {
 				assert.notOk(err, "get_services should not return an error");
 				assert.deepEqual(msg, {fwriter: {path: filewriter_module_path, params: filewriter_params}}, "the started service should be listed with it's parameters");
@@ -42,7 +45,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 						assert.deepEqual(msg, {pipe: {services: ['fwriter'], active: true}}, 'our created pipeline should be present');
 						mc.post_to_pipeline({name: 'pipe', data: test_msg}, function (err, msg) {
 							assert.notOk(err, 'post_to_pipeline should not produce an error');
-							sleep(200);
+							sleep(500);
 							assert.equal(fs.readFileSync(filepath, 'utf8'), test_msg, 'the file_writer service should have written our test message into the file');
 							mc.shutdown_service({name: 'fwriter'}, function(err, msg) {
 								assert.notOk(err, 'shutdown_service should not return an error');

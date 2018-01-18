@@ -176,7 +176,6 @@ class BaseService:
                     )
                     continue
 
-
                 self.monitoring.msg_received(
                     service_name=self.params['name'],
                     message_id=self.mosaic_message.id
