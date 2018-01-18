@@ -1,9 +1,7 @@
-const os = require('os');
 let fs = require('fs');
 let bunyan = require('bunyan');
 let spawn = require('child_process').spawn;
 let net = require('net');
-let uuid = require('uuid/v4');
 let mosaic_message = require('./mosaic_message.js');
 
 function __mosaic_control_private() {
