@@ -290,7 +290,7 @@ function post_to_report_service(mcp, funcname, args, cb) {
 			}
 		});
 	});
-	server.listen(() => {
+	server.listen(0, '0.0.0.0', () => {
 		let socket = net.createConnection( mcp.services[mcp.reporting_service].params.port, mcp.services[mcp.reporting_service].params.ip, () => {
 			let addr = socket.address();
 			let pline = [ new mosaic_message.Service(server.address().address, server.address().port) ];
