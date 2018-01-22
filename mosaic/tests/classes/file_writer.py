@@ -29,9 +29,10 @@ class FileWriter(base_service.BaseService):
 
     def write_file(self):
         html_string = self.msg
-        f = open(self.filepath, 'w')
-        f.write(html_string)
-        f.close()
+        with open(self.filepath, 'w+') as f:
+            f.write(html_string)
+            f.close()
+
         return self.dispatch(html_string)
 
 

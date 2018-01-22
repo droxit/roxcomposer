@@ -7,14 +7,17 @@
     "bunyan": "latest",
     "dtrace-provider": "^0.8.5",
     "google-protobuf": "latest",
-    "system-sleep": "^1.3.6"
+    "system-sleep": "^1.3.6",
+    "uuid": "latest"
   },
   "devDependencies": {
+    "expect.js": "latest",
     "mocha": "latest",
-    "expect.js": "latest"
+    "tap-spec": "^4.1.1",
+    "tape": "^4.8.0"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "./node_modules/mocha/bin/mocha test/test_mosaic_*.js && ./node_modules/tape/bin/tape test/test_integration.js && ./node_modules/tape/bin/tape test/test_config_and_monitoring.js"
   },
   "repository": {
     "type": "git",

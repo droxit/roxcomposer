@@ -7,7 +7,22 @@
   "PLUGINS": {
       "mosaic": {
           "path": "./plugins/mosaic_control.js",
-          "params": { "service_container_path": "plugins/service_container.py" }
+          "params": {
+		  "service_container": "plugins/service_container.py",
+		  "reporting_service": {
+			  "classpath": "mosaic.monitor.basic_reporting_service.BasicReportingService",
+			  "params": {
+				  "logging": { "filename": "pipeline.log" },
+				  "name": "basic_reporting",
+				  "filename": "monitoring.log",
+				  "ip": "127.0.0.1",
+				  "port": 6690,
+				  "monitoring": {
+					  "filename": "monitoring.log"
+				  }
+			  }
+		  }
+	  }
       }
   },
   "REST": {
@@ -55,7 +70,21 @@
                 "name": "mosaic",
                 "function": "shutdown_service"
             }
-        }
+        },
+	"get_msg_history": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "get_msg_history"
+            }
+	},
+	"get_msg_status": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "get_msg_status"
+            }
+	}
     }
   }
 }
