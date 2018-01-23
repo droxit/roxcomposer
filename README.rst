@@ -40,7 +40,7 @@ environment variable MOSAIC_VERSION before calling setup.py.
 Further documentation
 ---------------------
 For further documentation please consider reading the `Handbook
-<https://droxit.atlassian.net/wiki/spaces/PROJ/pages/74088468/Handbook/>`_.
+<https://github.com/droxit/mosaic/blob/dev/doc/handbook.md>`_.
 
 Build Config
 ------------
@@ -58,6 +58,6 @@ and
 cd impress_plugin && npm test
 
 Deploy Config
-------------
+-------------
 
 ENV VAR 'DROXIT_MOSAIC_CONFIG' to configure service's params
