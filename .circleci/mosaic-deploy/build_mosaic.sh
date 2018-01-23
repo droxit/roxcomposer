@@ -16,6 +16,7 @@ cp ../../../cli/mosaic-cli .
 cp ../scripts/* .
 cp -r ../api-server/ .
 cp ../$API_PLUGIN_PATH/*.js ./api-server/plugins
+cp ../$API_PLUGIN_PATH/package.json ./api-server/plugins
 cp ../$MOSAIC_PACKAGE ./packages/
 cp ../services/*.json ./services
 
