@@ -23,7 +23,7 @@ jobs:
             - node-dependency-cache-
 
       - run:
-          name: relink python3 binaries
+          name: Relink python3 binaries
           command: |
             rm -f /usr/bin/python3
             ln -s /usr/bin/python3.6 /usr/bin/python3
@@ -31,14 +31,14 @@ jobs:
             ln -s /usr/bin/pip3.6 /usr/bin/pip3
 
       - run:
-          name: install python dependencies
+          name: Install python dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip3 install -r requirements.txt
 
       - run:
-          name: install node dependencies
+          name: Install node dependencies
           working_directory: impress_plugin
           command: npm install
 
@@ -56,7 +56,7 @@ jobs:
       # python
       - run:
 #          working_directory: ~/repo
-          name: run python tests
+          name: Run python tests
           environment:
             SKIP_TEMPDIR_TEST: True
           command: |
@@ -65,7 +65,7 @@ jobs:
 
       - run:
 #          working_directory: ~/repo
-          name: install mosaic locally
+          name: Install mosaic locally
           command: |
             . venv/bin/activate
             pip3 install -e .
@@ -73,13 +73,13 @@ jobs:
       # run node tests
       - run:
           working_directory: impress_plugin
-          name: run node tests
+          name: Run node tests
           command: |
             . ../venv/bin/activate
             npm test
 
       - run:
-          name: create python package
+          name: Create python package
           command: |
             . venv/bin/activate
             if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n').dev$CIRCLE_BUILD_NUM > VERSION; fi
@@ -88,7 +88,7 @@ jobs:
             cp ./dist/*.tar.gz ./packages/
       # build demo package
       - run:
-          name: create demo package
+          name: Create demo package
           command: |
             cd .circleci/mosaic-deploy
             ./build_mosaic.sh ../../dist/mosaic-*.tar.gz ../../impress_plugin
@@ -103,7 +103,7 @@ jobs:
       ### deployment
       # deploy to gru
       - deploy:
-          name: deploy to gru
+          name: Deploy to gru
           command: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
 
 workflows:
