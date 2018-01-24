@@ -48,7 +48,6 @@ function deploy {
        then
           echo "deploying $service"
           curl_post_file "start_service" $argfile
-          echo ""
        else
            echo "service file not found: $argfile"
            exit 1
