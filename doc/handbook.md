@@ -15,3 +15,5 @@
 [Interfacing with the framework (REST API)](rest.md)
 
 [Appendix](appendix.md)
+
+[Demo](demo.md)
