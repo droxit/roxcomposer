@@ -179,7 +179,7 @@ function post_to_pipeline(mcp, args, cb) {
 	let servs;
 	try {
 		servs = pline.services.slice(1).map( (x) => {
-			let s = services[x];
+			let s = mcp.services[x];
 			return new mosaic_message.Service(s.params.ip, s.params.port);
 		});
 	} catch (e) {

@@ -65,7 +65,13 @@ function set_pipeline {
         then
             servarr="\"$1\""
         else
-            servarr="\"$(echo -n $1; shift; printf "%s" "${@/#/'","'}")\""
+            if [[ $OSTYPE = *"darwin"* ]]
+                then
+                    echo "macOS detected - switching handling..."
+                    servarr="\"$(echo -n $1; shift; printf "%s" "${@/#/","}")\""
+                else
+                    servarr="\"$(echo -n $1; shift; printf "%s" "${@/#/'","'}")\""
+		    fi
     fi
 
     curl_post_data "set_pipeline" "{\"name\":\"$pname\",\"services\":[$servarr]}"
