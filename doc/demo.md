@@ -1,6 +1,6 @@
-#How does mosaic work?
+# How does mosaic work?
 
-If you don't have installed mosaic so far please read the[installation](installation.md)manual.
+If you don't have installed mosaic so far please read the [installation](installation.md) manual.
 
 First of all we need services. The mosaic-demo package contains a couple of services you can use located at 
 `$MOSAIC_HOME/services`: 
