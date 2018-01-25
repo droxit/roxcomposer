@@ -1,9 +1,10 @@
 #How does mosaic work?
+
 Is mosaic already installed and server work? --> read installation.md
 
 We need services, you can use the demo service from mosaic ($MOSAIC_HOME/services, for example
-- html_generator
-- file_writer
+- html_generator: this service built a html-code an put the messasge in the body-tag
+- file_writer: the service create a file with the input.request names index.html
 
 
 1-. We start the services with the mosaic-client in the terminal (at $MOSAIC_HOME)
@@ -36,6 +37,6 @@ RESPONSE: {"pipe-demo":{"services":["html_generator","file_writer"],"active":tru
 RESPONSE: {"message":"pipeline initiated","message_id":"49e7f379-43fe-4d2a-99f3-3012c498c613"}
 
 6-. You can check if the index.html file exist :-)
---> Go to $MOSAIC_HOME/api-server and there is a index.html with your message
---> Open in a browser the $MOSAIC_HOME/api-server/index.html File and you can see your message
+--> Go to $MOSAIC_HOME/api-server and there is a mosaic_demo.html with your message
+--> Open in a browser the $MOSAIC_HOME/api-server/mosaic_demo.html file and you can see your message
 
