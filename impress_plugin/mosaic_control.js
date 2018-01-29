@@ -107,6 +107,13 @@ function start_service(mcp, args, cb) {
 		return;
 	}
 
+	for(var my_service in mcp.services) {
+    	if ((mcp.services[my_service].params.port == args.params.port) && (mcp.services[my_service].params.ip == args.params.ip)) {
+		    cb({'code': 400, 'message': 'start_service: an other service are using that ip and port'});
+		    return;
+        }
+	}
+
 	let name = args.params.name;
 	let params = args.params;
 	opt.push(JSON.stringify(params));
