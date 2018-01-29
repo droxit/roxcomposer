@@ -102,7 +102,7 @@ function start_service(mcp, args, cb) {
 		return;
 	}
 
-	if ('name' in mcp.services) {
+	if (args.params.name in mcp.services) {
 		cb({'code': 400, 'message': 'start_service: a service with that name already exists'});
 		return;
 	}
