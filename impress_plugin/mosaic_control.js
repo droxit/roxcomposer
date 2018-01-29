@@ -121,6 +121,8 @@ function start_service(mcp, args, cb) {
 	mcp.services[name].path = args.path;
 	mcp.services[name].params = args.params;
 
+	mcp.logger.debug(mcp);
+
 	mcp.logger.debug({opts: opt}, 'spawning process');
 
 	mcp.processes[name] = spawn('python3', opt, {stdio: 'inherit'})
@@ -149,6 +151,16 @@ function start_service(mcp, args, cb) {
 			delete mcp.services[name];
 			mcp.logger.error({error: e, args: args}, "unable to spawn service");
 		});
+
+    //activate all pipeline that include this service
+    for (let pl in mcp.pipelines) {
+	    for (let i=0; i < mcp.pipelines[pl]['services'].length; i++) {
+	        if ((mcp.pipelines[pl]['services'][i] === name) && !mcp.pipelines[pl]['active']){
+	            mcp.pipelines[pl]['active'] = true;
+				break;
+			}
+		}
+	}
 
 	cb(null, {'message': `service [${name}] created`});
 }
