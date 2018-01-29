@@ -11,7 +11,7 @@ please navigate to `$MOSAIC_DEMO_HOME` and execute the start_server shell script
 After the server has started, we need services. The mosaic-demo package contains a couple of services you can use 
 located at `$MOSAIC_DEMO_HOME/services`: 
 
-1. We start services with the mosaic-CLI in the terminal (at $MOSAIC_HOME)
+1. We start services with the mosaic-CLI in the terminal (at `$MOSAIC_HOME`)
 
 	```bash
 		./mosaic-cli start_service html_generator
@@ -19,7 +19,7 @@ located at `$MOSAIC_DEMO_HOME/services`:
 	```bash 
 		./mosaic-cli start_service file_writer
 	```
-2. You can check if the services are working and registered at the control process
+2. You can check if the services are working and registered to the control process
 	```bash
 		./mosaic-cli services
 	```
