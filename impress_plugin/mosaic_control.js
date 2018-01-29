@@ -266,7 +266,7 @@ function shutdown_service(mcp, args, cb) {
 	if (args.name in mcp.services) {
 		let proc = mcp.processes[args.name];
 		proc.kill('SIGTERM');
-		cb(null, {'message': 'service stopped'});
+		cb(null, {'message': 'service stopped - all pipelines, them with this service work, are now inactive'});
 	} else {
 		cb({'code': 400, 'message': `shutdown: service unknown ${args.name}`});
 	}
