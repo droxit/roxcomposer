@@ -2,10 +2,16 @@
 
 If you don't have installed mosaic so far please read the [installation](installation.md) manual.
 
-First of all we need services. The mosaic-demo package contains a couple of services you can use located at 
-`$MOSAIC_HOME/services`: 
+First of all we need to start up `impress` the api-server, to get the mosaic-CLI (Command Line Interface) going. So 
+please navigate to `$MOSAIC_DEMO_HOME` and execute the start_server shell script:
+```bash
+	./start_server.sh
+``` 
 
-1. We start services with the mosaic-CLI (Command Line Interface) in the terminal (at $MOSAIC_HOME)
+After the server has started, we need services. The mosaic-demo package contains a couple of services you can use 
+located at `$MOSAIC_DEMO_HOME/services`: 
+
+1. We start services with the mosaic-CLI in the terminal (at $MOSAIC_HOME)
 
 	```bash
 		./mosaic-cli start_service html_generator
