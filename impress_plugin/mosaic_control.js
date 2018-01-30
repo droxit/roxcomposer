@@ -107,9 +107,9 @@ function start_service(mcp, args, cb) {
 		return;
 	}
 
-	for(var my_service in mcp.services) {
+	for(let my_service in mcp.services) {
     	if ((mcp.services[my_service].params.port == args.params.port) && (mcp.services[my_service].params.ip == args.params.ip)) {
-		    cb({'code': 400, 'message': 'start_service: an other service are using that ip and port'});
+		    cb({'code': 400, 'message': `start_service: service ${my_service} is already registered under this address  (${args.params.ip},${args.params.port}`});
 		    return;
         }
 	}
@@ -120,8 +120,6 @@ function start_service(mcp, args, cb) {
 	mcp.services[name] = {};
 	mcp.services[name].path = args.path;
 	mcp.services[name].params = args.params;
-
-	mcp.logger.debug(mcp);
 
 	mcp.logger.debug({opts: opt}, 'spawning process');
 
