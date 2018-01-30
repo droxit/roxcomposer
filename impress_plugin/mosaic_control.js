@@ -102,9 +102,16 @@ function start_service(mcp, args, cb) {
 		return;
 	}
 
-	if ('name' in mcp.services) {
+	if (args.params.name in mcp.services) {
 		cb({'code': 400, 'message': 'start_service: a service with that name already exists'});
 		return;
+	}
+
+	for(let my_service in mcp.services) {
+    	if ((mcp.services[my_service].params.port == args.params.port) && (mcp.services[my_service].params.ip == args.params.ip)) {
+		    cb({'code': 400, 'message': `start_service: service ${my_service} is already registered under this address  (${args.params.ip},${args.params.port}`});
+		    return;
+        }
 	}
 
 	let name = args.params.name;
@@ -142,6 +149,16 @@ function start_service(mcp, args, cb) {
 			delete mcp.services[name];
 			mcp.logger.error({error: e, args: args}, "unable to spawn service");
 		});
+
+    //activate all pipeline that include this service
+    for (let pl in mcp.pipelines) {
+	    for (let i=0; i < mcp.pipelines[pl]['services'].length; i++) {
+	        if ((mcp.pipelines[pl]['services'][i] === name) && !mcp.pipelines[pl]['active']){
+	            mcp.pipelines[pl]['active'] = true;
+				break;
+			}
+		}
+	}
 
 	cb(null, {'message': `service [${name}] created`});
 }
@@ -259,7 +276,7 @@ function shutdown_service(mcp, args, cb) {
 	if (args.name in mcp.services) {
 		let proc = mcp.processes[args.name];
 		proc.kill('SIGTERM');
-		cb(null, {'message': 'service stopped'});
+		cb(null, {'message': 'service stopped - all pipelines, them with this service work, are now inactive'});
 	} else {
 		cb({'code': 400, 'message': `shutdown: service unknown ${args.name}`});
 	}

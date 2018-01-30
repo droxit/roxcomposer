@@ -9,7 +9,7 @@ from mosaic import exceptions
 def get_packet_len(msg):
     if len(msg) >= 4:
         return struct.unpack('>I', msg[:4])[0]
-    raise excepttions.InvalidArgument('the provided string was too short: {}'.format(msg))
+    raise exceptions.InvalidArgument('the provided string was too short: {}'.format(msg))
 
 # prefixes msg with it's length as a 32bit big endian integer
 def frame_message(msg):
