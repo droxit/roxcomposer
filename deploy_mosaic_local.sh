@@ -1,5 +1,19 @@
 #!/bin/bash
 
+#!/usr/bin/perl
+
+# Program:     <FILE>
+# Author:      <AUTHORNAME>
+# Date:        <COMMITTERDATE>
+# Ident:       <COMMITHASH>
+# Branch:      <BRANCH>
+#
+# devs@droxit.de - droxIT GmbH
+#
+# Copyright (c) <year> droxIT GmbH
+
+
+
 MOSAIC_DEPLOY_DIR=$1
 DEPLOY_LOG_DIR=$MOSAIC_DEPLOY_DIR/logs
 
