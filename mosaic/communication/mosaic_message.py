@@ -1,29 +1,32 @@
 from mosaic.communication import service_com_pb2 as proto
-from google.protobuf import json_format
-import urllib.parse
 import uuid
 import json
 import struct
 from mosaic import exceptions
+
 
 def get_packet_len(msg):
     if len(msg) >= 4:
         return struct.unpack('>I', msg[:4])[0]
     raise exceptions.InvalidArgument('the provided string was too short: {}'.format(msg))
 
+
 # prefixes msg with it's length as a 32bit big endian integer
 def frame_message(msg):
     return struct.pack('>I', len(msg)) + msg
+
 
 # remove the length prefix (see frame_message) from msg
 # throws an exception if len(msg) does not match the prefixed length
 def unframe_message(msg):
     l = struct.unpack('>I', msg[:4])[0]
     if l + 4 != len(msg):
-        raise exceptions.MessageLengthMismatch('Message of length {} does not match frame header {}'.format(len(msg), l))
+        raise exceptions.MessageLengthMismatch(
+            'Message of length {} does not match frame header {}'.format(len(msg), l))
     return msg[4:]
 
-class Service():
+
+class Service:
     def __init__(self, ip, port, parameters=[]):
         self.ip = ip
         self.port = port
@@ -43,7 +46,7 @@ class Service():
         return (ip, port)
 
     def __str__(self):
-        return str({ 'ip': self.ip, 'port': self.port, 'parameters': self.parameters })
+        return str({'ip': self.ip, 'port': self.port, 'parameters': self.parameters})
 
     def __repr__(self):
         return '<Service ' + str(self) + '>'
@@ -51,7 +54,8 @@ class Service():
     def __eq__(self, other):
         return repr(self) == repr(other)
 
-class Message():
+
+class Message:
     def __init__(self):
         self.pipeline = []
         self.id = None
@@ -69,10 +73,10 @@ class Message():
 
     def get_content_as_dict(self):
         return {
-                'id': self.id,
-                'pipeline': self.pipeline,
-                'payload': self.payload
-            }
+            'id': self.id,
+            'pipeline': self.pipeline,
+            'payload': self.payload
+        }
 
     # raises KeyError if the pipeline is empty
     def pop_service(self):
@@ -113,10 +117,10 @@ class Message():
 
     def serialize_to_json(self):
         msg = {
-                'id': self.id,
-                'pipeline': [x for x in map(lambda s: { 'id': s.encodeId(), 'parameters': s.parameters }, self.pipeline)],
-                'payload': self.payload
-            }
+            'id': self.id,
+            'pipeline': [x for x in map(lambda s: {'id': s.encodeId(), 'parameters': s.parameters}, self.pipeline)],
+            'payload': self.payload
+        }
 
         return json.dumps(msg)
 
@@ -132,11 +136,9 @@ class Message():
 
         return msg
 
-
     def serialize(self):
         return frame_message(self.serialize_to_protobuf())
 
     @staticmethod
     def deserialize(msg):
         return Message.deserialize_from_protobuf(unframe_message(msg))
-        

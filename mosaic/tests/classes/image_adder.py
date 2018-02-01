@@ -28,8 +28,8 @@ class ImageAdder(base_service.BaseService):
     #     self.to_html()
 
     def on_message_ext(self, extended_msg):
-        print(extended_msg)
-        self.msg = extended_msg.get_content_as_dict()['body']
+        # access the message's payload
+        self.msg = extended_msg.payload
         self.to_html()
 
     def to_html(self):

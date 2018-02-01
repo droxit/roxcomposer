@@ -4,6 +4,6 @@
         "name": "image_adder",
         "ip": "127.0.0.1",
         "port": 5003,
-        "image": "./assests/minions-yeah.jpg"
+        "image": "./assets/minions-yeah.jpg"
     }
 }
