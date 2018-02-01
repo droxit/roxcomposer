@@ -37,6 +37,6 @@ else
     tar xf mosaic-demo*.tar.gz
 
     cd $BUILD_DIR
-    pip3.6 uninstall -y mosaic > $DEPLOY_LOG_DIR/mosaic_uninstall.log
+    pip3 uninstall -y mosaic > $DEPLOY_LOG_DIR/mosaic_uninstall.log
     ./install.sh --user > $DEPLOY_LOG_DIR/mosaic_install.log
 fi
