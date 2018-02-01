@@ -104,7 +104,10 @@ jobs:
       # deploy to gru
       - deploy:
           name: Deploy to gru
-          command: scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:/opt/mosaic-deploy/
+          command: |
+            export mosaic_folder='/opt/artifacts/mosaic/dev'
+            if [ $CIRCLE_BRANCH == 'master' ]; then export mosaic_folder='/opt/artifacts/mosaic/release'; fi
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:$mosaic_folder
 
 workflows:
   version: 2
