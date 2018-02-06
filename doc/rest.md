@@ -53,6 +53,7 @@ commands:
   pipelines
   post_to_pipeline <PIPELINE> <MESSAGE>
   shutdown_service <SERVICE>
+  load_and_start_pipeline <PIPELINE_PATH>
 ```
 
 #### start\_service
@@ -109,5 +110,13 @@ Shutdown a service and set all pipelines to inactive if the service is part of t
 
 ```bash
 ./mosaic-cli shutdown_service my_service.service
+```bash
+
+#### load\_and\_start\_pipeline
+
+Load the pipelines configuration from path and activate this.
+
+```bash
+./mosaic-cli load_and_start_pipeline path_pipe
 ```bash
 
