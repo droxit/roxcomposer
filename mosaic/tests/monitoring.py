@@ -1,6 +1,14 @@
+# encoding: utf-8
+#
+# Monitoring test including tests for basic_monitoring and monitoring dependency injection.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
+
 import unittest
-import re
-import time
 import os
 import mosaic.tests.classes.test_monitoring as test_monitoring
 from os.path import join
@@ -21,7 +29,7 @@ class TestMonitoring(unittest.TestCase):
             mf = join(tdir, fname)
             mon = basic_monitoring.BasicMonitoring(filename=mf)
             self.assertRaises(exceptions.ParameterMissing, mon.msg_received)
-            args = {"service_name": "blorp", "message_id": "bla-blie-blub" }
+            args = {"service_name": "blorp", "message_id": "bla-blie-blub"}
             mon.msg_received(**args)
             f = open(mf)
             line = f.read()
@@ -70,6 +78,7 @@ class TestMonitoring(unittest.TestCase):
             for i, line in enumerate(f):
                 self.assertEqual(line.strip(), expected[i])
             f.close()
+
 
 if __name__ == '__main__':
     unittest.main()

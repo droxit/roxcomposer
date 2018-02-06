@@ -1,4 +1,13 @@
+# encoding: utf-8
+#
 # dummy monitoring class - for testing purposes only
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
+
 class DummyMonitor:
     def __init__(self, **kwargs):
         self.arguments = kwargs

@@ -1,3 +1,13 @@
+# encoding: utf-8
+#
+# monitor testing class - for testing purposes only
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
+
 from mosaic.base_service import BaseService
 
 

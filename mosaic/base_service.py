@@ -1,3 +1,17 @@
+# encoding: utf-8
+#
+# The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
+# with other services. To test it out just create a service which inherits from this BaseService class. Simply use the
+# dispatch and listen (listen_to) functions to communicate with other services. The communication follows a
+# predefined pipeline structure. That means every service which is listed in a pipeline will get and send a message in
+# the defined direction.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2017 droxIT GmbH
+#
+
+
 import socket
 from mosaic.communication import mosaic_message
 from mosaic.service_loader import load_class
@@ -5,14 +19,6 @@ from mosaic import exceptions
 from mosaic.config import configuration_loader
 
 
-# from mosaic.exception import basic_exception
-
-
-# The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
-# with other services. To test it out just create a service which inherits from this BaseService class. Simply use the
-# dispatch and listen (listen_to) functions to communicate with other services. The communication follows a
-# predefined pipeline structure. That means every service whih is listed in a pipeline will get and send a message in
-# the defined direction.
 class BaseService:
     def __init__(self, params):
 
@@ -62,17 +68,17 @@ class BaseService:
         logger_class = 'mosaic.log.basic_logger.BasicLogger'
         if 'logger_class' in logger_params:
             logger_class = logger_params['logger_class']
-        LoggingClass = load_class(logger_class)
+        logging_class = load_class(logger_class)
 
         if 'name' not in self.params:
             # service name as param
             # load the config from services.json
             self.params['name'] = 'not defined'
-            self.logger = LoggingClass(self.params['name'], **logger_params)
+            self.logger = logging_class(self.params['name'], **logger_params)
             self.logger.critical('BaseService.__init__() - name is undefined')
             raise exceptions.ParameterMissing('BaseService.__init__() - service name is missing.')
 
-        self.logger = LoggingClass(self.params['name'], **logger_params)
+        self.logger = logging_class(self.params['name'], **logger_params)
 
         if self.params is None:
             # logger need the service name
@@ -100,8 +106,8 @@ class BaseService:
         monitor_class = 'mosaic.monitor.basic_monitoring.BasicMonitoring'
         if 'monitor_class' in monitoring_params:
             monitor_class = monitoring_params['monitor_class']
-        MonitoringClass = load_class(monitor_class)
-        self.monitoring = MonitoringClass(**monitoring_params)
+        monitoring_class = load_class(monitor_class)
+        self.monitoring = monitoring_class(**monitoring_params)
 
         self.logger.info({'msg': 'started', 'effective_params': self.params})
         self.mosaic_message = mosaic_message.Message()
