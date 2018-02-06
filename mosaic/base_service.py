@@ -68,17 +68,17 @@ class BaseService:
         logger_class = 'mosaic.log.basic_logger.BasicLogger'
         if 'logger_class' in logger_params:
             logger_class = logger_params['logger_class']
-        logging_class = load_class(logger_class)
+        LoggingClass = load_class(logger_class)
 
         if 'name' not in self.params:
             # service name as param
             # load the config from services.json
             self.params['name'] = 'not defined'
-            self.logger = logging_class(self.params['name'], **logger_params)
+            self.logger = LoggingClass(self.params['name'], **logger_params)
             self.logger.critical('BaseService.__init__() - name is undefined')
             raise exceptions.ParameterMissing('BaseService.__init__() - service name is missing.')
 
-        self.logger = logging_class(self.params['name'], **logger_params)
+        self.logger = LoggingClass(self.params['name'], **logger_params)
 
         if self.params is None:
             # logger need the service name
@@ -106,8 +106,8 @@ class BaseService:
         monitor_class = 'mosaic.monitor.basic_monitoring.BasicMonitoring'
         if 'monitor_class' in monitoring_params:
             monitor_class = monitoring_params['monitor_class']
-        monitoring_class = load_class(monitor_class)
-        self.monitoring = monitoring_class(**monitoring_params)
+        MonitoringClass = load_class(monitor_class)
+        self.monitoring = MonitoringClass(**monitoring_params)
 
         self.logger.info({'msg': 'started', 'effective_params': self.params})
         self.mosaic_message = mosaic_message.Message()
