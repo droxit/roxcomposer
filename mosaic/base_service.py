@@ -1,8 +1,5 @@
 import socket
-import sys
-
 from mosaic.communication import mosaic_message
-from mosaic.monitor import basic_monitoring
 from mosaic.service_loader import load_class
 from mosaic import exceptions
 from mosaic.config import configuration_loader
@@ -99,7 +96,12 @@ class BaseService:
         }
         if 'monitoring' in self.params:
             monitoring_params = self.params['monitoring']
-        self.monitoring = basic_monitoring.BasicMonitoring(**monitoring_params)
+
+        monitor_class = 'mosaic.monitor.basic_monitoring.BasicMonitoring'
+        if 'monitor_class' in monitoring_params:
+            monitor_class = monitoring_params['monitor_class']
+        MonitoringClass = load_class(monitor_class)
+        self.monitoring = MonitoringClass(**monitoring_params)
 
         self.logger.info({'msg': 'started', 'effective_params': self.params})
         self.mosaic_message = mosaic_message.Message()
