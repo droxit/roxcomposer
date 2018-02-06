@@ -24,6 +24,7 @@ module.exports = function (container) {
 	container['post_to_pipeline'] = post_to_pipeline.bind(undefined, mcp);
 	container['get_msg_history'] = get_msg_history.bind(undefined, mcp);
 	container['get_msg_status'] = get_msg_status.bind(undefined, mcp);
+	container['load_and_start_pipeline'] = load_and_start_pipeline.bind(undefined, mcp);
 };
 
 /**
@@ -348,4 +349,33 @@ function get_msg_status(mcp, args, cb) {
 		}
 	else
 		cb({'code': 400, 'message': 'no reporting service has been configured'});
+}
+
+// args = { 'pipeline_path': "..."}
+function load_and_start_pipeline(mcp, args, cb) {
+	if (!('pipe_path' in args)) {
+		let msg = 'load_and_start_pipeline: path_file missing from arguments';
+		mcp.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+	}
+
+    let pipe_path = args.pipe_path;
+    let my_pipeline = load_pipeline_json_file(mcp, pipe_path, cb);
+    mcp.logger.debug('load_and_start_pipeline > pipeline = ', my_pipeline);
+    start_pipeline(mcp, my_pipeline, cb);
+}
+
+function load_pipeline_json_file(mcp, pipe_path, cb) {
+    mcp.logger.debug('load_pipeline_json_file > pipeline = ', pipe_path);
+    const fs = require('fs');
+    let pipeline_json = fs.readFileSync(pipe_path);
+    let pipeline = JSON.parse(pipeline_json);
+    console.log(pipeline);
+    return pipeline;
+}
+
+function start_pipeline(mcp, args, cb) {
+    mcp.logger.debug('start_pipeline > pipeline = ', args);
+    return(set_pipeline(mcp, args, cb));
 }
