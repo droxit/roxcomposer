@@ -64,22 +64,25 @@ ENV VAR 'DROXIT_MOSAIC_CONFIG' to configure service's params
 
 
 Build Tasks
-------------
-./build_mosaic_demo_local.sh <MOSAIC_PACKAGE_PATH> <IMPRESS_PLUGIN_PATH>
+-----------
+    >>> ./build_mosaic_demo_local.sh <MOSAIC_PACKAGE_PATH> <IMPRESS_PLUGIN_PATH>
 
 e.g
-./build_mosaic_demo_local.sh ./dist/mosaic-*.tar.gz impress_plugin
+
+    >>> ./build_mosaic_demo_local.sh ./dist/mosaic-*.tar.gz impress_plugin
 
 Deploy Tasks
---------------------
-./deploy_mosaic_demo_local.sh <MOSAIC_DEMO_PATH>
+------------
+    >>> ./deploy_mosaic_demo_local.sh <MOSAIC_DEMO_PATH>
 
 e.g
-./deploy_mosaic_demo_local.sh ../../test_installation/
+
+    >>> ./deploy_mosaic_demo_local.sh ../../test_installation/
 
 Build & Deploy Tasks
 --------------------
-./build_deploy_mosaic_demo_local.sh <MOSAIC_PACKAGE_PATH> <IMPRESS_PLUGIN_PATH> <MOSAIC_DEMO_PATH>
+    >>> ./build_deploy_mosaic_demo_local.sh <MOSAIC_PACKAGE_PATH> <IMPRESS_PLUGIN_PATH> <MOSAIC_DEMO_PATH>
 
 e.g
-./build_deploy_mosaic_demo_local.sh ./dist/mosaic-*.tar.gz impress_plugin ../../test_installation/
+
+    >>> ./build_deploy_mosaic_demo_local.sh ./dist/mosaic-*.tar.gz impress_plugin ../../test_installation/
