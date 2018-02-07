@@ -34,8 +34,6 @@ So how do we generate messages and define pipelines? If you want to generate you
 
 ## Config handling
 
-**This feature is at this point not compatible with the REST API controls**
-
 Since passing the configuration manually is cumbersome, services have a machanism to access their configuration via files:
 
 ```bash
