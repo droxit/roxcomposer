@@ -38,7 +38,13 @@ else
     # copy files
     cp ../cli/mosaic-cli .
     cp ../.circleci/mosaic-deploy/scripts/* .
-    cp -r ../.circleci/mosaic-deploy/api-server/ .
+    if [[ $OSTYPE = *"darwin"* ]]
+        then
+            echo "macOS detected - switching handling..."
+            cp -R ../.circleci/mosaic-deploy/api-server/ ./api-server/
+        else
+			cp -r ../.circleci/mosaic-deloy/api-server/ .
+    fi
     cp ../$API_PLUGIN_PATH/*.js ./api-server/plugins
     cp ../$API_PLUGIN_PATH/package.json ./api-server/plugins
     cp ../$MOSAIC_PACKAGE ./packages/

@@ -49,7 +49,6 @@ describe('mosaic_message', function () {
 			let msg2 = mosaic.deserialize_from_protobuf(jsonmsg);
 			let d1 = msg.get_content_as_dict();
 			let d2 = msg2.get_content_as_dict();
-			sleep(200);
 			expect(d1).to.eql(d2);
 		});
 		it('should be able to serialize framed binary and deserialize to the same object', function() {
@@ -61,6 +60,7 @@ describe('mosaic_message', function () {
 		});
 
 	});
+	sleep(200);
 });
 	
 /*

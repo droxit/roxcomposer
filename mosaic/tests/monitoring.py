@@ -1,7 +1,16 @@
+# encoding: utf-8
+#
+# Monitoring test including tests for basic_monitoring and monitoring dependency injection.
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
+
 import unittest
-import re
-import time
 import os
+import mosaic.tests.classes.test_monitoring as test_monitoring
 from os.path import join
 from tempfile import TemporaryDirectory
 from mosaic.monitor import basic_monitoring
@@ -20,7 +29,7 @@ class TestMonitoring(unittest.TestCase):
             mf = join(tdir, fname)
             mon = basic_monitoring.BasicMonitoring(filename=mf)
             self.assertRaises(exceptions.ParameterMissing, mon.msg_received)
-            args = {"service_name": "blorp", "message_id": "bla-blie-blub" }
+            args = {"service_name": "blorp", "message_id": "bla-blie-blub"}
             mon.msg_received(**args)
             f = open(mf)
             line = f.read()
@@ -42,6 +51,33 @@ class TestMonitoring(unittest.TestCase):
                 self.assertEqual(h['args']['message_id'], m_id)
             self.assertEqual(rep.get_msg_status(message_id=m_id)['status'], "finalized")
 
+    @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
+    def test_monitoring_injection(self):
+        with TemporaryDirectory() as tdir:
+            monitor_path = join(tdir, 'monitor_test.log')
+
+            params = {
+                'name': 'monitortest',
+                'ip': 'not important',
+                'port': 7,
+                'monitoring': {
+                    'filename': monitor_path,
+                    'monitor_class': 'mosaic.tests.classes.dummy_monitor.DummyMonitor'
+                }
+            }
+
+            mt = test_monitoring.MonitorTest(params)
+
+            mt.do_receive()
+            mt.do_dispatch()
+            mt.do_destination()
+            mt.do_error()
+
+            f = open(monitor_path, "r")
+            expected = ["DUMMY RECEIVE", "DUMMY DISPATCH", "DUMMY DESTINATION", "DUMMY ERROR"]
+            for i, line in enumerate(f):
+                self.assertEqual(line.strip(), expected[i])
+            f.close()
 
 
 if __name__ == '__main__':
