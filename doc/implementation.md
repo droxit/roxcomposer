@@ -149,7 +149,7 @@ Please consider the following example.
 custom = {"service_name": "serv1", "metric_name": "some-metric", "metric_dictionary":
                 {"metric": "entry", "metric2": "another-entry"}}
 monitor.custom_metric(**custom)
-´´´
+```
 
 ### Reporting
 
