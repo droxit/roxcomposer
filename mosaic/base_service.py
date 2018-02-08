@@ -144,9 +144,10 @@ class BaseService:
                 destination=next_service.encodeId()
             )
             connection.close()
+            return True
         except OSError as e:
-            self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
-            raise e
+            self.logger.error(e.strerror + ' - ' + str(e.__traceback__))
+            return False
 
     # receive mosaic protobuf messages sent to a socket running on the specified ip and port. To handle the received
     # message please implement the on_message funtion in your inherited service.
