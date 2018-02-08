@@ -172,10 +172,10 @@ class BaseService:
                 data = b''
                 while len(data) < packet_len:
                     chunk = connection.recv(self.BUFFER_SIZE)
-                    if len(chunk):
+                    if chunk != b'':
                         data += chunk
                     else: # socket on the other end broke down
-                        logger.warn('the sending socket from {} seems to have broken down')
+                        self.logger.warn('the sending socket from {} seems to have broken down')
                         connection.close()
 
 
