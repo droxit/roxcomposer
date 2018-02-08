@@ -15,6 +15,8 @@ from mosaic import base_service
 from mosaic import exceptions
 from mosaic.communication.mosaic_message import Service
 from mosaic.communication.mosaic_message import Message
+from multiprocessing import Process
+import time
 
 
 class TestBaseService(unittest.TestCase):
@@ -121,12 +123,33 @@ class TestBaseService(unittest.TestCase):
             'name': 'dummy-service'
         })
 
+        serv = Service("127.0.0.1", 1330)
+        msg = Message()
+        msg.set_payload("TEST.")
+        msg.add_service(serv)
+        s.mosaic_message = msg
+
+        # since assertFalse also allows None, we do a assertTrue with the negated statement
+        self.assertTrue(not s.dispatch("TEST."))
+
+        s2 = base_service.BaseService(params={
+            'ip': '127.0.0.1',
+            'port': 1337,
+            'name': 'dummy-service2'
+        })
+
+        p = Process(target=s2.listen, args=())
+        p.start()
+
         serv = Service("127.0.0.1", 1337)
         msg = Message()
         msg.set_payload("TEST.")
         msg.add_service(serv)
+        s.mosaic_message = msg
 
-        self.assertFalse(s.dispatch(msg))
+        self.assertTrue(s.dispatch("TEST."))
+
+        p.terminate()
 
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_config_loading(self):
