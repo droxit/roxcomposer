@@ -123,10 +123,10 @@ class BaseService:
 
     # send a mosaic protobuf message to the next service in the pipeline.
     def dispatch(self, msg):
-        self.mosaic_message.set_payload(msg)
-
         if self.mosaic_message.has_empty_pipeline():
             return
+
+        self.mosaic_message.set_payload(msg)
 
         next_service = self.mosaic_message.pop_service()
         message_id = self.mosaic_message.id
