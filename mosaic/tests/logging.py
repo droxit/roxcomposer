@@ -16,7 +16,7 @@ class TestLogging(unittest.TestCase):
             log_path = join(tdir, 'logtest.log')
 
             params = {
-                'name': 'logtest',
+                'name': 'logging_logtest',
                 'ip': 'not important',
                 'port': 7,
                 'logging': {
