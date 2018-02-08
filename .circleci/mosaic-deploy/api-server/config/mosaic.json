@@ -1,7 +1,7 @@
 {
   "SYSTEM": {
 	"port": 7475,
-    "loglevel": "info",
+    "loglevel": "debuggit add",
     "logfile": "api-server.log"
   },
   "PLUGINS": {
