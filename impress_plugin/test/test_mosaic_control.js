@@ -11,6 +11,8 @@ let bunyan = require('bunyan');
 let it = require('mocha').it;
 let path = require('path');
 let sleep = require('system-sleep');
+let fs = require('fs');
+let tmp = os.tmpdir();
 
 describe('mosaic_control', function () {
 	let mc = {};
@@ -174,5 +176,74 @@ describe('mosaic_control', function () {
 				}
 			});
 		})
+	});
+	describe('load_and_start_pipeline()', function () {
+		it('should should return an error code >= 400 when invoked without pipeline_path parameter', function (done) {
+			mc.load_and_start_pipeline({}, function (err) {
+				if (err.code >= 400)
+					done();
+				else
+					done(err);
+			});
+		});
+		it('should should return an error code >= 400 when invoked with an empty pipeline_path', function (done) {
+			mc.load_and_start_pipeline({pipe_path: ' ', services: []}, function (err) {
+				if (err.code >= 400)
+					done();
+				else
+					done(err);
+			});
+		});
+		it('should should return an error code >= 400 when invoked with a a non-existant pipeline_path', function (done) {
+			mc.load_and_start_pipeline({pipe_path: 'dsdasd'}, function (err) {
+				if (err.code >= 400)
+					done();
+				else
+					done(err);
+			});
+		});
+
+        let pipeline_config = {"name": "pipe_test", "services": ["html_generator_test", "file_writer_test"]};
+        let pipeline_file = path.join(tmpdir, "pipeline.config");
+		fs.writeFileSync(pipeline_file, JSON.stringify(pipeline_config));
+
+		it('should contain an active state when a pipeline is created', function (done) {
+			mc.start_service({
+				'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
+				'params': {
+					'name': 'html_generator_test',
+					'ip': '127.0.0.1',
+					'port': 1001
+				}
+			}, function (err) {
+				if (err && err.code === 400) {
+					done(err);
+				}
+			});
+			mc.start_service({
+				'path': path.resolve(__dirname, '../../mosaic/tests/classes/file_writer.py'),
+				'params': {
+					'name': 'file_writer_test',
+					'ip': '127.0.0.1',
+					'port': 2001
+				}
+			}, function (err) {
+				if (err && err.code === 400) {
+					done(err);
+				}
+			});
+
+			mc.load_and_start_pipeline({pipe_path: tmpdir+'/pipeline.config'}, function (err) {
+				if (err === null) {
+					mc.get_pipelines({}, (args, pipelines) => {
+						if (pipelines['pipe_test']['active']) {
+							done();
+						}
+					});
+				} else {
+					done(err);
+				}
+			})
+		});
 	});
 });
