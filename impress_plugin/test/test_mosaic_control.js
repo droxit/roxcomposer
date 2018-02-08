@@ -12,6 +12,7 @@ let it = require('mocha').it;
 let path = require('path');
 let sleep = require('system-sleep');
 let fs = require('fs');
+let os = require('os');
 let tmp = os.tmpdir();
 
 describe('mosaic_control', function () {
