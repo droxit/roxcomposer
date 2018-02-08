@@ -1,3 +1,11 @@
+//
+// Test Classe test_config_and_monitoring: standard test for login and monitoring functionalities from mosaic
+//
+// devs@droxit.de - droxIT GmbH
+//
+// Copyright (c) 2018 droxIT GmbH
+//
+
 let bunyan = require('bunyan');
 let path = require('path');
 let sleep = require('system-sleep');

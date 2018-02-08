@@ -1,3 +1,11 @@
+//
+// Classe mosaic deploy: standard functionalities from mosaic
+//
+// devs@droxit.de - droxIT GmbH
+//
+// Copyright (c) 2018 droxIT GmbH
+//
+
 let fs = require('fs');
 let bunyan = require('bunyan');
 let spawn = require('child_process').spawn;

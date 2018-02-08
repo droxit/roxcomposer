@@ -1,3 +1,9 @@
+//
+// Test Classe test_message: standard test mosaic functionalities
+// devs@droxit.de - droxIT GmbH
+//
+// Copyright (c) 2018 droxIT GmbH
+//
 let expect = require('expect.js');
 let describe = require('mocha').describe;
 let bunyan = require('bunyan');
