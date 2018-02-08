@@ -382,7 +382,7 @@ function load_pipeline_json_file(mcp, pipe_path, cb) {
         let pipeline = JSON.parse(pipeline_json);
         return pipeline;
     }catch (e) {
-		{'code': 400, 'message': e }
+		cb({'code': 400, 'message': e });
     }
 }
 
