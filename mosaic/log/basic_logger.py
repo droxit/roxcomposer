@@ -1,6 +1,13 @@
 import logging
 import time
 
+level_map = {
+    'DEBUG': logging.DEBUG,
+    'INFO': logging.INFO,
+    'WARNING': logging.WARNING,
+    'ERROR': logging.ERROR,
+    'CRITICAL': logging.CRITICAL
+}
 
 # This class provided a standard logging feature. It takes arguments like the {'path': './service.log'} to specify
 # the logging configuration. If the specified logfile already exists logs will get appended to the file.
@@ -12,6 +19,12 @@ class BasicLogger:
         # kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S.%f%z'
         # %(msecs)
         kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S'
+        if 'level' in kwargs:
+            if kwargs['level'] in level_map:
+                kwargs['level'] = level_map[kwargs['level']]
+            else:
+                del kwargs['level']
+
         logging.basicConfig(**kwargs)
 
     # log a message for information
