@@ -140,6 +140,7 @@ class TestBaseService(unittest.TestCase):
 
         p = Process(target=s2.listen, args=())
         p.start()
+        time.sleep(1)
 
         serv = Service("127.0.0.1", 1337)
         msg = Message()
