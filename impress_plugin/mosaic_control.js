@@ -371,8 +371,8 @@ function load_pipeline_json_file(mcp, pipe_path, cb) {
     mcp.logger.debug('##################### load_pipeline_json_file > pipeline = ', pipe_path);
     const fs = require('fs');
     let pipeline_json = fs.readFileSync(pipe_path);
+    mcp.logger.debug('##################### load_pipeline_json_file > pipeline_json = ', pipeline_json);
     let pipeline = JSON.parse(pipeline_json);
-    console.log(pipeline);
     return pipeline;
 }
 
