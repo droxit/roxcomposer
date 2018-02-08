@@ -19,9 +19,17 @@ class MosaicConfig:
             if config_identifier in os.environ:
                 config_file = os.environ[config_identifier]
 
-        f = open(config_file, 'r')
-        self.config = json.load(f)
-        f.close()
+        try:
+            f = open(config_file, 'r')
+        except Exception as e:
+            raise exceptions.ConfigError('unable to read the configuration file: {} - {}'.format(config_file, e)) from e
+
+        try:
+            self.config = json.load(f)
+        except Exception as e:
+            raise exceptions.ConfigError('unable to parse the configuration file: {} - {}'.format(config_file,e)) from e
+        finally:
+            f.close()
 
     # because you don't know the exact location of the item in the config this function will return the right value of
     # the config item passed with item_as_string
