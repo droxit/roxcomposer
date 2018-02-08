@@ -13,36 +13,53 @@ level_map = {
 # the logging configuration. If the specified logfile already exists logs will get appended to the file.
 class BasicLogger:
     def __init__(self, servicename, **kwargs):
+        self.logger = logging.getLogger(servicename)
+        handler = None
+        if 'filename' in kwargs:
+            handler = logging.FileHandler(kwargs['filename'], encoding='utf8')
+        else:
+            handler = logging.StreamHandler()
         time.tzset()
         # tz = datetime.now(timezone.utc).astimezone().tzinfo
-        kwargs['format'] = '[%(asctime)-15s.%(msecs)d' + time.strftime('%z') + '][%(created)s][%(levelname)s] service:' + servicename + ' - %(message)s'
+        fmt = None
+        if 'format' in kwargs:
+            fmt = kwargs['format']
+        else:
+            fmt = '[%(asctime)-15s.%(msecs)d' + time.strftime('%z') + '][%(created)s][%(levelname)s] service:' + servicename + ' - %(message)s'
         # kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S.%f%z'
         # %(msecs)
-        kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S'
+        dtfmt = None
+        if 'datefmt' in kwargs:
+            dtfmt = kwargs['datefmt']
+        else:
+            dtfmt = '%Y-%m-%dT%H:%M:%S'
         if 'level' in kwargs:
             if kwargs['level'] in level_map:
-                kwargs['level'] = level_map[kwargs['level']]
-            else:
-                del kwargs['level']
+                self.logger.setLevel(level_map[kwargs['level']])
 
-        logging.basicConfig(**kwargs)
+        formatter = logging.Formatter(fmt, dtfmt)
+
+        handler.setFormatter(formatter)
+
+        self.logger.addHandler(handler)
 
     # log a message for information
     def info(self, msg):
-        logging.info(msg)
+        self.logger.info(msg)
 
     # log a message for debug purposes
     def debug(self, msg):
-        logging.debug(msg)
+        self.logger.debug(msg)
 
     # log a message for warning purposes
     def warn(self, msg):
-        logging.warning(msg)
+        self.logger.warning(msg)
 
     # log a message for error issues
     def error(self, msg):
-        logging.error(msg)
+        self.logger.error(msg)
 
     # log a message for fatal issues
     def critical(self, msg):
-        logging.critical(msg)
+        self.logger.critical(msg)
+
