@@ -81,7 +81,7 @@ e.g
 
 Build & Deploy Tasks
 --------------------
-    >>> ./build_deploy_mosaic_demo_local.sh <MOSAIC_PACKAGE_PATH> <IMPRESS_PLUGIN_PATH> <MOSAIC_DEMO_PATH>
+    >>> ./build_deploy_mosaic_demo_local.sh <RELATIVE_MOSAIC_PACKAGE_PATH> <RELATIVE_IMPRESS_PLUGIN_PATH> <RELATIVE_MOSAIC_DEMO_PATH>
 
 e.g
 
