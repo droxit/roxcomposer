@@ -232,6 +232,7 @@ function get_pipelines(mcp, args, cb) {
 
 // args = { 'name': "...", 'pipeline': [ ... service names ... ] }
 function set_pipeline(mcp, args, cb) {
+    mcp.logger.debug("###############set_pipeline=", args)
 	if (!('services' in args)) {
 		let msg = 'set_pipeline: service array missing from arguments';
 		mcp.logger.error({args: args}, msg);
@@ -362,12 +363,12 @@ function load_and_start_pipeline(mcp, args, cb) {
 
     let pipe_path = args.pipe_path;
     let my_pipeline = load_pipeline_json_file(mcp, pipe_path, cb);
-    mcp.logger.debug('load_and_start_pipeline > pipeline = ', my_pipeline);
+    mcp.logger.debug('##################### load_and_start_pipeline > pipeline = ', my_pipeline);
     start_pipeline(mcp, my_pipeline, cb);
 }
 
 function load_pipeline_json_file(mcp, pipe_path, cb) {
-    mcp.logger.debug('load_pipeline_json_file > pipeline = ', pipe_path);
+    mcp.logger.debug('##################### load_pipeline_json_file > pipeline = ', pipe_path);
     const fs = require('fs');
     let pipeline_json = fs.readFileSync(pipe_path);
     let pipeline = JSON.parse(pipeline_json);
@@ -376,6 +377,6 @@ function load_pipeline_json_file(mcp, pipe_path, cb) {
 }
 
 function start_pipeline(mcp, args, cb) {
-    mcp.logger.debug('start_pipeline > pipeline = ', args);
+    mcp.logger.debug('##################### start_pipeline > pipeline = ', args);
     return(set_pipeline(mcp, args, cb));
 }
