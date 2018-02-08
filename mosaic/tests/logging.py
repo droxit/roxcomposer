@@ -17,6 +17,24 @@ import mosaic.exceptions as exceptions
 
 class TestLogging(unittest.TestCase):
  
+    def test_basic_logger_fails(self):
+        params = {
+            'name': 'logger_should_fail',
+            'ip': 'not important',
+            'port': 3,
+            'logging': {
+                'level': 'WARNING',
+                'filename': '/does/not/exists.log'
+            }
+        }
+
+        self.assertRaises(exceptions.ConfigError, test_logging.LogTest, params)
+
+        del params['logging']['filename']
+        params['logging']['level'] = 'totally dumb not existstant level name'
+
+        self.assertRaises(exceptions.ConfigError, test_logging.LogTest, params)
+
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_basic_logger(self):
 
