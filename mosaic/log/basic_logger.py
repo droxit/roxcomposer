@@ -1,5 +1,6 @@
 import logging
 import time
+from mosaic import exceptions
 
 level_map = {
     'DEBUG': logging.DEBUG,
@@ -16,7 +17,10 @@ class BasicLogger:
         self.logger = logging.getLogger(servicename)
         handler = None
         if 'filename' in kwargs:
-            handler = logging.FileHandler(kwargs['filename'], encoding='utf8')
+            try:
+                handler = logging.FileHandler(kwargs['filename'], encoding='utf8')
+            except Exception as e:
+                raise exceptions.ConfigError('unable to set up file logging: {} - {}'.format(kwargs['filename'],e)) from e
         else:
             handler = logging.StreamHandler()
         time.tzset()
@@ -36,6 +40,8 @@ class BasicLogger:
         if 'level' in kwargs:
             if kwargs['level'] in level_map:
                 self.logger.setLevel(level_map[kwargs['level']])
+            else:
+                raise exceptions.ConfigError("can't set log level: {} is invalid".format(kwargs['level']))
 
         formatter = logging.Formatter(fmt, dtfmt)
 
