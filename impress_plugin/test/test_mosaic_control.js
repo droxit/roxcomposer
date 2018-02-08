@@ -14,6 +14,20 @@ let sleep = require('system-sleep');
 let fs = require('fs');
 let os = require('os');
 let tmp = os.tmpdir();
+const { sep } = require('path');
+
+
+  let pipeline_config = {"name": "pipe_test", "services": ["html_generator_test", "file_writer_test"]};
+
+fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
+  if (err){
+    throw err;
+  }
+
+  let pipeline_file = path.join(tmpdir, "pipeline.config");
+  fs.writeFileSync(pipeline_file, JSON.stringify(pipeline_config));
+
+});
 
 describe('mosaic_control', function () {
 	let mc = {};
@@ -204,10 +218,6 @@ describe('mosaic_control', function () {
 			});
 		});
 
-        let pipeline_config = {"name": "pipe_test", "services": ["html_generator_test", "file_writer_test"]};
-        let pipeline_file = path.join(tmpdir, "pipeline.config");
-		fs.writeFileSync(pipeline_file, JSON.stringify(pipeline_config));
-
 		it('should contain an active state when a pipeline is created', function (done) {
 			mc.start_service({
 				'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
@@ -234,7 +244,7 @@ describe('mosaic_control', function () {
 				}
 			});
 
-			mc.load_and_start_pipeline({pipe_path: tmpdir+'/pipeline.config'}, function (err) {
+			mc.load_and_start_pipeline({pipe_path: pipeline_file}, function (err) {
 				if (err === null) {
 					mc.get_pipelines({}, (args, pipelines) => {
 						if (pipelines['pipe_test']['active']) {
