@@ -7,8 +7,10 @@
 # Copyright (c) 2018 droxIT GmbH
 #
 
-class DummyLog():
+
+class DummyLog:
     def __init__(self, name, **kwargs):
+        self.name = name
         self.file = kwargs['filename']
 
     def debug(self, msg):
