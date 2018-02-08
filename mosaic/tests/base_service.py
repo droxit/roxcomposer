@@ -1,9 +1,20 @@
+# encoding: utf-8
+#
+# Tests for the base service
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
 import unittest
 import os
 import json
 from tempfile import TemporaryDirectory
 from mosaic import base_service
 from mosaic import exceptions
+from mosaic.communication.mosaic_message import Service
+from mosaic.communication.mosaic_message import Message
 
 
 class TestBaseService(unittest.TestCase):
@@ -102,6 +113,20 @@ class TestBaseService(unittest.TestCase):
             'name': 'dummy-service'
         })
         self.assertEqual(s.get_service_id(), self.dummy_service_id)
+
+    def test_dispatch(self):
+        s = base_service.BaseService(params={
+            'ip': '127.0.0.1',
+            'port': 1234,
+            'name': 'dummy-service'
+        })
+
+        serv = Service("127.0.0.1", 1337)
+        msg = Message()
+        msg.set_payload("TEST.")
+        msg.add_service(serv)
+
+        self.assertFalse(s.dispatch(msg))
 
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_config_loading(self):

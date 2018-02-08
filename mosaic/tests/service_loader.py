@@ -6,8 +6,7 @@ from mosaic import exceptions
 class TestBaseService(unittest.TestCase):
     def test_load_class(self):
         self.assertRaises(exceptions.ParameterMissing, service_loader.load_class, None)
-        self.assertRaises(ModuleNotFoundError, service_loader.load_class, 'totally.bogus.classpath')
-        self.assertRaises(AttributeError, service_loader.load_class, 'logging.missingClassThingy')
+        self.assertRaises(exceptions.ConfigError, service_loader.load_class, 'totally.bogus.classpath')
         self.assertRaises(exceptions.NotAClass, service_loader.load_class, 'logging.info')
 
         param = {'blub': 2, 'blorp': "yeah"}
