@@ -352,10 +352,10 @@ function get_msg_status(mcp, args, cb) {
 		cb({'code': 400, 'message': 'no reporting service has been configured'});
 }
 
-// args = { 'pipeline_path': "..."}
+// args = { 'pipe_path': "<absolute_path>"}
 function load_and_start_pipeline(mcp, args, cb) {
 	if (!('pipe_path' in args)) {
-		let msg = 'load_and_start_pipeline: path_file missing from arguments';
+		let msg = 'load_and_start_pipeline: path_pipeline_config_file missing from arguments';
 		mcp.logger.error({args: args}, msg);
 		cb({'code': 400, 'message': msg});
 		return;
@@ -363,20 +363,18 @@ function load_and_start_pipeline(mcp, args, cb) {
 
     let pipe_path = args.pipe_path;
     let my_pipeline = load_pipeline_json_file(mcp, pipe_path, cb);
-    mcp.logger.debug('##################### load_and_start_pipeline > pipeline = ', my_pipeline);
     start_pipeline(mcp, my_pipeline, cb);
 }
 
+//String pipe_path = <absolute_path_to_pipeline_config_file>
 function load_pipeline_json_file(mcp, pipe_path, cb) {
-    mcp.logger.debug('##################### load_pipeline_json_file > pipeline = ', pipe_path);
     const fs = require('fs');
     let pipeline_json = fs.readFileSync(pipe_path);
-    mcp.logger.debug('##################### load_pipeline_json_file > pipeline_json = ', pipeline_json);
     let pipeline = JSON.parse(pipeline_json);
     return pipeline;
 }
 
+// args = { 'name': <pipeline_name>, 'services': [ ... service names ... ] }
 function start_pipeline(mcp, args, cb) {
-    mcp.logger.debug('##################### start_pipeline > pipeline = ', args);
     return(set_pipeline(mcp, args, cb));
 }
