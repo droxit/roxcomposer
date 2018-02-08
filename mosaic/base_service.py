@@ -169,8 +169,15 @@ class BaseService:
                 data = connection.recv(self.BUFFER_SIZE)
                 packet_len = mosaic_message.get_packet_len(data)
 
+                data = b''
                 while len(data) < packet_len:
-                    data += connection.recv(self.BUFFER_SIZE)
+                    chunk = connection.recv(self.BUFFER_SIZE)
+                    if len(chunk):
+                        data += chunk
+                    else: # socket on the other end broke down
+                        logger.warn('the sending socket from {} seems to have broken down')
+                        connection.close()
+
 
                 try:
                     self.mosaic_message = mosaic_message.Message.deserialize(data)
