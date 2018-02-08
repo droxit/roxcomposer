@@ -377,9 +377,13 @@ function load_and_start_pipeline(mcp, args, cb) {
 //String pipe_path = <absolute_path_to_pipeline_config_file>
 function load_pipeline_json_file(mcp, pipe_path, cb) {
     const fs = require('fs');
-    let pipeline_json = fs.readFileSync(pipe_path);
-    let pipeline = JSON.parse(pipeline_json);
-    return pipeline;
+    try {
+        let pipeline_json = fs.readFileSync(pipe_path);
+        let pipeline = JSON.parse(pipeline_json);
+        return pipeline;
+    }catch (e) {
+		{'code': 400, 'message': e }
+    }
 }
 
 // args = { 'name': <pipeline_name>, 'services': [ ... service names ... ] }
