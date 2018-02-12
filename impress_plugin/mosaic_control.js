@@ -240,7 +240,6 @@ function get_pipelines(mcp, args, cb) {
 
 // args = { 'name': "...", 'pipeline': [ ... service names ... ] }
 function set_pipeline(mcp, args, cb) {
-    mcp.logger.debug("###############set_pipeline=", args)
 	if (!('services' in args)) {
 		let msg = 'set_pipeline: service array missing from arguments';
 		mcp.logger.error({args: args}, msg);
