@@ -1,4 +1,11 @@
 #!/bin/bash
+#
+# script mosaic-cli
+#
+# devs@droxit.de - droxIT GmbH
+#
+# Copyright (c) 2018 droxIT GmbH
+#
 
 server="localhost:7475"
 

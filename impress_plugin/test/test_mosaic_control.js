@@ -224,7 +224,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     'params': {
                         'name': 'html_generator_test',
                         'ip': '127.0.0.1',
-                        'port': 1001
+                        'port': 1235
                     }
                 }, function (err) {
                     if (err && err.code === 400) {
@@ -236,7 +236,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     'params': {
                         'name': 'file_writer_test',
                         'ip': '127.0.0.1',
-                        'port': 2001
+                        'port': 3456
                     }
                 }, function (err) {
                     if (err && err.code === 400) {
@@ -256,13 +256,13 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     }
                 });
                 sleep(500);
-                mc.shutdown_service({'name': 'file_writer'}, function (err) {
+                mc.shutdown_service({'name': 'file_writer_test'}, function (err) {
                     if (err && err.code >= 400) {
                         done(err);
                     } else {
                         done();
                     }
-                });mc.shutdown_service({'name': 'html_generator'}, function (err) {
+                });mc.shutdown_service({'name': 'html_generator_test'}, function (err) {
                     if (err && err.code >= 400) {
                         done(err);
                     } else {
