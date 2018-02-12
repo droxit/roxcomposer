@@ -40,9 +40,13 @@ class BasicMonitoring:
     # a helper function to write to a file
     def write_to_file(self, event, status, args):
         msg = { "event": event, "status": status, "time": time.time(), "args": args }
-        fh = open(self.arguments['filename'], 'a')
-        fh.write(repr(msg) + '\n')
-        fh.close()
+        try:
+            fh = open(self.arguments['filename'], 'a')
+            fh.write(repr(msg) + '\n')
+            fh.close()
+        except Exception as e:
+            re = RuntimeError('unable to commit monitoring message to file: {}'.format(e))
+            raise re from e
 
 
 class BasicReporting:
@@ -50,15 +54,26 @@ class BasicReporting:
         self.arguments = kwargs
         if 'filename' not in kwargs:
             raise exceptions.ParameterMissing("BasicReporting needs a filename")
-        fh = open(kwargs['filename'], 'a')
-        fh.close()
+        try:
+            fh = open(kwargs['filename'], 'a')
+            fh.close()
+        except Exception as e:
+            ce = exceptions.ConfigError('unable to open monitoring file {} : {}'.format(kwargs['filename'], e))
+            raise ce from e
+            
 
     # ---- DO NOT USE IN PRODUCTION ---- can be memory intensive and is potentially unsafe because of eval
     def get_msg_history(self, **kwargs):
         check_args(kwargs, "message_id")
-        with open(self.arguments['filename']) as f:
+        lines = []
+        try:
+            open(self.arguments['filename']) as f:
             lines = f.readlines()
-            content = [x for x in map(eval, lines)]
+        except Exception as e:
+            re = RuntimeError('unable to open monitoring file {} - {}'.format(self.arguments['filename'], e))
+            raise re from e
+
+        content = [x for x in map(eval, lines)]
         if len(content):
             return [x for x in filter(lambda x: x['args']['message_id'] == kwargs['message_id'], content)]
         else:
