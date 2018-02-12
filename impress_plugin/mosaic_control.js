@@ -3,6 +3,7 @@ let bunyan = require('bunyan');
 let spawn = require('child_process').spawn;
 let net = require('net');
 let mosaic_message = require('./mosaic_message.js');
+let config_loader = require('./config_loader.js');
 
 function __mosaic_control_private() {
 	this.processes = {};
@@ -57,6 +58,14 @@ function init(mcp, args) {
 			mcp.reporting_service = args.reporting_service.params.name;
 		});
 	}
+
+	mcp.service_config = false;
+	try {
+		mcp.service_config = new config_loader();
+	} catch(e) {
+		mcp.logger.fatal({error: e}, 'unable to load service config file');
+		process.exit(1);
+	}
 }
 
 /**
@@ -97,6 +106,36 @@ function start_service(mcp, args, cb) {
 		return;
 	}
 
+	if ('service_key' in args.params) {
+		if ('config_file' in args.params) {
+			let c;
+			try {
+				c = new config_loader(args.params.config_file);
+			} catch(e) {
+				cb({'code': 400, 'message': `start_service: unable to load config file ${args.params.config_file} - ${e}`});
+				return;
+			}
+			try {
+				args.params = c.get_item(args.params.service_key);
+			} catch(e) {
+				mcp.logger.error({error: e, key: args.params.service_key, config_file: args.params.config_file}, 'tried to access invalid service key in service config');
+				cb({'code': 400, 'message': `invalid service key provided: ${args.params.service_key}`});
+				return;
+			}
+		} else if (mcp.service_config) {
+			try {
+				args.params = mcp.service_config.get_item(args.params.service_key);
+			} catch(e) {
+				mcp.logger.error({error: e, key: args.params.service_key}, 'tried to access invalid service key in service config');
+				cb({'code': 400, 'message': `invalid service key provided: ${args.params.service_key}`});
+				return;
+			}
+		} else {
+			cb({'code': 400, 'message': 'start_service: service key was provided but service config is not loaded'});
+			return;
+		}
+	}
+
 	if (!('name' in args.params)) {
 		cb({'code': 400, 'message': 'start_service: a service name must be given'});
 		return;
@@ -108,10 +147,10 @@ function start_service(mcp, args, cb) {
 	}
 
 	for(let my_service in mcp.services) {
-    	if ((mcp.services[my_service].params.port == args.params.port) && (mcp.services[my_service].params.ip == args.params.ip)) {
-		    cb({'code': 400, 'message': `start_service: service ${my_service} is already registered under this address  (${args.params.ip},${args.params.port}`});
-		    return;
-        }
+		if ((mcp.services[my_service].params.port == args.params.port) && (mcp.services[my_service].params.ip == args.params.ip)) {
+			cb({'code': 400, 'message': `start_service: service ${my_service} is already registered under this address  (${args.params.ip},${args.params.port}`});
+				return;
+			}
 	}
 
 	let name = args.params.name;
