@@ -28,6 +28,7 @@ class TestMonitoring(unittest.TestCase):
             fname = 'monitoring_test.log'
             mf = join(tdir, fname)
             mon = basic_monitoring.BasicMonitoring(filename=mf)
+
             self.assertRaises(exceptions.ParameterMissing, mon.msg_received)
             args = {"service_name": "blorp", "message_id": "bla-blie-blub"}
             mon.msg_received(**args)
@@ -38,28 +39,46 @@ class TestMonitoring(unittest.TestCase):
             for k in ["time", "event", "status"]:
                 self.assertIn(k, o)
             f.close()
+
             m_id = "prettycoolmessageid-adlkfjalsdfkj"
             args = {"service_name": "serv1", "message_id": m_id}
             mon.msg_received(**args)
             mon.msg_reached_final_destination(**args)
+            custom = {"service_name": "serv1", "metric_name": "some_metric", "metric_dictionary":
+                {"metric": "entry", "metric2": "another_entry"}}
+            mon.custom_metric(**custom)
+
             self.assertRaises(exceptions.ParameterMissing, basic_monitoring.BasicReporting)
             rep = basic_monitoring.BasicReporting(filename=mf)
             self.assertEqual(rep.get_msg_history(message_id="invalidmsgid"), [])
+
             hist = rep.get_msg_history(message_id=m_id)
             self.assertEqual(len(hist), 2)
             for h in hist:
                 self.assertEqual(h['args']['message_id'], m_id)
             self.assertEqual(rep.get_msg_status(message_id=m_id)['status'], "finalized")
 
+            hist = rep.get_msg_history(message_id=None)
+            self.assertEqual(len(hist), 1)
+            for k in ["service_name", "metric_name", "metric_dictionary"]:
+                self.assertIn(k, hist[0]['args'])
+            for k in ["metric", "metric2"]:
+                self.assertIn(k, hist[0]['args']["metric_dictionary"])
+
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_monitoring_injection(self):
         with TemporaryDirectory() as tdir:
             monitor_path = join(tdir, 'monitor_test.log')
+            log_path = join(tdir, 'monitor_test_log.log')
 
             params = {
                 'name': 'monitortest',
                 'ip': 'not important',
                 'port': 7,
+                'logging': {
+                    'level': 'DEBUG',
+                    'filename': log_path
+                },
                 'monitoring': {
                     'filename': monitor_path,
                     'monitor_class': 'mosaic.tests.classes.dummy_monitor.DummyMonitor'
