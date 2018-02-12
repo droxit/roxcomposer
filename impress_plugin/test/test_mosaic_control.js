@@ -254,7 +254,8 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     } else {
                         done(err);
                     }
-                })
+                });
+                sleep(500);
                 mc.shutdown_service({'name': 'file_writer'}, function (err) {
                     if (err && err.code >= 400) {
                         done(err);
