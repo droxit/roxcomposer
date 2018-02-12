@@ -255,6 +255,19 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                         done(err);
                     }
                 })
+                mc.shutdown_service({'name': 'file_writer'}, function (err) {
+                    if (err && err.code >= 400) {
+                        done(err);
+                    } else {
+                        done();
+                    }
+                });mc.shutdown_service({'name': 'html_generator'}, function (err) {
+                    if (err && err.code >= 400) {
+                        done(err);
+                    } else {
+                        done();
+                    }
+                });
             });
         });
     });
