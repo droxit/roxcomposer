@@ -145,6 +145,17 @@ If everything works as expected a monitoring message like the following should b
 {'event': 'message_dispatched', 'status': 'in_transit', 'time': 1513596460.0961697, 'args': {'service_name': 'service1', 'message_id': 'dfa156e3-a8f6-4968-a255-ebd44e41d846', 'destination': '127.0.0.1:10000'}}
 ```
 
+Furthermore, the basic monitoring can be used to monitor a custom metric.
+To monitor a custom metric, use the custom_metric function from the basic monitoring class.
+The function expects a service name, a metric name and a metric dictionary as keyword arguments.
+Please consider the following example.
+
+```python
+custom = {"service_name": "serv1", "metric_name": "some-metric", "metric_dictionary":
+                {"metric": "entry", "metric2": "another-entry"}}
+monitor.custom_metric(**custom)
+```
+
 ### Reporting
 
 The basic monitoring class has a counterpart named `BasicReporting`. This class holds the functions to retrieve monitoring information on specific events. Either their whole monitoring history or only the last
