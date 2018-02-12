@@ -1,3 +1,15 @@
+// encoding: utf-8
+//
+// This module provides config-loading support similar to the mosaic/config/config_loader.py in python.
+// This is used as a workaround to load needed service information like ip and port until we have
+// implemented a service callback feature with which the services will report their active configuration
+// on their own.
+//
+// devs@droxit.de
+//
+// Copyright (c) 2017 droxIT GmbH
+//
+
 let fs = require('fs');
 
 module.exports = ConfigModule;
