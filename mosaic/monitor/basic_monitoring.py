@@ -67,7 +67,7 @@ class BasicReporting:
         check_args(kwargs, "message_id")
         lines = []
         try:
-            open(self.arguments['filename']) as f:
+            f = open(self.arguments['filename'])
             lines = f.readlines()
         except Exception as e:
             re = RuntimeError('unable to open monitoring file {} - {}'.format(self.arguments['filename'], e))
