@@ -15,8 +15,12 @@ class BasicMonitoring:
         self.arguments = kwargs
         if 'filename' not in kwargs:
             raise exceptions.ParameterMissing("BasicMonitoring needs a filename")
-        fh = open(kwargs['filename'], 'a')
-        fh.close()
+        try:
+            fh = open(kwargs['filename'], 'a')
+            fh.close()
+        except Exception as e:
+            ce = exceptions.ConfigError('unable to open monitoring file {} : {}'.format(kwargs['filename'], e))
+            raise ce from e
 
     # monitors msg receiving acitvities
     def msg_received(self, **kwargs):
@@ -69,6 +73,7 @@ class BasicReporting:
         try:
             f = open(self.arguments['filename'])
             lines = f.readlines()
+            f.close()
         except Exception as e:
             re = RuntimeError('unable to open monitoring file {} - {}'.format(self.arguments['filename'], e))
             raise re from e
