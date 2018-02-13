@@ -27,6 +27,6 @@ else
 
     # mosasic-demo run
     cd $MOSAIC_DEPLOY_DIR/$BUILD_DIR/
-    echo "start mosaic"
-    ./start_server.sh
+#    echo "start mosaic"
+#    ./start_server.sh
 fi

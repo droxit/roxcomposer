@@ -57,5 +57,6 @@ if __name__ == '__main__':
     #service = HtmlGenerator('html_generator.params')
 
     #use service_key
-    serv_params = {'service_key':'html_generator.params'}
-    service = HtmlGenerator(serv_params)
+#    serv_params = {'service_key':'html_generator.params'}
+#    service = HtmlGenerator(serv_params)
+    service = HtmlGenerator(params)

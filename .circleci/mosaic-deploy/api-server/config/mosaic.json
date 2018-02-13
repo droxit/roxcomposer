@@ -1,7 +1,7 @@
 {
   "SYSTEM": {
 	"port": 7475,
-    "loglevel": "info",
+    "loglevel": "debug",
     "logfile": "api-server.log"
   },
   "PLUGINS": {
@@ -71,20 +71,27 @@
                 "function": "shutdown_service"
             }
         },
-	"get_msg_history": {
-            "handler": {
-                "type": "plugin",
-                "name": "mosaic",
-                "function": "get_msg_history"
-            }
-	},
-	"get_msg_status": {
-            "handler": {
-                "type": "plugin",
-                "name": "mosaic",
-                "function": "get_msg_status"
-            }
-	}
+        "get_msg_history": {
+                "handler": {
+                    "type": "plugin",
+                    "name": "mosaic",
+                    "function": "get_msg_history"
+                }
+        },
+        "get_msg_status": {
+                "handler": {
+                    "type": "plugin",
+                    "name": "mosaic",
+                    "function": "get_msg_status"
+                }
+        },
+        "load_and_start_pipeline": {
+                "handler": {
+                    "type": "plugin",
+                    "name": "mosaic",
+                    "function": "load_and_start_pipeline"
+                }
+        }
     }
   }
 }
