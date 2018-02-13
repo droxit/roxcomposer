@@ -1,3 +1,11 @@
+//
+// Classe mosaic deploy: standard functionalities from mosaic
+//
+// devs@droxit.de - droxIT GmbH
+//
+// Copyright (c) 2018 droxIT GmbH
+//
+
 let fs = require('fs');
 let bunyan = require('bunyan');
 let spawn = require('child_process').spawn;
@@ -27,6 +35,7 @@ module.exports = function (container) {
 	container['get_msg_status'] = get_msg_status.bind(undefined, mcp);
 	container['dump_services_and_pipelines'] = dump_services_and_pipelines.bind(undefined, mcp);
 	container['load_services_and_pipelines'] = load_services_and_pipelines.bind(undefined, mcp);
+	container['load_and_start_pipeline'] = load_and_start_pipeline.bind(undefined, mcp);
 };
 
 /**
@@ -459,5 +468,36 @@ function load_services_and_pipelines(mcp, args, cb) {
 			errors: errors
 		});
 	});
+}
+
+// args = { 'pipe_path': "<absolute_path>"}
+function load_and_start_pipeline(mcp, args, cb) {
+	if (!('pipe_path' in args)) {
+		let msg = 'load_and_start_pipeline: path_pipeline_config_file missing from arguments';
+		mcp.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+	}
+
+    let pipe_path = args.pipe_path;
+    let my_pipeline = load_pipeline_json_file(mcp, pipe_path, cb);
+    start_pipeline(mcp, my_pipeline, cb);
+}
+
+//String pipe_path = <absolute_path_to_pipeline_config_file>
+function load_pipeline_json_file(mcp, pipe_path, cb) {
+    const fs = require('fs');
+    try {
+        let pipeline_json = fs.readFileSync(pipe_path);
+        let pipeline = JSON.parse(pipeline_json);
+        return pipeline;
+    }catch (e) {
+		cb({'code': 400, 'message': e });
+    }
+}
+
+// args = { 'name': <pipeline_name>, 'services': [ ... service names ... ] }
+function start_pipeline(mcp, args, cb) {
+    return(set_pipeline(mcp, args, cb));
 }
 

@@ -55,6 +55,7 @@ commands:
   pipelines
   post_to_pipeline <PIPELINE> <MESSAGE>
   shutdown_service <SERVICE>
+  load_and_start_pipeline <PIPELINE_PATH>
 ```
 
 #### start\_service
@@ -129,4 +130,11 @@ Restore a previously taken service and pipeline dump
 ./mosaic-cli restore /path/to/dump.json
 ```
 
+#### load\_and\_start\_pipeline
+
+Load the pipelines configuration from path and activate this.
+
+```bash
+./mosaic-cli load_and_start_pipeline path_pipe
+```bash
 

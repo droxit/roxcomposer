@@ -1,3 +1,10 @@
+//
+// Test Classe test_integration
+//
+// devs@droxit.de - droxIT GmbH
+//
+// Copyright (c) 2018 droxIT GmbH
+//
 let os = require('os');
 let bunyan = require('bunyan');
 let path = require('path');

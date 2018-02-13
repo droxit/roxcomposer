@@ -24,7 +24,7 @@ else
     echo "deploy mosaic"
     # clean logs
     rm -rf $DEPLOY_LOG_DIR
-    mkdir $DEPLOY_LOG_DIR
+    mkdir -p $DEPLOY_LOG_DIR
 
     # copy mosaic for deploy
     rm $MOSAIC_DEPLOY_DIR/mosaic-demo-*.tar.gz

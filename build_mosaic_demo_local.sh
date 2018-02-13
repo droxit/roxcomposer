@@ -43,7 +43,7 @@ else
             echo "macOS detected - switching handling..."
             cp -R ../.circleci/mosaic-deploy/api-server/ ./api-server/
         else
-			cp -r ../.circleci/mosaic-deloy/api-server/ .
+			cp -r ../.circleci/mosaic-deploy/api-server/ .
     fi
     cp ../$API_PLUGIN_PATH/*.js ./api-server/plugins
     cp ../$API_PLUGIN_PATH/package.json ./api-server/plugins
