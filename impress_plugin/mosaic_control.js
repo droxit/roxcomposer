@@ -25,6 +25,8 @@ module.exports = function (container) {
 	container['post_to_pipeline'] = post_to_pipeline.bind(undefined, mcp);
 	container['get_msg_history'] = get_msg_history.bind(undefined, mcp);
 	container['get_msg_status'] = get_msg_status.bind(undefined, mcp);
+	container['dump_services_and_pipelines'] = dump_services_and_pipelines.bind(undefined, mcp);
+	container['load_services_and_pipelines'] = load_services_and_pipelines.bind(undefined, mcp);
 };
 
 /**
@@ -276,6 +278,12 @@ function set_pipeline(mcp, args, cb) {
 		cb({'code': 400, 'message': msg});
 		return;
 	}
+	if (!('name' in args)) {
+		let msg = 'set_pipeline: pipeline name not provided';
+		mcp.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+	}
 	if (!Array.isArray(args.services)) {
 		let msg = 'set_pipeline: args.services must be an array';
 		mcp.logger.error({args: args}, msg);
@@ -388,3 +396,68 @@ function get_msg_status(mcp, args, cb) {
 	else
 		cb({'code': 400, 'message': 'no reporting service has been configured'});
 }
+
+function dump_services_and_pipelines(mcp, args, cb) {
+	cb(null, { services: mcp.services, pipelines: mcp.pipelines });
+}
+
+function load_services_and_pipelines(mcp, args, cb) {
+	let skipped_services = [];
+	let started_services = [];
+	let set_pipelines = [];
+	let skipped_pipelines = [];
+	let errors = [];
+	let promises = [];
+
+	if ('services' in args) {
+		for (let s in args.services) {
+			if (s in mcp.services)
+				skipped_services.push(s);
+			else {
+				promises.push(new Promise((resolve) => {
+					start_service(mcp, args.services[s], (err, msg) => {
+						if (err) {
+							errors.push(err);
+						} else {
+							started_services.push(s);
+						}
+						resolve();
+					});
+				}));
+			}
+		}
+	}
+
+	Promise.all(promises).then(() => {
+		promises = [];
+		if ('pipelines' in args) {
+			for (let p in args.pipelines) {
+				if(!('active' in args.pipelines[p]) || args.pipelines[p].active) {
+					promises.push(new Promise((resolve) => {
+						set_pipeline(mcp, {name: p , services: args.pipelines[p].services }, (err, msg) => {
+							if (err) {
+								errors.push(err);
+							} else {
+								set_pipelines.push(p);
+							}
+							resolve();
+						});
+					}));
+				} else {
+					skipped_pipelines.push(p);
+				}
+			}
+		}
+	});
+
+	Promise.all(promises).then(() => {
+		cb(null, {
+			services_started: started_services,
+			services_skipped: skipped_services,
+			set_pipelines: set_pipelines,
+			skipped_pipelines: skipped_pipelines,
+			errors: errors
+		});
+	});
+}
+
