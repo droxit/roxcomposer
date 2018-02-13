@@ -35,6 +35,8 @@ In the default configuration the following endpoints are available:
 | shutdown\_service | POST | name (string) - the services name in the pipeline | Shuts down a service with the SIGTERM os signal |
 | get\_msg\_history | POST | message\_id (string) - the message id of the message in question | Retrieves all monitoring information for this message |
 | get\_msg\_status | POST | message\_id (string) - the message id of the message in question | Retrieves the last known status for this message |
+| dump\_services\_and\_pipelines | GET | | Returns a JSON object that represents the currently active services and defined pipelines |
+| load\_services\_and\_pipelines | POST | service and pipeline dump  | This takes a generated dump and tries to restore the services and pipelines. If a service under the same name is already running it is skipped and inactive pipelines are skipped as well |
 
 
 ### Using the mosaic-cli
@@ -110,4 +112,21 @@ Shutdown a service and set all pipelines to inactive if the service is part of t
 ```bash
 ./mosaic-cli shutdown_service my_service.service
 ```bash
+
+#### dump
+
+Retrieve a dump of the running services and defined pipelines
+
+```bash
+./mosaic-cli dump
+```
+
+#### restore
+
+Restore a previously taken service and pipeline dump
+
+```bash
+./mosaic-cli restore /path/to/dump.json
+```
+
 
