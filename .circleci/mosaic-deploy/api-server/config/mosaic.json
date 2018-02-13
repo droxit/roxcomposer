@@ -40,7 +40,14 @@
                 "name": "mosaic",
                 "function": "get_pipelines"
             }
-        }
+        },
+        "dump_services_and_pipelines": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "dump_services_and_pipelines"
+            }
+	}
     },
     "POST": {
         "start_service": {
@@ -83,6 +90,13 @@
                 "type": "plugin",
                 "name": "mosaic",
                 "function": "get_msg_status"
+            }
+	},
+	"load_services_and_pipelines": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "load_services_and_pipelines"
             }
 	}
     }
