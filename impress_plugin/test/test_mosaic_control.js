@@ -219,6 +219,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
             });
 
             it('should contain an active state when a pipeline is created', function (done) {
+		let service_startup_error = false;
                 mc.start_service({
                     'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
                     'params': {
@@ -229,6 +230,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 }, function (err) {
                     if (err && err.code === 400) {
                         done(err);
+			return;
                     }
                 });
                 mc.start_service({
@@ -241,34 +243,27 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 }, function (err) {
                     if (err && err.code === 400) {
                         done(err);
+			service_startup_error = true;
                     }
                 });
 
-                mc.load_and_start_pipeline({pipe_path: pipeline_file}, function (err) {
-                    if (err === null) {
-                        mc.get_pipelines({}, (args, pipelines) => {
-                            if (pipelines['pipe_test']['active']) {
-                                done();
-                            }
-                        });
-                    } else {
-                        done(err);
-                    }
-                });
-                sleep(500);
-                mc.shutdown_service({'name': 'file_writer_test'}, function (err) {
-                    if (err && err.code >= 400) {
-                        done(err);
-                    } else {
-                        done();
-                    }
-                });mc.shutdown_service({'name': 'html_generator_test'}, function (err) {
-                    if (err && err.code >= 400) {
-                        done(err);
-                    } else {
-                        done();
-                    }
-                });
+		if(service_startup_error == false) {
+			mc.load_and_start_pipeline({pipe_path: pipeline_file}, function (err) {
+				if (err === null) {
+					mc.get_pipelines({}, (args, pipelines) => {
+						if (pipelines['pipe_test']['active']) {
+							done();
+						}
+					});
+				} else {
+					done(err);
+				}
+			});
+		}
+                sleep(100);
+		if(service_startup_error == false)
+                	mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
+  	        mc.shutdown_service({'name': 'file_writer_test'}, function (err) {});
             });
         });
     });
