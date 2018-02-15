@@ -1,3 +1,8 @@
+# v0.2.1
+
+* Fixed interal storage of service parameters in `mosaic_control.js`
+* Removed multiple `done()` call from  `load_and_start_pipeline` tests
+
 # v0.2.0
 
 * Added new endpoints `dump_services_and_pipelines` and `load_services_and_pipelines` to dump and restore the current service pipeline setup

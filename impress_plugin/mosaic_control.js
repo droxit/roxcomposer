@@ -167,9 +167,7 @@ function start_service(mcp, args, cb) {
 	let name = args.params.name;
 	let params = args.params;
 	opt.push(JSON.stringify(params));
-	mcp.services[name] = {};
-	mcp.services[name].path = args.path;
-	mcp.services[name].params = args.params;
+	mcp.services[name] = args
 
 	mcp.logger.debug({opts: opt}, 'spawning process');
 
