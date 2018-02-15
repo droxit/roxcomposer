@@ -1,88 +1,144 @@
-#!/usr/bin/env python3.6
-
-from mosaic.communication import service_com_pb2
-from google.protobuf import json_format
-import urllib.parse
+from mosaic.communication import service_com_pb2 as proto
+import uuid
 import json
+import struct
 from mosaic import exceptions
 
 
-# This class offers serialization and deserialization functions to parse a protobuf message directly after it has been
-# sent or received.
-class Utils:
-    @staticmethod
-    def serialize(protobuf_msg):
-        return service_com_pb2.MosaicMessage.SerializeToString(protobuf_msg)
+def get_packet_len(msg):
+    if len(msg) >= 4:
+        return struct.unpack('>I', msg[:4])[0]
+    raise exceptions.InvalidArgument('the provided string was too short: {}'.format(msg))
+
+
+# prefixes msg with it's length as a 32bit big endian integer
+def frame_message(msg):
+    return struct.pack('>I', len(msg)) + msg
+
+
+# remove the length prefix (see frame_message) from msg
+# throws an exception if len(msg) does not match the prefixed length
+def unframe_message(msg):
+    l = struct.unpack('>I', msg[:4])[0]
+    if l + 4 != len(msg):
+        raise exceptions.MessageLengthMismatch(
+            'Message of length {} does not match frame header {}'.format(len(msg), l))
+    return msg[4:]
+
+
+class Service:
+    def __init__(self, ip, port, parameters=[]):
+        self.ip = ip
+        self.port = port
+        self.parameters = parameters
+
+    def encodeId(self):
+        return "{}:{}".format(self.ip, self.port)
 
     @staticmethod
-    def deserialize(protobuf_msg_serialized):
-        protobuf_msg_received = service_com_pb2.MosaicMessage()
-        protobuf_msg_received.MergeFromString(protobuf_msg_serialized)
-        return protobuf_msg_received
+    def decodeId(idstring):
+        parts = idstring.split(':')
+        if len(parts) < 2:
+            errmsg = 'invalid service id: {}'.format(idstring)
+            raise exceptions.InvalidServiceId(errmsg)
+        port = int(parts.pop())
+        ip = ':'.join(parts)
+        return (ip, port)
+
+    def __str__(self):
+        return str({'ip': self.ip, 'port': self.port, 'parameters': self.parameters})
+
+    def __repr__(self):
+        return '<Service ' + str(self) + '>'
+
+    def __eq__(self, other):
+        return repr(self) == repr(other)
 
 
-# The Message class offers an easier handling of protobuf messages used for communication. Therefor services don't need
-# to use the protobuf classes and methods.
 class Message:
-    def __init__(self, protobuf_msg=None):
-        # the messag can be set up either as a new message or an existing protobuf msg
-        if protobuf_msg is None:
-            self.protobuf_msg = service_com_pb2.MosaicMessage()
-        else:
-            try:
-                self.protobuf_msg = service_com_pb2.MosaicMessage()
-                self.protobuf_msg.CopyFrom(protobuf_msg)
-            except TypeError:
-                raise exceptions.InvalidMosaicMessage('Message.__init__() - ' + str(protobuf_msg) + ' is not a valid '
-                                                                                                    'MosaicMessage.')
+    def __init__(self):
+        self.pipeline = []
+        self.id = None
+        self.payload = None
+        self.create_id()
 
-        self.pipeline = self.protobuf_msg.pipeline
-        self.payload = self.protobuf_msg.payload
+    def create_id(self):
+        self.id = str(uuid.uuid4())
 
-    # add a service to the currently processed pipeline
-    def add_service(self, ip, port, params=None):
-        service = self.pipeline.services.add()
-        service.id = ip + ':' + str(port)
-        if params is not None:
-            parameter = service.parameters.add()
-            parameter.serviceParams = urllib.parse.urlencode(params)
+    def set_payload(self, data):
+        self.payload = data
 
-    # get services out of the current message as protobuf Service objects
-    def get_services(self):
-        return self.protobuf_msg.pipeline.services
+    def get_payload(self):
+        return self.payload
 
-    # get services out of the current message as dictionary objects
-    def get_services_as_dict(self):
-        return json_format.MessageToDict(self.protobuf_msg.pipeline)
-
-    # pop out the first service of the pipeline
-    def pop_service(self):
-        services_as_dict = self.get_services_as_dict()
-        me = services_as_dict['services'].pop(0)
-
-        json_format.Parse(json.dumps(services_as_dict), self.protobuf_msg.pipeline)
-
-        return me
-
-    # set the content @data of the current message
-    def set_content(self, data):
-        payload = service_com_pb2.Payload()
-        payload.body = data
-
-        self.protobuf_msg.payload.CopyFrom(payload)
-
-    # get the content out of the current message as a protobuf Payload object
-    def get_content(self):
-        return self.protobuf_msg.payload
-
-    # get the content out of the current message as a dictionary
     def get_content_as_dict(self):
-        return json_format.MessageToDict(self.protobuf_msg.payload)
+        return {
+            'id': self.id,
+            'pipeline': self.pipeline,
+            'payload': self.payload
+        }
 
-    # get the current message as a protobuf MosaicMessage object
-    def get_protobuf_msg(self):
-        return self.protobuf_msg
+    # raises KeyError if the pipeline is empty
+    def pop_service(self):
+        return self.pipeline.pop(0)
 
-    # get the current message as a dictionary
-    def get_protobuf_msg_as_dict(self):
-        return json_format.MessageToDict(self.protobuf_msg)
+    def add_service(self, service):
+        self.pipeline.append(service)
+
+    def has_empty_pipeline(self):
+        return len(self.pipeline) == 0
+
+    def serialize_to_protobuf(self):
+        pmsg = proto.MosaicMessage()
+        for p in self.pipeline:
+            s = pmsg.pipeline.services.add()
+            s.id = p.encodeId()
+            for para in p.parameters:
+                param = s.parameters.add()
+                param.serviceParams = para
+
+        pmsg.id = self.id
+        pmsg.payload.body = self.payload
+        binmsg = pmsg.SerializeToString()
+        return binmsg
+
+    @staticmethod
+    def deserialize_from_protobuf(binmsg):
+        msg = Message()
+        pmsg = proto.MosaicMessage()
+        pmsg.ParseFromString(binmsg)
+        msg.set_payload(pmsg.payload.body)
+        msg.id = pmsg.id
+        for s in pmsg.pipeline.services:
+            ip, port = Service.decodeId(s.id)
+            msg.add_service(Service(ip, port, s.parameters))
+
+        return msg
+
+    def serialize_to_json(self):
+        msg = {
+            'id': self.id,
+            'pipeline': [x for x in map(lambda s: {'id': s.encodeId(), 'parameters': s.parameters}, self.pipeline)],
+            'payload': self.payload
+        }
+
+        return json.dumps(msg)
+
+    @staticmethod
+    def deserialize_from_json(jsonstring):
+        msg = Message()
+        d = json.loads(jsonstring)
+        msg.set_payload(d['payload'])
+        msg.id = d['id']
+        for s in d['pipeline']:
+            ip, port = Service.decodeId(s['id'])
+            msg.add_service(Service(ip, port, s['parameters']))
+
+        return msg
+
+    def serialize(self):
+        return frame_message(self.serialize_to_protobuf())
+
+    @staticmethod
+    def deserialize(msg):
+        return Message.deserialize_from_protobuf(unframe_message(msg))

@@ -1,5 +1,5 @@
-#!/usr/bin/env python3.6
-
+import sys
+import json
 from mosaic import base_service
 
 
@@ -7,19 +7,25 @@ class HtmlGenerator(base_service.BaseService):
     def __init__(self, params=None):
         if params is None:
             params = {
-                'ip': '127.0.0.1',
-                'port': 5001
+                "ip": "127.0.0.1",
+                "port": 5001,
+                "name": "html_generator",
+                "logging": {
+                    "filename": "pipeline.log",
+                    "level": "DEBUG"
+                }
             }
         super().__init__(params)
-        self.recv_pipeline_msg()
+
+        self.msg = ''
+        self.listen()
 
     def on_message(self, msg):
-        self.mosaic_message = msg
-        print(self.mosaic_message.get_protobuf_msg_as_dict())
+        self.msg = msg
         self.to_html()
 
     def to_html(self):
-        received_text = self.mosaic_message.get_content_as_dict()['body']
+        received_text = self.msg
         html_string = """
             <!doctype html>
                 <html>
@@ -40,8 +46,17 @@ class HtmlGenerator(base_service.BaseService):
                 </html>
         """
 
-        self.mosaic_message.set_content(html_string)
-        return self.send()
+        return self.dispatch(html_string)
+
 
 if __name__ == '__main__':
-    service = HtmlGenerator()
+    params = None
+    if len(sys.argv) > 1:
+        params = json.loads(sys.argv[1])
+
+    #service = HtmlGenerator('html_generator.params')
+
+    #use service_key
+#    serv_params = {'service_key':'html_generator.params'}
+#    service = HtmlGenerator(serv_params)
+    service = HtmlGenerator(params)

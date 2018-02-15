@@ -1,0 +1,23 @@
+{
+  "path": "../services/sent_mail.py",
+  "params": {
+    "ip": "127.0.0.1",
+    "port": 7001,
+    "name": "sent_mail",
+    "logging": {
+      "filename": "pipeline.log",
+      "level": "INFO"
+    },
+    "smtp": {
+      "sender": "villarroya@droxit.de",
+      "smtpserver": "smtp.office365.com",
+      "smtpusername": "villarroya@droxit.de",
+      "smtppassword": "XXXXXXXX",
+      "usetls": true
+    },
+    "mail": {
+      "subject": "Mosaic-Demo: Test",
+      "recipient": "info@droxit.de"
+    }
+  }
+}

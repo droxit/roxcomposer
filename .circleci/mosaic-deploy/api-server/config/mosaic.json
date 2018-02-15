@@ -1,0 +1,111 @@
+{
+  "SYSTEM": {
+	"port": 7475,
+    "loglevel": "debug",
+    "logfile": "api-server.log"
+  },
+  "PLUGINS": {
+      "mosaic": {
+          "path": "./plugins/mosaic_control.js",
+          "params": {
+		  "service_container": "plugins/service_container.py",
+		  "reporting_service": {
+			  "classpath": "mosaic.monitor.basic_reporting_service.BasicReportingService",
+			  "params": {
+				  "logging": { "filename": "pipeline.log" },
+				  "name": "basic_reporting",
+				  "filename": "monitoring.log",
+				  "ip": "127.0.0.1",
+				  "port": 6690,
+				  "monitoring": {
+					  "filename": "monitoring.log"
+				  }
+			  }
+		  }
+	  }
+      }
+  },
+  "REST": {
+	"GET": {
+        "services": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "get_services"
+            }
+        },
+        "pipelines": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "get_pipelines"
+            }
+        },
+        "dump_services_and_pipelines": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "dump_services_and_pipelines"
+            }
+	}
+    },
+    "POST": {
+        "start_service": {
+            "handler": {
+               "type": "plugin",
+               "name": "mosaic",
+               "function": "start_service"
+            }
+        },
+        "set_pipeline": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "set_pipeline"
+            }
+        },
+        "post_to_pipeline": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "post_to_pipeline"
+            }
+        },
+        "shutdown_service": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "shutdown_service"
+            }
+        },
+	"load_services_and_pipelines": {
+            "handler": {
+                "type": "plugin",
+                "name": "mosaic",
+                "function": "load_services_and_pipelines"
+            }
+	},
+        "get_msg_history": {
+                "handler": {
+                    "type": "plugin",
+                    "name": "mosaic",
+                    "function": "get_msg_history"
+                }
+        },
+        "get_msg_status": {
+                "handler": {
+                    "type": "plugin",
+                    "name": "mosaic",
+                    "function": "get_msg_status"
+                }
+        },
+        "load_and_start_pipeline": {
+                "handler": {
+                    "type": "plugin",
+                    "name": "mosaic",
+                    "function": "load_and_start_pipeline"
+                }
+        }
+    }
+  }
+}

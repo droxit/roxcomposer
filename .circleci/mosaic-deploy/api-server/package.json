@@ -1,0 +1,27 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "droxit Core System ================== This is the readme file of the droxit core system for analyzing and crawling data. It contains requirements, elements and the standard process to use the most basic items of the system.",
+  "main": "droxitApi.js",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "bunyan": "latest"
+  },
+  "devDependencies": {
+    "supertest": "^2.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/droxit/core.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/droxit/core/issues"
+  },
+  "homepage": "https://github.com/droxit/core#readme"
+}

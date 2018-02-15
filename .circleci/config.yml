@@ -5,81 +5,114 @@
 version: 2
 jobs:
   build:
-    branches:
-      only:
-        - dev
-        - master
-
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.6.1
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
+      - image: droxops/mosaic-node-py:0.0.4
 
     working_directory: ~/repo
 
     steps:
+      # checkout the code of the branch from github, which triggers the build
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - python-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - python-dependencies-
+            - node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
+            - node-dependency-cache-
 
       - run:
-          name: install dependencies
+          name: Relink python3 binaries
           command: |
-            python -m venv venv
+            rm -f /usr/bin/python3
+            ln -s /usr/bin/python3.6 /usr/bin/python3
+            rm -f /usr/bin/pip3
+            ln -s /usr/bin/pip3.6 /usr/bin/pip3
+
+      - run:
+          name: Install python dependencies
+          command: |
+            python3 -m venv venv
             . venv/bin/activate
-            pip install -r requirements.txt
+            pip3 install -r requirements.txt
+
+      - run:
+          name: Install node dependencies
+          working_directory: impress_plugin
+          command: npm install
 
       - save_cache:
           paths:
             - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+          key: python-dependencies-{{ checksum "requirements.txt" }}
 
-      # run tests!
-      - run:
-          name: run tests
-          command: |
-            . venv/bin/activate
-            python setup.py test
+      - save_cache:
+          key: node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
+          paths:
+            - ./node_modules
 
-      # build package
+      ### run automatic tests
+      # python
       - run:
-          name: build package
+#          working_directory: ~/repo
+          name: Run python tests
+          #environment:
+          #  SKIP_TEMPDIR_TEST: True
           command: |
             . venv/bin/activate
-            mkdir ./test-reports;
-            tar cz --exclude venv -f ./test-reports/build.tar.gz *;
-      # create pip package
+            python3 setup.py test
+
       - run:
-          name: create pip package
+#          working_directory: ~/repo
+          name: Install mosaic locally
           command: |
             . venv/bin/activate
-            python setup.py sdist
-            cp ./dist/*.tar.gz ./test-reports/
+            pip3 install -e .
+
+      # run node tests
+      - run:
+          working_directory: impress_plugin
+          name: Run node tests
+          command: |
+            . ../venv/bin/activate
+            npm test
+
+      - run:
+          name: Create python package
+          command: |
+            . venv/bin/activate
+            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n').dev$CIRCLE_BUILD_NUM > VERSION; fi
+            python3 setup.py sdist
+            mkdir ./packages
+            cp ./dist/*.tar.gz ./packages/
+      # build demo package
+      - run:
+          name: Create demo package
+          command: |
+            cd .circleci/mosaic-deploy
+            ./build_mosaic.sh ../../dist/mosaic-*.tar.gz ../../impress_plugin
+            cp mosaic-demo-*.tar.gz ../../packages/
+
+      ### artifacts
+      # store artifact
       - store_artifacts:
-          path: test-reports
-          destination: test-reports
+          path: packages
+          destination: packages
+
+      ### deployment
+      # deploy to gru
       - deploy:
-          name: deploy to gru
+          name: Deploy to gru
           command: |
-            . venv/bin/activate
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz devpi@176.9.144.37:/tmp
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi use http://localhost:4040/droxit/dev; devpi upload /tmp/mosaic*.tar.gz; rm /tmp/mosaic*.tar.gz; devpi logoff'
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'rm -f /opt/mosaic-deploy/incoming/*'
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./test-reports/mosaic*.tar.gz ./api_srv_plugin/*.js devpi@176.9.144.37:/opt/mosaic-deploy/incoming
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null devpi@176.9.144.37 'cd /opt/mosaic-deploy/; ./build_mosaic.sh /opt/mosaic-deploy/incoming/mosaic*.tar.gz /opt/mosaic-deploy/incoming'
-#          dev:
-#            branch: dev
-#            commands: |
-#              . venv/bin/activate
-#              scp ./test-reports/pip_package.tar.gz 176.9.144.37:/tmp
-#              ssh devpi@176.9.144.37 'devpi login droxit --password=droxit; devpi upload --index droxit/dev /tmp/pip_package.tar.gz; devpi logoff'
+            export mosaic_folder='/opt/artifacts/mosaic/dev'
+            if [ $CIRCLE_BRANCH == 'master' ]; then export mosaic_folder='/opt/artifacts/mosaic/release'; fi
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:$mosaic_folder
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+
+

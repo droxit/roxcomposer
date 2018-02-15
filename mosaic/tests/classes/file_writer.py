@@ -1,30 +1,44 @@
-#!/usr/bin/env python3.6
-
+import sys
+import json
 from mosaic import base_service
 
 
 class FileWriter(base_service.BaseService):
     def __init__(self, params=None):
+        self.filepath = "index.html"
         if params is None:
             params = {
-                'ip': '127.0.0.1',
-                'port': 4001
+                "ip": "127.0.0.1",
+                "port": 4001,
+                "name": "file_writer",
+                "logging": {
+                    "filename": "pipeline.log",
+                    "level": "DEBUG"
+                }
             }
         super().__init__(params)
+        if 'filepath' in params:
+            self.filepath = params['filepath']
 
-        self.recv_pipeline_msg()
+        self.msg = ''
+        self.listen()
 
     def on_message(self, msg):
-        self.mosaic_message = msg
-        print(self.mosaic_message.get_protobuf_msg_as_dict())
+        self.msg = msg
         self.write_file()
 
     def write_file(self):
-        html_string = self.mosaic_message.get_content_as_dict()['body']
-        f = open('index.html', 'w')
-        f.write(html_string)
-        f.close()
+        html_string = self.msg
+        with open(self.filepath, 'w+') as f:
+            f.write(html_string)
+            f.close()
+
+        return self.dispatch(html_string)
 
 
 if __name__ == '__main__':
-    math_service = FileWriter()
+    params = None
+    if len(sys.argv) > 1:
+        params = json.loads(sys.argv[1])
+
+    service = FileWriter(params)

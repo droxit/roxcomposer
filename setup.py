@@ -8,6 +8,7 @@ https://github.com/pypa/sampleproject
 from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
+import os
 from os import path
 
 here = path.abspath(path.dirname(__file__))
@@ -16,13 +17,21 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
+if 'MOSAIC_VERSION' in os.environ:
+    version = os.environ['MOSAIC_VERSION']
+else:
+    with open(path.join(here, 'VERSION'), encoding='utf-8') as f:
+        version = f.read()
+
+version.strip()
+
 setup(
     name='mosaic',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1.0',
+    version=version,
 
     description='droxIT microservice framework',
     long_description=long_description,
