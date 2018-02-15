@@ -34,3 +34,7 @@ class DummyMonitor:
         fh = open(self.arguments['filename'], 'a')
         fh.write('DUMMY ERROR \n')
         fh.close()
+
+
+def not_a_class():
+    pass

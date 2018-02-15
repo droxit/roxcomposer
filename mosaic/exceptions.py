@@ -40,3 +40,11 @@ class InvalidArgument(Exception):
     def __str__(self):
         return repr(self.value)
 
+class ConfigError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        m = self.message
+
+        return self.message

@@ -101,6 +101,11 @@ The basic logger has functions for logging on different log levels: debug, info,
 self.logger.info("Hello World!")
 self.logger.error(errorObject) # we can log anything that has a string representation
 
+### Logging exceptions
+
+The BaseService class does not catch any exceptions raised by the logger. This is intentional - being unable to log leaves your infrastructure blind to any errors. If you don't want this behaviour you can always write
+your own logging class and catch any exceptions inside it.
+
 ## Monitoring
 
 The base class contains a basic monitoring solution, which prints every monitoring message to the service console and writes them to a file. 

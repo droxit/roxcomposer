@@ -9,11 +9,14 @@ def load_class(classpath):
         #self.logger.critical('_classpath: ' + classpath)
         raise exceptions.ParameterMissing("classpath is empty")
 
-    components = classpath.split('.')
-    modpath = ".".join(components[:-1])
-    classname = components[-1]
-    mod = importlib.import_module(modpath)
-    c = getattr(mod, classname)
+    try:
+        components = classpath.split('.')
+        modpath = ".".join(components[:-1])
+        classname = components[-1]
+        mod = importlib.import_module(modpath)
+        c = getattr(mod, classname)
+    except Exception as e:
+        raise exceptions.ConfigError('Failed to load the specified logging class: {} - {}'.format(classpath, e)) from e
 
     if not inspect.isclass(c):
         #FixMe: how is it to be logged here?

@@ -1,9 +1,22 @@
+# encoding: utf-8
+#
+# Tests for the base service
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
 import unittest
 import os
 import json
 from tempfile import TemporaryDirectory
 from mosaic import base_service
 from mosaic import exceptions
+from mosaic.communication.mosaic_message import Service
+from mosaic.communication.mosaic_message import Message
+from multiprocessing import Process
+import time
 
 
 class TestBaseService(unittest.TestCase):
@@ -103,10 +116,46 @@ class TestBaseService(unittest.TestCase):
         })
         self.assertEqual(s.get_service_id(), self.dummy_service_id)
 
+    def test_dispatch(self):
+        s = base_service.BaseService(params={
+            'ip': '127.0.0.1',
+            'port': 1234,
+            'name': 'dummy-service'
+        })
+
+        serv = Service("127.0.0.1", 1330)
+        msg = Message()
+        msg.set_payload("TEST.")
+        msg.add_service(serv)
+        s.mosaic_message = msg
+
+        # since assertFalse also allows None, we do a assertTrue with the negated statement
+        self.assertTrue(not s.dispatch("TEST."))
+
+        s2 = base_service.BaseService(params={
+            'ip': '127.0.0.1',
+            'port': 1337,
+            'name': 'dummy-service2'
+        })
+
+        p = Process(target=s2.listen, args=())
+        p.start()
+        time.sleep(0.5)
+
+        serv = Service("127.0.0.1", 1337)
+        msg = Message()
+        msg.set_payload("TEST.")
+        msg.add_service(serv)
+        s.mosaic_message = msg
+
+        self.assertTrue(s.dispatch("TEST."))
+
+        p.terminate()
+
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_config_loading(self):
         os.environ['DROXIT_MOSAIC_CONFIG'] = '/bogus/path/from/hell.json'
-        self.assertRaises(OSError, base_service.BaseService, { "service_key": "nevermind" })
+        self.assertRaises(exceptions.ConfigError, base_service.BaseService, { "service_key": "nevermind" })
 
         with TemporaryDirectory() as tdir:
             confname = os.path.join(tdir, "config.json")
@@ -114,11 +163,19 @@ class TestBaseService(unittest.TestCase):
             json.dump({"service": {"dummy": self.test_params_1}}, f)
             f.close()
             s = base_service.BaseService({"service_key": "service.dummy", "config_file": confname})
+
             self.assertDictEqual(s.params, self.test_params_1)
+
             os.environ['DROXIT_MOSAIC_CONFIG'] = confname
+
             self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, { "service_key": "nevermind" })
             s = base_service.BaseService({"service_key": "service.dummy"})
             self.assertDictEqual(s.params, self.test_params_1)
+
+            f = open(confname, "w")
+            f.write('this is no proper JSON')
+            f.close()
+            self.assertRaises(exceptions.ConfigError, base_service.BaseService, { "service_key": "nevermind" })
 
 
 if __name__ == '__main__':

@@ -76,7 +76,7 @@ class TestPipeline(unittest.TestCase):
         ip = "127.0.0.1"
         port = 10000
         mm = mosaic_message.Message()
-        payload = "original message"
+        payload = "original message" * 1000
         expected_payload = payload
         for serv in self.services:
             expected_payload += serv['msg']
@@ -99,7 +99,7 @@ class TestPipeline(unittest.TestCase):
 
             conn, addr = s.accept()
             with conn:
-                msg = conn.recv(2048)
+                msg = conn.recv(len(payload) + 1024)
 
         msg = mosaic_message.Message.deserialize(msg)
 

@@ -22,7 +22,9 @@ class TestMonitoring(unittest.TestCase):
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_basic_monitoring(self):
         self.assertRaises(exceptions.ParameterMissing, basic_monitoring.BasicMonitoring)
-        self.assertRaises(FileNotFoundError, basic_monitoring.BasicMonitoring, filename='/not/even/remotely/viable')
+        self.assertRaises(exceptions.ConfigError, basic_monitoring.BasicMonitoring, filename='/not/even/remotely/viable')
+        self.assertRaises(exceptions.ParameterMissing, basic_monitoring.BasicReporting)
+        self.assertRaises(exceptions.ConfigError, basic_monitoring.BasicReporting, filename='/not/even/remotely/viable')
 
         with TemporaryDirectory() as tdir:
             fname = 'monitoring_test.log'
@@ -97,6 +99,42 @@ class TestMonitoring(unittest.TestCase):
             for i, line in enumerate(f):
                 self.assertEqual(line.strip(), expected[i])
             f.close()
+
+            params = {
+                'name': 'monitortest',
+                'ip': 'not important',
+                'port': 7,
+                'monitoring': {
+                    'filename': monitor_path,
+                    'monitor_class': 'mosaic.tests.classes.dummy_monitor.NotExistentDummyMonitor'
+                }
+            }
+
+            self.assertRaises(exceptions.ConfigError, test_monitoring.MonitorTest, params)
+
+            params = {
+                'name': 'monitortest',
+                'ip': 'not important',
+                'port': 7,
+                'monitoring': {
+                    'filename': monitor_path,
+                    'monitor_class': None
+                }
+            }
+
+            self.assertRaises(exceptions.ParameterMissing, test_monitoring.MonitorTest, params)
+
+            params = {
+                'name': 'monitortest',
+                'ip': 'not important',
+                'port': 7,
+                'monitoring': {
+                    'filename': monitor_path,
+                    'monitor_class': 'mosaic.tests.classes.dummy_monitor.not_a_class'
+                }
+            }
+
+            self.assertRaises(exceptions.NotAClass, test_monitoring.MonitorTest, params)
 
 
 if __name__ == '__main__':

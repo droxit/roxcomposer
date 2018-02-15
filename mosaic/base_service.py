@@ -123,10 +123,10 @@ class BaseService:
 
     # send a mosaic protobuf message to the next service in the pipeline.
     def dispatch(self, msg):
-        self.mosaic_message.set_payload(msg)
-
         if self.mosaic_message.has_empty_pipeline():
             return
+
+        self.mosaic_message.set_payload(msg)
 
         next_service = self.mosaic_message.pop_service()
         message_id = self.mosaic_message.id
@@ -144,9 +144,10 @@ class BaseService:
                 destination=next_service.encodeId()
             )
             connection.close()
+            return True
         except OSError as e:
-            self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
-            raise e
+            self.logger.error(e.strerror + ' - ' + str(e.__traceback__))
+            return False
 
     # receive mosaic protobuf messages sent to a socket running on the specified ip and port. To handle the received
     # message please implement the on_message funtion in your inherited service.
@@ -169,7 +170,14 @@ class BaseService:
                 packet_len = mosaic_message.get_packet_len(data)
 
                 while len(data) < packet_len:
-                    data += connection.recv(self.BUFFER_SIZE)
+                    chunk = connection.recv(self.BUFFER_SIZE)
+                    if chunk != b'':
+                        data += chunk
+                    else: # socket on the other end broke down
+                        self.logger.warn('the sending socket from {} seems to have broken down'.format(sender_address))
+                        connection.close()
+                        break
+
 
                 try:
                     self.mosaic_message = mosaic_message.Message.deserialize(data)

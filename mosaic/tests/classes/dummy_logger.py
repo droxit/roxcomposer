@@ -1,6 +1,16 @@
-## dummy logging class - for testing purposes only
-class DummyLog():
+# encoding: utf-8
+#
+# dummy logging class - for testing purposes only
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
+
+
+class DummyLog:
     def __init__(self, name, **kwargs):
+        self.name = name
         self.file = kwargs['filename']
 
     def debug(self, msg):
@@ -20,3 +30,6 @@ class DummyLog():
     def critical(self, msg):
         pass
 
+
+def not_a_class():
+    pass
