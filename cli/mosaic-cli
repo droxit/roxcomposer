@@ -20,6 +20,8 @@ function usage {
     echo "  pipelines"
     echo "  post_to_pipeline <PIPELINE> <MESSAGE>"
     echo "  shutdown_service <SERVICE>"
+    echo "  dump"
+    echo "  restore <PATH TO DUMPFILE>"
     echo "  load_and_start_pipeline <PIPELINE PATH>"
     exit 0
 }
@@ -139,9 +141,19 @@ case "$1" in
         ;;
     "shutdown_service")
         shift
-		curl_post_data "shutdown_service" "{\"name\": \"$1\"}"
-		echo ""
+	curl_post_data "shutdown_service" "{\"name\": \"$1\"}"
+	echo ""
         ;;
+    "dump")
+	shift
+	curl_get "dump_services_and_pipelines"
+	echo ""
+	;;
+   "restore")
+	shift
+	curl_post_data "load_services_and_pipelines" "$(cat $1 | tr -d '\n')"
+	echo ""
+	;;
     "load_and_start_pipeline")
         shift
 		curl_post_data  "load_and_start_pipeline" "{\"pipe_path\": \"$1\"}"
@@ -151,3 +163,4 @@ case "$1" in
         usage
         ;;
 esac
+
