@@ -82,6 +82,10 @@ class Message:
     def pop_service(self):
         return self.pipeline.pop(0)
 
+    # raises KeyError if the pipeline is empty
+    def peek_service(self):
+        return self.pipeline[0]
+
     def add_service(self, service):
         self.pipeline.append(service)
 
