@@ -80,7 +80,7 @@ class TestPipeline(unittest.TestCase):
         expected_payload = payload
         for serv in self.services:
             expected_payload += serv['msg']
-        for serv in self.services[1:]:
+        for serv in self.services:
             mm.add_service(mosaic_message.Service(serv['args']['ip'], serv['args']['port']))
         mm.add_service(mosaic_message.Service(ip, port))
         mm.set_payload(payload)

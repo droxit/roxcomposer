@@ -70,6 +70,7 @@ function Message() {
 	this.get_payload = get_payload;
 	this.get_content_as_dict = get_content_as_dict;
 	this.pop_service = pop_service;
+	this.peek_service = peek_service;
 	this.add_service = add_service;
 	this.has_empty_pipeline = has_empty_pipeline;
 	this.serialize_to_protobuf = serialize_to_protobuf;
@@ -103,6 +104,12 @@ function pop_service() {
 	return this.pipeline.shift();
 }
 
+// returns undef if pipeline is empty
+function peek_service() {
+	return this.pipeline[0];
+}
+
+// returns undef if pipeline is empty
 function add_service(service) {
 	this.pipeline.push(service);
 }

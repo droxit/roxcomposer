@@ -39,6 +39,7 @@ describe('mosaic_message', function () {
 			expect(msg.get_content_as_dict()).to.eql(d);
 			expect(msg.pop_service()).to.eql(services[0]);
 			expect(msg.pipeline).to.eql([services[1]]);
+			expect(msg.peek_service()).to.eql(services[1]);
 		});
 	});
 
