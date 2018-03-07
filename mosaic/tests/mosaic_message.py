@@ -8,7 +8,7 @@ import urllib.parse
 class TestMosaicMessage(unittest.TestCase):
     def setUp(self):
         self.msg = mosaic_message.Message()
-        self.services = [ mosaic_message.Service('127.0.0.1', 5000), mosaic_message.Service('::1', 5001) ]
+        self.services = [ mosaic_message.Service('127.0.0.1', 5000), mosaic_message.Service('::1', 5001, ["blorp", "blub"]) ]
         self.payload = 'a;sdklfja0eifjq'
 
         self.msg.set_payload(self.payload)
