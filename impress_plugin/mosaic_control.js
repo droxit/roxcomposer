@@ -243,7 +243,7 @@ function post_to_pipeline(mcp, args, cb) {
 
 	let servs;
 	try {
-		servs = pline.services.slice(1).map( (x) => {
+		servs = pline.services.map( (x) => {
 			let s = mcp.services[x];
 			return new mosaic_message.Service(s.params.ip, s.params.port);
 		});
@@ -362,7 +362,7 @@ function post_to_report_service(mcp, funcname, args, cb) {
 	server.listen(0, '0.0.0.0', () => {
 		let socket = net.createConnection( mcp.services[mcp.reporting_service].params.port, mcp.services[mcp.reporting_service].params.ip, () => {
 			let addr = socket.address();
-			let pline = [ new mosaic_message.Service(server.address().address, server.address().port) ];
+			let pline = [ new mosaic_message.Service(mcp.services[mcp.reporting_service].params.ip, mcp.services[mcp.reporting_service].params.port), new mosaic_message.Service(server.address().address, server.address().port) ];
 			let msg = create_mosaic_message(pline, JSON.stringify({'function': funcname, 'args': args}));
 			let packet = msg.serialize();
 			socket.end(packet);
