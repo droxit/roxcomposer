@@ -199,7 +199,7 @@ class BaseService:
 
                 try:
                     me = self.mosaic_message.pop_service()
-                Except KeyError:
+                except KeyError:
                     self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
                 finally:
                     me = mosaic_message.Service(ip, port)
