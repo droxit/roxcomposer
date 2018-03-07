@@ -29,18 +29,22 @@ class TestMosaicMessage(unittest.TestCase):
         self.assertListEqual(self.msg.pipeline, [self.services[1]])
 
 
-    def test_serialization(self):
+    def test_protobuf_serialization(self):
         protomsg = self.msg.serialize_to_protobuf()
         msg2 = mosaic_message.Message.deserialize_from_protobuf(protomsg)
         d1 = self.msg.get_content_as_dict()
         d2 = msg2.get_content_as_dict()
         self.assertEqual(d1, d2)
 
+    def test_json_serialization(self):
+        d1 = self.msg.get_content_as_dict()
         jsonmsg = self.msg.serialize_to_json()
         msg2 = mosaic_message.Message.deserialize_from_json(jsonmsg)
         d2 = msg2.get_content_as_dict()
         self.assertEqual(d1, d2)
 
+    def test_wire_serialization(self):
+        d1 = self.msg.get_content_as_dict()
         binmsg = self.msg.serialize()
         msg2 = mosaic_message.Message.deserialize(binmsg)
         d2 = msg2.get_content_as_dict()
