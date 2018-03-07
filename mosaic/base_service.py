@@ -128,7 +128,7 @@ class BaseService:
 
         self.mosaic_message.set_payload(msg)
 
-        next_service = self.mosaic_message.pop_service()
+        next_service = self.mosaic_message.peek_service()
         message_id = self.mosaic_message.id
 
         address_tuple = (next_service.ip, next_service.port)
