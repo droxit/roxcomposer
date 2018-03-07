@@ -115,7 +115,7 @@ class Message:
         msg.id = pmsg.id
         for s in pmsg.pipeline.services:
             ip, port = Service.decodeId(s.id)
-            msg.add_service(Service(ip, port, [x for x in s.parameters]))
+            msg.add_service(Service(ip, port, [x.serviceParams for x in s.parameters]))
 
         return msg
 
