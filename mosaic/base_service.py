@@ -128,6 +128,7 @@ class BaseService:
 
         self.mosaic_message.set_payload(msg)
 
+        # check next destination
         next_service = self.mosaic_message.peek_service()
         message_id = self.mosaic_message.id
 
@@ -195,6 +196,13 @@ class BaseService:
                     service_name=self.params['name'],
                     message_id=self.mosaic_message.id
                 )
+
+                try:
+                    me = self.mosaic_message.pop_service()
+                Except KeyError:
+                    self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
+                finally:
+                    me = mosaic_message.Service(ip, port)
 
                 if self.mosaic_message.has_empty_pipeline():
                     self.monitoring.msg_reached_final_destination(
