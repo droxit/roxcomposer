@@ -180,7 +180,11 @@ class BaseService:
                         connection.close()
                         break
 
-                connection.close()
+                # if the connection was closed before - see above - this throws an exception, so we catch it
+                try:
+                    connection.close()
+                except:
+                    pass
 
                 try:
                     self.mosaic_message = mosaic_message.Message.deserialize(data)
