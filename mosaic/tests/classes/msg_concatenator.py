@@ -5,6 +5,9 @@ import http.server
 from mosaic import base_service
 
 class SimpleRHandler(http.server.BaseHTTPRequestHandler):
+    def log_request(code, size):
+        pass
+
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-Type', 'text/plain')
