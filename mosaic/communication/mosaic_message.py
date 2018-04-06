@@ -82,6 +82,10 @@ class Message:
     def pop_service(self):
         return self.pipeline.pop(0)
 
+    # raises KeyError if the pipeline is empty
+    def peek_service(self):
+        return self.pipeline[0]
+
     def add_service(self, service):
         self.pipeline.append(service)
 
@@ -111,7 +115,7 @@ class Message:
         msg.id = pmsg.id
         for s in pmsg.pipeline.services:
             ip, port = Service.decodeId(s.id)
-            msg.add_service(Service(ip, port, s.parameters))
+            msg.add_service(Service(ip, port, [x.serviceParams for x in s.parameters]))
 
         return msg
 

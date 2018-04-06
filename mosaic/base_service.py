@@ -13,6 +13,7 @@
 
 
 import socket
+import threading
 from mosaic.communication import mosaic_message
 from mosaic.service_loader import load_class
 from mosaic import exceptions
@@ -128,7 +129,8 @@ class BaseService:
 
         self.mosaic_message.set_payload(msg)
 
-        next_service = self.mosaic_message.pop_service()
+        # check next destination
+        next_service = self.mosaic_message.peek_service()
         message_id = self.mosaic_message.id
 
         address_tuple = (next_service.ip, next_service.port)
@@ -178,6 +180,11 @@ class BaseService:
                         connection.close()
                         break
 
+                # if the connection was closed before - see above - this throws an exception, so we catch it
+                try:
+                    connection.close()
+                except:
+                    pass
 
                 try:
                     self.mosaic_message = mosaic_message.Message.deserialize(data)
@@ -195,6 +202,13 @@ class BaseService:
                     service_name=self.params['name'],
                     message_id=self.mosaic_message.id
                 )
+
+                try:
+                    me = self.mosaic_message.pop_service()
+                except KeyError:
+                    self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
+                finally:
+                    me = mosaic_message.Service(ip, port)
 
                 if self.mosaic_message.has_empty_pipeline():
                     self.monitoring.msg_reached_final_destination(
@@ -217,6 +231,10 @@ class BaseService:
     # the mosaic protobuf message.
     def listen(self):
         self.listen_to(self.params['ip'], self.params['port'])
+
+    def listen_thread(self):
+        t = threading.Thread(target=self.listen)
+        t.start()
 
     # get current service id
     def get_service_id(self):

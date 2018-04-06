@@ -1,3 +1,8 @@
+# v0.3.0
+
+* added `listen_thread` function that starts `listen()` in a separate thread.
+* changed the pipeline processing within BaseService: messages that are sent to a service must this service as their first element of the pipeline.
+
 # v0.2.1
 
 * Fixed interal storage of service parameters in `mosaic_control.js`
