@@ -13,6 +13,7 @@
 
 
 import socket
+import threading
 from mosaic.communication import mosaic_message
 from mosaic.service_loader import load_class
 from mosaic import exceptions
@@ -179,6 +180,11 @@ class BaseService:
                         connection.close()
                         break
 
+                # if the connection was closed before - see above - this throws an exception, so we catch it
+                try:
+                    connection.close()
+                except:
+                    pass
 
                 try:
                     self.mosaic_message = mosaic_message.Message.deserialize(data)
@@ -225,6 +231,10 @@ class BaseService:
     # the mosaic protobuf message.
     def listen(self):
         self.listen_to(self.params['ip'], self.params['port'])
+
+    def listen_thread(self):
+        t = threading.Thread(target=self.listen)
+        t.start()
 
     # get current service id
     def get_service_id(self):

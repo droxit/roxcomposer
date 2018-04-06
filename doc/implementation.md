@@ -144,7 +144,7 @@ If everything works as expected a monitoring message like the following should b
 ```
 
 Furthermore, the basic monitoring can be used to monitor a custom metric.
-To monitor a custom metric, use the custom_metric function from the basic monitoring class.
+To monitor a custom metric, use the custom\_metric function from the basic monitoring class.
 The function expects a service name, a metric name and a metric dictionary as keyword arguments.
 Please consider the following example.
 
@@ -158,4 +158,10 @@ monitor.custom_metric(**custom)
 
 The basic monitoring class has a counterpart named `BasicReporting`. This class holds the functions to retrieve monitoring information on specific events. Either their whole monitoring history or only the last
 known status. See the API [documentation](rest.md) for details on accessing the reporting functionionality.
+
+## Threading
+
+The `listen()` function blocks the main thread leaving you unable to do anything beyond processing messages. If you wish to add more interfaces to your service or maybe send a regular heartbeat you should use the
+`listen_thread()` function. It will put the `listen()` function into a separate thread leaving the main thread open. Be aware that there are no locking/synchronization mechanisms implemented in the `BaseService` class. You can
+easily add some yourself though - should you need them.
 

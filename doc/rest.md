@@ -27,7 +27,7 @@ In the default configuration the following endpoints are available:
 
 | Endpoint | HTTP verb  | Data | Description |
 | -------- | ---------- | ---- | ----------- |
-| start\_service | POST | Service parameters the chapter on implementing a service for details | This starts a new service |
+| start\_service | POST | <ul><li>path (string): the path to the python module to start.</li><li>classpath (string): the python package to load</li><li>params (json string): see the chapter on implementing a service for details</li></ul> | This starts a new service. Either `path` or `classpath` is required to find the right python module (see below for details). |
 | services | GET |  | Get information on the running services |
 | set\_pipeline | POST | <ul><li>name (string) - the pipelines name (pipelines under the same name will be overridden)</li><li>services (array of strings) - the names of the services the pipeline should consist of. Messages sent to this pipeline will pass through all services mentioned here in the same sequence</li></ul> | Define a pipeline |
 | pipelines | GET | | Show defined pipelines |
@@ -37,6 +37,11 @@ In the default configuration the following endpoints are available:
 | get\_msg\_status | POST | message\_id (string) - the message id of the message in question | Retrieves the last known status for this message |
 | dump\_services\_and\_pipelines | GET | | Returns a JSON object that represents the currently active services and defined pipelines |
 | load\_services\_and\_pipelines | POST | service and pipeline dump  | This takes a generated dump and tries to restore the services and pipelines. If a service under the same name is already running it is skipped and inactive pipelines are skipped as well |
+
+### Loading via classpath
+
+If you choose to provide a module path, e.g. `somepackage.subpackge.module`, a service container will be started that loads the module with the parameters provided and call the `listen()` method. There is no version of that
+container that calls `listen_thread()` at this point since we would need to impose a standard way of constructing the main thread functionality in order to call it generically.
 
 
 ### Using the mosaic-cli
