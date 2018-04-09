@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# script mosaic-cli
+# cmdparser.py
 #
 # devs@droxit.de - droxIT GmbH
 #
