@@ -8,7 +8,9 @@
 #
 
 import curses
-server = "localhost:7475"
+import commands
+import cmdparser
+import json
 
 
 def main(logwindow):
@@ -23,7 +25,7 @@ def main(logwindow):
     logwindow.move(0, 2)
     logwindow.addstr("Log Window")
     logwindow.move(1, 1)
-    logwindow.addstr("Height: "+str(height)+", Width: "+str(width))
+    #logwindow.addstr("Height: "+str(height)+", Width: "+str(width))
     logwindow.refresh()
 
     cmdhistory_window = curses.newwin(height-3, width, 10, 0)
@@ -48,11 +50,20 @@ def main(logwindow):
         cmdline.border()
         cmdhistory.addstr(input_string)
         y, x = cmdhistory.getyx()
-        cmdhistory.move(y + 1, 0)
+        cmdhistory.move(y + 1, 1)
         if(y+1 > height-3-cmdhistory_pos-11):
             cmdhistory_pos += 1
         cmdhistory.refresh(cmdhistory_pos, 0, 11, 1, height-3, width-2)
+
+        try:
+            logwindow.addstr(commands.run_cmd(*cmdparser.tokenize(input_string.decode())))
+        except Exception as e:
+            logwindow.addstr(str(e))
+        y, x = logwindow.getyx()
+        logwindow.move(y + 1, 1)
+        logwindow.refresh()
+
         curses.doupdate()
 
-
 curses.wrapper(main)
+
