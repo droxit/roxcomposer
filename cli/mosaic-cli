@@ -19,24 +19,26 @@ def main(logwindow):
     height, width = logwindow.getmaxyx()
 
     logwindow.resize(height - 13, width)
-    logwindow.move(1, 1)
     logwindow.border()
+    logwindow.move(0, 2)
+    logwindow.addstr("Command History")
+    logwindow.move(1, 1)
     logwindow.refresh()
 
     cmdhistory = curses.newwin(13, width, height - 14, 0)
-    cmdhistory.move(1, 1)
     cmdhistory.border()
+    cmdhistory.move(0, 2)
+    cmdhistory.addstr("Command History")
+    cmdhistory.move(1, 1)
     cmdhistory.refresh()
 
     cmdline = curses.newwin(3, width, height - 3, 0)
     cmdline.keypad(True)
     cmdline.border()
     cmdline.refresh()
-
     curses.doupdate()
 
-
-    while(True):
+    while True:
         input_string = cmdline.getstr(1, 1)
         cmdline.clear()
         cmdline.border()
