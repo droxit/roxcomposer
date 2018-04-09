@@ -18,12 +18,12 @@ def main(logwindow):
 
     height, width = logwindow.getmaxyx()
 
-    logwindow.resize(height - 15, width)
+    logwindow.resize(height - 13, width)
     logwindow.move(1, 1)
     logwindow.border()
     logwindow.refresh()
 
-    cmdhistory = curses.newwin(12, width, height - 15, 0)
+    cmdhistory = curses.newwin(13, width, height - 14, 0)
     cmdhistory.move(1, 1)
     cmdhistory.border()
     cmdhistory.refresh()
