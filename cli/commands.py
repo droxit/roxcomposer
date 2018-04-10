@@ -32,7 +32,7 @@ def get_services(*args):
     
 def start_service(*args):
     if len(args) > 1:
-        return 'WARNING: superflous arguments to start service: {}'.format(args)
+        return 'WARNING: superfluous arguments to start service: {}'.format(args)
     service = args[0]
     print(args)
 
@@ -50,6 +50,18 @@ def start_service(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+def set_pipeline(*args):
+    if len(args) < 2:
+        return 'ERROR: a pipeline name and at least one service must be specified'
+    pipename = args[0]
+    services = args[1:]
+    d = { 'name': pipename, 'services': services }
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/set_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 
 def list_commands(*args):
@@ -60,6 +72,7 @@ cmd_map = {
         'list_service_files': list_service_files,
         'services': get_services,
         'start_service': start_service,
+        'set_pipeline': set_pipeline,
         'help': list_commands
 }
 
