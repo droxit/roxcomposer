@@ -63,6 +63,12 @@ def set_pipeline(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+def get_pipelines(*args):
+    r = requests.get('http://{}/pipelines'.format(roxconnector))
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 def list_commands(*args):
     return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
@@ -71,6 +77,7 @@ def list_commands(*args):
 cmd_map = {
         'list_service_files': list_service_files,
         'services': get_services,
+        'pipelines': get_pipelines,
         'start_service': start_service,
         'set_pipeline': set_pipeline,
         'help': list_commands
