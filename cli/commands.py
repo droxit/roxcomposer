@@ -70,6 +70,20 @@ def get_pipelines(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+def shutdown_service(*args):
+    if len(args) != 1:
+        return 'ERROR: exactly one service needs to be specified for shutdown'
+
+    service = args[0]
+    d = { 'name': service }
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/shutdown_service'.format(roxconnector), data=json.dumps(d), headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
+
 def list_commands(*args):
     return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
 
@@ -80,6 +94,7 @@ cmd_map = {
         'pipelines': get_pipelines,
         'start_service': start_service,
         'set_pipeline': set_pipeline,
+        'shutdown_service': shutdown_service,
         'help': list_commands
 }
 
