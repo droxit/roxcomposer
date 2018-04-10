@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# script mosaic-cli
+# script mosaic-cli_old
 #
 # devs@droxit.de - droxIT GmbH
 #
