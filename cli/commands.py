@@ -7,14 +7,14 @@
 # Copyright (c) 2018 droxIT GmbH
 #
 
+import json
 import os
 import requests
 
 roxconnector = 'localhost:7475'
 service_file_dir = 'services'
 
-
-def list_service_files():
+def list_service_files(*args):
     ret = []
     for f in os.scandir(service_file_dir):
         if f.is_file() and f.name.endswith('.json'):
@@ -23,7 +23,7 @@ def list_service_files():
     return ret
 
 
-def get_services():
+def get_services(*args):
     r = requests.get('http://{}/services'.format(roxconnector))
     if r.status_code == 200:
         return r.text
@@ -31,7 +31,7 @@ def get_services():
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
     
 
-def list_commands():
+def list_commands(*args):
     return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
 
 

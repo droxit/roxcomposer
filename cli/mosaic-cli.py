@@ -9,7 +9,8 @@
 #
 
 from urwid import *
-from commands import cmd_map, list_commands
+from commands import cmd_map, list_commands, run_cmd
+from cmdparser import tokenize
 
 
 class Window(LineBox):
@@ -40,15 +41,25 @@ class MainFrame(Frame):
     def keypress(self, size, key):
         if key != 'enter':
             return super(MainFrame, self).keypress(size, key)
+
         cmd = self.cmdl.get_text()
+
+        # do not react on empty input
+        if cmd == "":
+            return super(MainFrame, self).keypress(size, key)
 
         # stop on exit
         if cmd == "exit":
             raise ExitMainLoop()
 
+        cmdt = tokenize(cmd)
+
         # command not available
-        if cmd not in cmd_map:
-            self.log.fill(list_commands()+"\n exit")
+        if cmdt[0] not in cmd_map:
+            self.log.fill(list_commands())
+        else:
+            self.log.fill(run_cmd(*cmdt))
+
 
         self.cmdh.addline(cmd)
         self.cmdl.clear()
