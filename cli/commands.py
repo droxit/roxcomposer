@@ -30,6 +30,27 @@ def get_services(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
     
+def start_service(*args):
+    if len(args) > 1:
+        return 'WARNING: superflous arguments to start service: {}'.format(args)
+    service = args[0]
+    print(args)
+
+    service_args = None
+    try:
+        f = open('./services/{}.json'.format(service))
+        service_args = f.read()
+    except Exception as e:
+        return 'ERROR unable to load service {} - {}'.format(service, e)
+
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/start_service'.format(roxconnector), data=service_args, headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
+
 
 def list_commands(*args):
     return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
@@ -38,6 +59,7 @@ def list_commands(*args):
 cmd_map = {
         'list_service_files': list_service_files,
         'services': get_services,
+        'start_service': start_service,
         'help': list_commands
 }
 
@@ -48,4 +70,4 @@ def run_cmd(*args):
     if args[0] not in cmd_map:
         raise RuntimeError("command '{}' is not defined".format(args[0]))
 
-    return cmd_map[args[0]](args[1:])
+    return cmd_map[args[0]](*args[1:])
