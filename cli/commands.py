@@ -20,7 +20,7 @@ def list_service_files(*args):
         if f.is_file() and f.name.endswith('.json'):
             ret.append(f.name)
 
-    return ret
+    return "\n".join(ret)
 
 
 def get_services(*args):

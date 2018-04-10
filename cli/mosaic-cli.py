@@ -60,7 +60,6 @@ class MainFrame(Frame):
         else:
             self.log.fill(run_cmd(*cmdt))
 
-
         self.cmdh.addline(cmd)
         self.cmdl.clear()
 
