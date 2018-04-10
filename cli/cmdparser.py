@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# script mosaic-cli_old
+# cmdparser.py
 #
 # devs@droxit.de - droxIT GmbH
 #
@@ -33,3 +33,4 @@ def type_caster(group, val):
         return float(val)
 
     return val
+
