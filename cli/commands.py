@@ -24,6 +24,8 @@ def list_service_files(*args):
 
 
 def get_services(*args):
+    if len(args) != 0:
+        return 'WARNING: superfluous arguments to services: {}'.format(args)
     r = requests.get('http://{}/services'.format(roxconnector))
     if r.status_code == 200:
         return r.text
@@ -83,6 +85,34 @@ def shutdown_service(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+def dump_everything(*args):
+    if len(args) > 1:
+        return 'WARNING: superfluous arguments to services: {}'.format(args[1:])
+    dumpfile = 'dump.json'
+    if len(args) == 1:
+        dumpfile = args[0]
+
+    f = None
+    try:
+        f = open(dumpfile, 'w')
+    except Exception as e:
+        return 'ERROR unable to open file {} - {}'.format(dumpfile, e)
+
+    r = requests.get('http://{}/dump_services_and_pipelines'.format(roxconnector))
+    if r.status_code == 200:
+        o = r.json()
+        try:
+            json.dump(o, f)
+        except Exception as e:
+            return 'ERROR: unable to write dump to file {} - {}'.format(dumpfile, e)
+        finally:
+            f.close()
+            
+        return "dump written to file {}\n{}".format(dumpfile, r.text)
+    else:
+        f.close()
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
 
 def list_commands(*args):
     return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
@@ -95,6 +125,7 @@ cmd_map = {
         'start_service': start_service,
         'set_pipeline': set_pipeline,
         'shutdown_service': shutdown_service,
+        'dump': dump_everything,
         'help': list_commands
 }
 
