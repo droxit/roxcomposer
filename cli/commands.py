@@ -7,15 +7,14 @@
 # Copyright (c) 2018 droxIT GmbH
 #
 
-import json
 import os
 import requests
 
 roxconnector = 'localhost:7475'
 service_file_dir = 'services'
-cmd_map = {}
 
-def list_service_files(*args):
+
+def list_service_files():
     ret = []
     for f in os.scandir(service_file_dir):
         if f.is_file() and f.name.endswith('.json'):
@@ -23,14 +22,16 @@ def list_service_files(*args):
 
     return ret
 
-def get_services(*args):
+
+def get_services():
     r = requests.get('http://{}/services'.format(roxconnector))
     if r.status_code == 200:
         return r.text
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
     
-def list_commands(*args):
+
+def list_commands():
     return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
 
 
@@ -40,6 +41,7 @@ cmd_map = {
         'help': list_commands
 }
 
+
 def run_cmd(*args):
     if len(args) == 0:
         raise RuntimeError('no command given')
@@ -47,4 +49,3 @@ def run_cmd(*args):
         raise RuntimeError("command '{}' is not defined".format(args[0]))
 
     return cmd_map[args[0]](args[1:])
-

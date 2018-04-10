@@ -6,7 +6,9 @@
 #
 # Copyright (c) 2018 droxIT GmbH
 #
-# usage: tokenize(line) will return a list of recognized tokens. Integers (decimal and hexadecimal) and floats are cast to their native type. 
+# usage: tokenize(line) will return a list of recognized tokens.
+# Integers (decimal and hexadecimal) and floats are cast to their native type.
+#
 
 import re
 
@@ -19,8 +21,10 @@ token_patterns = [
 
 tok_rex = '|'.join(['(?P<{}>{})'.format(token[0], token[1]) for token in token_patterns])
 
+
 def tokenize(line):
     return [type_caster(mo.lastgroup, mo.group(mo.lastgroup)) for mo in re.finditer(tok_rex, line)]
+
 
 def type_caster(group, val):
     if group == 'STRING':
@@ -33,4 +37,3 @@ def type_caster(group, val):
         return float(val)
 
     return val
-
