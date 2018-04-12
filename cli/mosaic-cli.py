@@ -33,10 +33,11 @@ class Window(LineBox):
 class MainFrame(Frame):
     def __init__(self):
         self.log = Window(u"Log Window")
+        self.mtw = MessageTraceWidget()
         self.cmdh = Window(u"Command History")
         self.cmdl = CommandLine()
         self.cmd_walk = 0
-        body = Pile([self.log, self.cmdh])
+        body = Pile([self.log, self.mtw, self.cmdh])
         super(MainFrame, self).__init__(body, footer=self.cmdl)
 
     def keypress(self, size, key):
@@ -78,6 +79,31 @@ class MainFrame(Frame):
         self.cmdh.addline(cmd)
         self.cmdl.clear()
 
+
+class MessageTraceWidget(Pile):
+    def __init__(self):
+        self.message_map = dict()
+        self.body = self.message_map.values()
+        super(MessageTraceWidget, self).__init__(self.body)
+
+    def add_message(self, msg_id):
+        if msg_id in self.message_map.keys():
+            return "Message tracing failed: ID duplicate."
+        self.message_map[msg_id] = Window(u"Message "+str(msg_id))
+        self.update()
+        return "Message tracing started: "+msg_id
+
+    def remove_message(self, msg_id):
+        if msg_id not in self.message_map.keys():
+            return "Message tracing stop failed: ID not found."
+        del self.message_map[msg_id]
+        self.update()
+        return "Message tracing stopped: "+msg_id
+
+    def update(self):
+        for key in self.message_map.keys():
+            self.message_map[key].fill(msg_history(key))
+        self.body = self.message_map.values()
 
 class CommandLine(LineBox):
     def __init__(self):
