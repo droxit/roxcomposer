@@ -9,7 +9,7 @@
 #
 
 from urwid import *
-from commands import cmd_map, list_commands, run_cmd
+from commands import cmd_map, run_cmd
 from cmdparser import tokenize
 
 
@@ -72,7 +72,7 @@ class MainFrame(Frame):
 
         # command not available
         if cmdt[0] not in cmd_map:
-            self.log.addline(list_commands())
+            self.log.addline(run_cmd(*['help']))
         else:
             self.log.addline(run_cmd(*cmdt))
 
@@ -102,7 +102,7 @@ class MessageTraceWidget(Pile):
 
     def update(self):
         for key in self.message_map.keys():
-            self.message_map[key].fill(msg_history(key))
+            self.message_map[key].fill(run_cmd(['msg_history', key]))
         self.body = self.message_map.values()
 
 class CommandLine(LineBox):

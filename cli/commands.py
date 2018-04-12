@@ -52,6 +52,19 @@ def start_service(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+def get_msg_history(*args):
+    if len(args) > 1:
+        return 'WARNING: superfluous arguments to get msg history: {}'.format(args)
+    msg_id = args[0]
+    print(args)
+
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/get_msg_history'.format(roxconnector), data=msg_id, headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
 def set_pipeline(*args):
     if len(args) < 2:
         return 'ERROR: a pipeline name and at least one service must be specified'
@@ -125,6 +138,7 @@ cmd_map = {
         'start_service': start_service,
         'set_pipeline': set_pipeline,
         'shutdown_service': shutdown_service,
+        'get_msg_history': get_msg_history,
         'dump': dump_everything,
         'help': list_commands
 }
