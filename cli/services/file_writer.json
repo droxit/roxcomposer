@@ -1,5 +1,5 @@
 {
-  "path": "../services/file_writer.py",
+  "classpath": "mosaic.tests.classes.file_writer.FileWriter",
   "params": {
 	"ip": "127.0.0.1",
 	"port": 4001,
