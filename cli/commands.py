@@ -45,7 +45,6 @@ def start_service(*args):
     if len(args) > 1:
         return 'WARNING: superfluous arguments to start service: {}'.format(args)
     service = args[0]
-    print(args)
 
     service_args = None
     try:
@@ -65,10 +64,10 @@ def get_msg_history(*args):
     if len(args) > 1:
         return 'WARNING: superfluous arguments to get msg history: {}'.format(args)
     msg_id = args[0]
-    print(args)
+    d = {'message_id': msg_id}
 
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/get_msg_history'.format(roxconnector), data=msg_id, headers=headers)
+    r = requests.post('http://{}/get_msg_history'.format(roxconnector), data=json.dumps(d), headers=headers)
     if r.status_code == 200:
         return r.text
     else:
