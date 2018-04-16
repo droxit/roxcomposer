@@ -22,6 +22,15 @@ def list_service_files(*args):
 
     return "\n".join(ret)
 
+def post_to_pipeline(*args):
+    if len(args) < 2:
+        return 'ERROR: a pipeline name and a message must be specified'
+
+    d = {'name': args[0], 'data': " ".join(args[1:])}
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/post_to_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    return json.loads(r.text)['message_id']
+
 
 def get_services(*args):
     if len(args) != 0:
@@ -137,6 +146,7 @@ cmd_map = {
         'pipelines': get_pipelines,
         'start_service': start_service,
         'set_pipeline': set_pipeline,
+        'post_to_pipeline': post_to_pipeline,
         'shutdown_service': shutdown_service,
         'get_msg_history': get_msg_history,
         'dump': dump_everything,

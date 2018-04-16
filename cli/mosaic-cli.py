@@ -73,6 +73,8 @@ class MainFrame(Frame):
         # command not available
         if cmdt[0] not in cmd_map:
             self.log.addline(run_cmd(*['help']))
+        elif cmdt[0] == "post_to_pipeline":
+            self.log.addline(self.mtw.add_message(run_cmd(*cmdt)))
         else:
             self.log.addline(run_cmd(*cmdt))
 
@@ -83,13 +85,14 @@ class MainFrame(Frame):
 class MessageTraceWidget(Pile):
     def __init__(self):
         self.message_map = dict()
-        self.body = self.message_map.values()
+        self.body = []
         super(MessageTraceWidget, self).__init__(self.body)
 
     def add_message(self, msg_id):
         if msg_id in self.message_map.keys():
             return "Message tracing failed: ID duplicate."
         self.message_map[msg_id] = Window(u"Message "+str(msg_id))
+        self.body.append(self.message_map[msg_id])
         self.update()
         return "Message tracing started: "+msg_id
 
@@ -102,8 +105,8 @@ class MessageTraceWidget(Pile):
 
     def update(self):
         for key in self.message_map.keys():
-            self.message_map[key].fill(run_cmd(['msg_history', key]))
-        self.body = self.message_map.values()
+            self.message_map[key].fill("TEST")
+        self._set_widget_list(list(self.message_map.values()))
 
 class CommandLine(LineBox):
     def __init__(self):
