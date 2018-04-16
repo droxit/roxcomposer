@@ -36,7 +36,7 @@ else
     cp ../dist/*.tar.gz ./packages/.
 
     # copy files
-    cp ../cli/mosaic-cli .
+    cp ../cli/mosaic-cli.py .
     cp ../.circleci/mosaic-deploy/scripts/* .
     if [[ $OSTYPE = *"darwin"* ]]
         then

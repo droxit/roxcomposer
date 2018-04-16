@@ -20,5 +20,5 @@ if [[ ($# -lt 1) ]]
     then usage
 else
     rm -rf $MOSAIC_DEPLOY_DIR/$BUILD_DIR/mosaic-cli*
-    cp ./cli/mosaic-cli $MOSAIC_DEPLOY_DIR/$BUILD_DIR/.
+    cp ./cli/mosaic-cli.py $MOSAIC_DEPLOY_DIR/$BUILD_DIR/.
 fi
