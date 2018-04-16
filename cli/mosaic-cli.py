@@ -33,12 +33,13 @@ class Window(LineBox):
 class MainFrame(Frame):
     def __init__(self):
         self.log = Window(u"Log Window")
-        self.mtw = MessageTraceWidget()
+        self.mtw = MessageTraceWidget(self)
         self.cmdh = Window(u"Command History")
         self.cmdl = CommandLine()
         self.cmd_walk = 0
-        body = Pile([self.log, self.mtw, self.cmdh])
-        super(MainFrame, self).__init__(body, footer=self.cmdl)
+        self.body = Pile([])
+        self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 0)), (self.cmdh, (WEIGHT, 1))]
+        super(MainFrame, self).__init__(self.body, footer=self.cmdl)
 
     def keypress(self, size, key):
         if self.focus_position == 'footer':
@@ -81,18 +82,24 @@ class MainFrame(Frame):
         self.cmdh.addline(cmd)
         self.cmdl.clear()
 
+    def showmtw(self, show):
+        if show:
+            self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 1)), (self.cmdh, (WEIGHT, 1))]
+        else:
+            self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 0)), (self.cmdh, (WEIGHT, 1))]
+
 
 class MessageTraceWidget(Pile):
-    def __init__(self):
+    def __init__(self, parent):
         self.message_map = dict()
-        self.body = []
-        super(MessageTraceWidget, self).__init__(self.body)
+        self.parent = parent
+        super(MessageTraceWidget, self).__init__([])
 
     def add_message(self, msg_id):
         if msg_id in self.message_map.keys():
             return "Message tracing failed: ID duplicate."
         self.message_map[msg_id] = Window(u"Message "+str(msg_id))
-        self.body.append(self.message_map[msg_id])
+        self.parent.showmtw(True)
         self.update()
         return "Message tracing started: "+msg_id
 
@@ -100,13 +107,14 @@ class MessageTraceWidget(Pile):
         if msg_id not in self.message_map.keys():
             return "Message tracing stop failed: ID not found."
         del self.message_map[msg_id]
-        self.update()
+        if not self.message_map:
+            self.parent.showmtw(False)
         return "Message tracing stopped: "+msg_id
 
     def update(self):
         for key in self.message_map.keys():
-            self.message_map[key].fill("TEST")
-        self._set_widget_list(list(self.message_map.values()))
+            self.message_map[key].fill(run_cmd(*['get_msg_history', key]))
+        self.contents = [(w, (WEIGHT, 1)) for w in self.message_map.values()]
 
 class CommandLine(LineBox):
     def __init__(self):
