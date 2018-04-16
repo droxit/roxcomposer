@@ -24,12 +24,15 @@ def list_service_files(*args):
 
 def post_to_pipeline(*args):
     if len(args) < 2:
-        return 'ERROR: a pipeline name and a message must be specified'
+        raise RuntimeError('ERROR: a pipeline name and a message must be specified')
 
     d = {'name': args[0], 'data': " ".join(args[1:])}
     headers = {'Content-Type': 'application/json'}
     r = requests.post('http://{}/post_to_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
-    return json.loads(r.text)['message_id']
+    if r.status_code == 200:
+        return json.loads(r.text)['message_id']
+    else:
+        raise RuntimeError('ERROR: {} - {}'.format(r.status_code, r.text))
 
 
 def get_services(*args):
@@ -104,7 +107,7 @@ def shutdown_service(*args):
     if r.status_code == 200:
         return r.text
     else:
-        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+        raise RuntimeError('ERROR: {} - {}'.format(r.status_code, r.text))
 
 def dump_everything(*args):
     if len(args) > 1:
