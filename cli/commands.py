@@ -113,6 +113,24 @@ def dump_everything(*args):
         f.close()
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+def load_services_and_pipelines(*args):
+    if len(args) > 1:
+        return 'WARNING: superfluous arguments to services: {}'.format(args[1:])
+
+    if os.path.isfile(args[0]):
+        restore_json = json.loads(open(args[0]).read())
+        #with open(args[0]) as json_file:
+        #    restore_json = json.load(json_file)
+
+    else:
+        return 'file {} not found'.format(args[0])
+
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/load_services_and_pipelines'.format(roxconnector), data=json.dumps(restore_json), headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 def list_commands(*args):
     return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
@@ -126,6 +144,7 @@ cmd_map = {
         'set_pipeline': set_pipeline,
         'shutdown_service': shutdown_service,
         'dump': dump_everything,
+        'restore': load_services_and_pipelines,
         'help': list_commands
 }
 
