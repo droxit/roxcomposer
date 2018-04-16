@@ -5,13 +5,18 @@
 //
 // Copyright (c) 2018 droxIT GmbH
 //
+// usage: const logobs = require('./log_observer');
+//        let observer = new logobs(callback);
+//        observer.register(file1, file2, ...);
+//        /* callback will be called with new log lines as they arrive */
+//        /* unregister when you're done */
+//        observer.unregister(file1, file2, ...);
 
 
 let fs = require('fs');
 let _files = {};
 
-module.exports = function (cb, cleanup=true) {
-	this.cleanup = cleanup;
+module.exports = function (cb) {
 	this.register = register;
 	this.unregister = unregister;
 	this.files = new Set();
