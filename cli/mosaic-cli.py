@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# mosaic-cli.py
+# Urwid based CLI application for ROXcomposer
+# It can be used to start and shutdown services, setup pipelines and post messages.
+# Once a message is posted, it will be traced back automatically by using the message history.
 #
 # devs@droxit.de - droxIT GmbH
 #
@@ -14,15 +16,18 @@ from cmdparser import tokenize
 import json
 
 
+# Window class - for boxed windows with listed elements
 class Window(LineBox):
     def __init__(self, caption):
         self.body = SimpleFocusListWalker([])
         super(Window, self).__init__(ListBox(self.body), title=caption)
 
+    # add a singe text line to the window
     def addline(self, line):
         self.body.append(Text(line))
         self.body.set_focus(len(self.body)-1)
 
+    # overwrite the window content
     def fill(self, content):
         self.body.clear()
         lines = content.split("\n")
@@ -31,12 +36,14 @@ class Window(LineBox):
             self.body.set_focus(len(self.body) - 1)
 
 
+# ProgressWindow class - for boxed windows with listed elements and progress bar header
 class ProgressWindow(LineBox):
     def __init__(self, caption, done):
         self.pbar = ProgressBar('normal', 'complete', done=done)
         self.body = SimpleFocusListWalker([])
         super(ProgressWindow, self).__init__(Frame(ListBox(self.body), header=self.pbar), title=caption)
 
+    # overwrite the window content
     def fill(self, content):
         self.body.clear()
         lines = content.split("\n")
@@ -44,10 +51,12 @@ class ProgressWindow(LineBox):
             self.body.append(Text(line.strip()))
             self.body.set_focus(len(self.body) - 1)
 
+    # set the current progress for the progress bar
     def progress(self, completion):
         self.pbar.set_completion(completion)
 
 
+# MainFrame class - main window container and key input handler
 class MainFrame(Frame):
     def __init__(self):
         self.log = Window(u"Log Window")
@@ -59,7 +68,10 @@ class MainFrame(Frame):
         self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 0)), (self.cmdh, (WEIGHT, 1))]
         super(MainFrame, self).__init__(self.body, footer=self.cmdl)
 
+    # key input handling function
     def keypress(self, size, key):
+
+        # cmd history walk with up and down arrow keys
         if self.focus_position == 'footer':
             if key == 'up' or key == 'down':
                 if key == 'up':
@@ -73,6 +85,7 @@ class MainFrame(Frame):
                 else:
                     self.cmdl.set_text(u"")
 
+        # only pass if enter is pressed
         if key != 'enter':
             return super(MainFrame, self).keypress(size, key)
 
@@ -89,7 +102,7 @@ class MainFrame(Frame):
 
         cmdt = tokenize(cmd)
 
-        # command not available
+        # interpret command
         if cmdt[0] not in cmd_map:
             self.log.addline(run_cmd(*['help']))
         elif cmdt[0] == "post_to_pipeline":
@@ -106,6 +119,7 @@ class MainFrame(Frame):
         self.cmdh.addline(cmd)
         self.cmdl.clear()
 
+    # show and hide message trace window
     def showmtw(self, show):
         if show:
             self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 1)), (self.cmdh, (WEIGHT, 1))]
@@ -113,6 +127,7 @@ class MainFrame(Frame):
             self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 0)), (self.cmdh, (WEIGHT, 1))]
 
 
+# MessageTraceWidget class - message trace windows container
 class MessageTraceWidget(Pile):
     def __init__(self, parent):
         self.message_map = dict()
@@ -120,6 +135,8 @@ class MessageTraceWidget(Pile):
         self.parent = parent
         super(MessageTraceWidget, self).__init__([])
 
+    # add a message to the widget.
+    # it uses the pipeline length to compute the progress.
     def add_message(self, msg_id, pipe_len):
         if msg_id in self.message_map.keys():
             self.parent.log.addline("Message tracing failed: ID duplicate.")
@@ -129,6 +146,8 @@ class MessageTraceWidget(Pile):
         self.parent.showmtw(True)
         self.parent.log.addline("Message tracing started: "+msg_id)
 
+    # removes the message from the widget.
+    # completed messages are automatically removed during refresh.
     def remove_message(self, msg_id):
         if msg_id not in self.message_map.keys():
             self.parent.log.addline("Message tracing stop failed: ID not found.")
@@ -138,6 +157,8 @@ class MessageTraceWidget(Pile):
             self.parent.showmtw(False)
         self.parent.log.addline("Message tracing finished: "+msg_id)
 
+    # refreshes the message histories and progress.
+    # the progress is computed by the 'message dispatched' event counts and the pipeline length.
     def refresh(self, loop=None, data=None):
         # do update with collecting the finished
         finished = []
@@ -161,30 +182,39 @@ class MessageTraceWidget(Pile):
         loop.set_alarm_in(1, self.refresh)
 
 
+# CommandLine class - for boxed edit line used to read the command input
 class CommandLine(LineBox):
     def __init__(self):
         self.edit = Edit(u"")
         super(CommandLine, self).__init__(self.edit)
 
+    # read the text from the edit box
     def get_text(self):
         return self.edit.edit_text
 
+    # set a text for the edit box
     def set_text(self, txt):
         self.edit.edit_text = txt
 
+    # clear the edit box
     def clear(self):
         self.edit.edit_text = u""
 
 
+# Main function
 if __name__ == "__main__":
     frame = MainFrame()
     frame.focus_position = 'footer'
 
+    # palette introduces colors with labels 'normal' and 'complete'
+    # the colors are used for the progress bars
     palette = [
         ('normal',   'white', 'black', 'standout'),
         ('complete', 'white', 'dark magenta'),
     ]
-
     loop = MainLoop(frame, palette)
+
+    # start refreshing loop for the message trace widget
     loop.set_alarm_in(1, frame.mtw.refresh)
+
     loop.run()
