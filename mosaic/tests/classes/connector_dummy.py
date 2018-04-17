@@ -1,4 +1,11 @@
-#! /usr/bin/env python
+# encoding: utf-8
+#
+# dummy connector class - for testing purposes only
+#
+# devs@droxit.de
+#
+# Copyright (c) 2018 droxIT GmbH
+#
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading

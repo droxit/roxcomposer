@@ -107,7 +107,7 @@ class MainFrame(Frame):
             self.log.addline(run_cmd(*['help']))
         elif cmdt[0] == "post_to_pipeline":
             try:
-                msg_id = run_cmd(*cmdt)
+                msg_id = json.loads(run_cmd(*cmdt))['message_id']
                 pipelines = run_cmd(*['pipelines'])
                 pipe_len = len(json.loads(pipelines)[cmdt[1]]['services'])
                 self.mtw.add_message(msg_id, pipe_len)
@@ -179,7 +179,7 @@ class MessageTraceWidget(Pile):
             self.remove_message(key)
 
         self.contents = [(w, (WEIGHT, 1)) for w in self.message_map.values()]
-        loop.set_alarm_in(1, self.refresh)
+        loop.set_alarm_in(0.1, self.refresh)
 
 
 # CommandLine class - for boxed edit line used to read the command input
@@ -215,6 +215,6 @@ if __name__ == "__main__":
     loop = MainLoop(frame, palette)
 
     # start refreshing loop for the message trace widget
-    loop.set_alarm_in(1, frame.mtw.refresh)
+    loop.set_alarm_in(0.1, frame.mtw.refresh)
 
     loop.run()

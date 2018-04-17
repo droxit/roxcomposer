@@ -14,6 +14,7 @@ import requests
 roxconnector = 'localhost:7475'
 service_file_dir = 'services'
 
+
 def list_service_files(*args):
     ret = []
     for f in os.scandir(service_file_dir):
@@ -22,6 +23,9 @@ def list_service_files(*args):
 
     return "\n".join(ret)
 
+
+# post a message to pipeline
+# needs the pipeline name and the message as args
 def post_to_pipeline(*args):
     if len(args) < 2:
         raise RuntimeError('ERROR: a pipeline name and a message must be specified')
@@ -30,7 +34,7 @@ def post_to_pipeline(*args):
     headers = {'Content-Type': 'application/json'}
     r = requests.post('http://{}/post_to_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
     if r.status_code == 200:
-        return json.loads(r.text)['message_id']
+        return r.text
     else:
         raise RuntimeError('ERROR: {} - {}'.format(r.status_code, r.text))
 
@@ -43,7 +47,8 @@ def get_services(*args):
         return r.text
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
-    
+
+
 def start_service(*args):
     if len(args) > 1:
         return 'WARNING: superfluous arguments to start service: {}'.format(args)
@@ -63,6 +68,8 @@ def start_service(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+
+# get message history by message id
 def get_msg_history(*args):
     if len(args) > 1:
         return 'WARNING: superfluous arguments to get msg history: {}'.format(args)
@@ -76,12 +83,13 @@ def get_msg_history(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+
 def set_pipeline(*args):
     if len(args) < 2:
         return 'ERROR: a pipeline name and at least one service must be specified'
     pipename = args[0]
     services = args[1:]
-    d = { 'name': pipename, 'services': services }
+    d = {'name': pipename, 'services': services}
     headers = {'Content-Type': 'application/json'}
     r = requests.post('http://{}/set_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
     if r.status_code == 200:
@@ -89,12 +97,14 @@ def set_pipeline(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+
 def get_pipelines(*args):
     r = requests.get('http://{}/pipelines'.format(roxconnector))
     if r.status_code == 200:
         return r.text
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
 
 def shutdown_service(*args):
     if len(args) != 1:
@@ -108,6 +118,7 @@ def shutdown_service(*args):
         return r.text
     else:
         raise RuntimeError('ERROR: {} - {}'.format(r.status_code, r.text))
+
 
 def dump_everything(*args):
     if len(args) > 1:
