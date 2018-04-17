@@ -136,8 +136,11 @@ def load_and_start_pipeline(*args):
     if len(args) > 1:
         return 'WARNING: superfluous arguments to services: {}'.format(args[1:])
 
+    pipe_path = args[0]
+    d = { 'pipe_path': pipe_path }
+
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/load_and_start_pipeline'.format(roxconnector), args[0], headers=headers)
+    r = requests.post('http://{}/load_and_start_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
     if r.status_code == 200:
         return r.text
     else:
