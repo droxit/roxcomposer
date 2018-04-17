@@ -46,21 +46,29 @@ container that calls `listen_thread()` at this point since we would need to impo
 
 ### Using the mosaic-cli
 
-Since writing curl requests can be quite cumbersome the mosaic package includes a cli that streamlines the process.
+Since writing curl requests can be quite cumbersome the mosaic package includes a cli shell that streamlines the process.
 
-If invoked without arguments it will print usage information:
+You can easily start it from within the mosaic folder:
+python mosaic-cli.py
+
+The cli-window is divided in three parts, the Log-window there collect the responses, the Command-history it show the last seven commands and the the last part is the command-line for the input
+
+With the command help it will print usage information:
 
 ```bash
-./mosaic-cli
-usage: mosaic-cli <COMMAND> [ARGUMENTS]
+python mosaic-cli.py
+
+command-line usage : <COMMAND> [ARGUMENTS]
 commands:
+  dump
+  restore_pipeline <ABSOLUTE_PIPELINE_PATH>
+  restore_server <DUMP_PATH>
   start_service <SERVICE>
   services
   set_pipeline <NAME> <SERVICE> [...]
   pipelines
   post_to_pipeline <PIPELINE> <MESSAGE>
   shutdown_service <SERVICE>
-  load_and_start_pipeline <PIPELINE_PATH>
 ```
 
 #### start\_service
@@ -95,8 +103,8 @@ Lists the active services
 
 This allows you to set a pipeline by naming it and listing the name's of the services it should contain:
 
-```bash
-./mosaic-cli set_pipeline pipe myservice myotherservice gotanotherone
+```command-line
+set_pipeline pipe myservice myotherservice gotanotherone
 ```
 
 #### pipelines
@@ -107,39 +115,39 @@ List the defined pipelines.
 
 Post a message to a pipeline of your choice:
 
-```bash
-./mosaic-cli post_to_pipeline pipe "Hello world!"
+```command-line
+post_to_pipeline pipe "Hello world!"
 ```
 
 #### shutdown\_service
 
 Shutdown a service and set all pipelines to inactive if the service is part of their pipeline.
 
-```bash
-./mosaic-cli shutdown_service my_service.service
+```command-line
+shutdown_service my_service.service
 ```
 
 #### dump
 
 Retrieve a dump of the running services and defined pipelines
 
-```bash
-./mosaic-cli dump
+```command-line
+dump
 ```
 
-#### restore
+#### restore\_server
 
 Restore a previously taken service and pipeline dump
 
-```bash
-./mosaic-cli restore /path/to/dump.json
+```command-line
+restore_server /path/to/dump.json
 ```
 
-#### load\_and\_start\_pipeline
+#### restore\_pipeline
 
 Load the pipelines configuration from path and activate this.
 
-```bash
-./mosaic-cli load_and_start_pipeline path_pipe
+```command-line
+restore_pipeline path_pipe
 ```
 
