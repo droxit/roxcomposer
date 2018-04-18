@@ -1,5 +1,5 @@
 //
-// Classe mosaic deploy: standard functionalities from mosaic
+// Class mosaic control: ROXconnector control plugin for ROXcomposer
 //
 // devs@droxit.de - droxIT GmbH
 //
@@ -10,8 +10,10 @@ let fs = require('fs');
 let bunyan = require('bunyan');
 let spawn = require('child_process').spawn;
 let net = require('net');
+let uuid = require('uuid/v4');
 let mosaic_message = require('./mosaic_message.js');
 let config_loader = require('./config_loader.js');
+let logsession = require('./log_session.js');
 
 function __mosaic_control_private() {
 	this.processes = {};
@@ -36,6 +38,7 @@ module.exports = function (container) {
 	container['dump_services_and_pipelines'] = dump_services_and_pipelines.bind(undefined, mcp);
 	container['load_services_and_pipelines'] = load_services_and_pipelines.bind(undefined, mcp);
 	container['load_and_start_pipeline'] = load_and_start_pipeline.bind(undefined, mcp);
+	container['create_log_observer'] = create_log_observer.bind(undefined, mcp);
 };
 
 /**
