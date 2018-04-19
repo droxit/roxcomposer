@@ -1,0 +1,7 @@
+[distutils]
+index-servers =
+    nexus
+
+[nexus]
+repository: http://localhost:8081/npm-hosted
+username: dr0x1tD3pl0ym3nt
