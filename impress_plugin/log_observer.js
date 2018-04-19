@@ -16,6 +16,7 @@
 let fs = require('fs');
 let _files = {};
 
+// constructor
 module.exports = function (cb) {
 	this.register = register.bind(this);
 	this.unregister = unregister.bind(this);
@@ -23,6 +24,7 @@ module.exports = function (cb) {
 	this.cb = cb;
 }
 
+// add files to be watched
 function register(...files) {
 	let proms = []; 
 	files.forEach((f) => {
@@ -41,6 +43,7 @@ function register(...files) {
 	return proms;
 }
 
+// remove files from watch list
 function unregister(...files) {
 	// if called without any arguments we unregister all files
 	if (files.length == 0)
@@ -59,6 +62,7 @@ function unregister(...files) {
 	});
 }
 
+// class for observing a single file - takes an optional buffer size
 function FileListener(bufsize=2048) {
 	this.cleanup = cleanup_listener.bind(this);
 	this.subscribers = new Set();
@@ -69,6 +73,7 @@ function FileListener(bufsize=2048) {
 	this.buffer = Buffer.alloc(bufsize);
 }
 
+// watch a file
 function watch_file(file) {
 	let p = new Promise((resolve, reject) => {
 		fs.open(file, 'r', (err, fd) => {
@@ -100,7 +105,7 @@ function watch_file(file) {
 						});
 					}
 				});
-				this.watcher.on('error', (err) => { console.log(err); });
+				this.watcher.on('error', (err) => { console.error(err); });
 			});
 		});
 	});
@@ -108,6 +113,7 @@ function watch_file(file) {
 	return p;
 }
 
+// cleanup 
 function cleanup_listener() {
 	this.watcher.close();
 	fs.close(this.fd, () => {});
@@ -115,6 +121,7 @@ function cleanup_listener() {
 	this.fd = null;
 }
 
+// take a string and return all lines that end in a newline and the rest in { lines: [...], rest: "..." }
 function read_lines(lines) {
 	let ret = { rest: "", lines: [] };
 
