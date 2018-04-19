@@ -1,6 +1,7 @@
 //
 // Class LogSession: Session management for log observation
-// a log session has a uuid and 
+// a log session has a uuid and buffers up to nlines lines
+// accross all observed files
 //
 // devs@droxit.de - droxIT GmbH
 //
@@ -12,7 +13,8 @@ let logobs = require('./log_observer.js');
 
 module.exports = LogSession;
 
-function LogSession(lines) {
+// constructor
+function LogSession(nlines) {
 	this.id = uuid();
 	this.nlines = lines;
 	this.lines = [];
@@ -25,14 +27,17 @@ function LogSession(lines) {
 	this.logobs = new logobs(this.receive_lines);
 }
 
+// add files to observe to this session
 function watch_files(files) {
 	return Promise.all(this.logobs.register.apply(this.logobs, files));
 }
 
+// remove files from this session
 function unwatch_files(files) {
 	this.logobs.unregister(files);
 }
 
+// callback function for receiving lines from the LogObserver
 function receive_lines(lines) {
 	let ln = lines;
 	for (i in this.filters)
@@ -45,6 +50,7 @@ function receive_lines(lines) {
 	}
 }
 
+// get buffered lines and clear buffer
 function get_lines() {
 	let lines = this.lines;
 	this.lines = [];
@@ -52,6 +58,7 @@ function get_lines() {
 	return lines;
 }
 
+// unregister all files from LogObserver and clear buffer
 function cleanup() {
 	this.logobs.unregister();
 	this.lines = [];
