@@ -129,11 +129,15 @@ function start_service(args, cb) {
 	this.logger.debug({args: args}, 'start_service called');
 	let opt;
 
+	// LOTS of argument checking ahead
+
+	// basic stuff
 	if (args === undefined)
 		throw TypeError("start_service: 'args' must be a dictionary");
 	if (typeof cb !== 'function')
 		throw TypeError("start_service: 'cb' must be a function");
 
+	// we either need a path to load the service module from ....
 	if ('path' in args) {
 		try {
 			fs.accessSync(args.path);
@@ -142,6 +146,7 @@ function start_service(args, cb) {
 			cb({'code': 400, 'message': `start_service: path does not exist - ${args.path}`});
 			return;
 		}
+	// ... or a classpath to utilize the python class loading utilities
 	} else if ('classpath' in args) {
         if (this.service_container_path) {
 		    opt = [this.service_container_path, args.classpath];
@@ -159,6 +164,8 @@ function start_service(args, cb) {
 		return;
 	}
 
+	// if a service key is present we try to retrieve the config via the config_loader and look up the key
+	// this is necessary for the plugin to know the service's address
 	if ('service_key' in args.params) {
 		if ('config_file' in args.params) {
 			let c;
@@ -206,6 +213,7 @@ function start_service(args, cb) {
 			}
 	}
 
+	// now we actually start the child process
 	let name = args.params.name;
 	let params = args.params;
 	opt.push(JSON.stringify(params));
@@ -253,6 +261,9 @@ function start_service(args, cb) {
 	cb(null, {'message': `service [${name}] created`});
 }
 
+/**
+ * construct a mosaic message object given a pipeline and payload (data)
+ **/
 function create_mosaic_message(pline, data) {
 	let msg = new mosaic_message.Message();
 
@@ -264,12 +275,18 @@ function create_mosaic_message(pline, data) {
 	return msg;
 }
 
+/**
+ * read a mosaic message from its binary representation
+ **/
 function read_mosaic_message(msg) {
 	let m = mosaic_message.deserialize(msg);
 	return m.get_payload();
 }
 
-// args = { 'name': pipeline_name, 'data': "..." }
+/**
+ * send a message into a pipeline
+ * args = { 'name': pipeline_name, 'data': "..." }
+ **/
 function post_to_pipeline(args, cb) {
 	if (!(args.name in this.pipelines)) {
 		cb({'code': 400, 'message': 'no pipeline with that name'});
@@ -309,17 +326,26 @@ function post_to_pipeline(args, cb) {
 	});
 }
 
-// no args required
+/**
+ * get the list of active services
+ * no args required
+ **/
 function get_services(args, cb) {
 	cb(null, this.services);
 }
 
-// no args required
+/**
+ * get the list of defined pipelines
+ * no args required
+ **/
 function get_pipelines(args, cb) {
 	cb(null, this.pipelines);
 }
 
-// args = { 'name': "...", 'pipeline': [ ... service names ... ] }
+/**
+ * define a pipeline of services
+ * args = { 'name': "...", 'pipeline': [ ... service names ... ] }
+ **/
 function set_pipeline(args, cb) {
 	if (!('services' in args)) {
 		let msg = 'set_pipeline: service array missing from arguments';
@@ -362,7 +388,10 @@ function set_pipeline(args, cb) {
 	cb(null, {'message': `pipeline [${args.name}] created`});
 }
 
-// args = { 'name': "..." }
+/**
+ * shutdown a service
+ * args = { 'name': "..." }
+ **/
 function shutdown_service(args, cb) {
 	if (args === undefined)
 		throw TypeError("shutdown: 'args' must be a dictionary");
@@ -378,7 +407,13 @@ function shutdown_service(args, cb) {
 	}
 }
 
+/**
+ * contact the reporting service
+ * funcname: command to be performed by the reporting service
+ * args: arguments depending on funcname
+ **/
 function post_to_report_service(funcname, args, cb) {
+	// we open a socket to receive the answer from the reporting service
 	let server = new net.createServer((c) => {
 		// will only be closed when the last active connection has been closed
 		// but this way we don't have to do it later
@@ -423,6 +458,10 @@ function post_to_report_service(funcname, args, cb) {
 	});
 }
 
+/**
+ * retrieve the message trace for a specific message
+ * args = { TODO: do some argument checking }
+ **/
 function get_msg_history(args, cb) {
 	if (this.reporting_service)
 		try {
@@ -435,6 +474,10 @@ function get_msg_history(args, cb) {
 		cb({'code': 400, 'message': 'no reporting service has been configured'});
 }
 
+/**
+ * retrieve the message status for a specific message
+ * args = { TODO: do some argument checking }
+ **/
 function get_msg_status(args, cb) {
 	if (this.reporting_service)
 		try {
@@ -446,10 +489,18 @@ function get_msg_status(args, cb) {
 		cb({'code': 400, 'message': 'no reporting service has been configured'});
 }
 
+/**
+ * dump the currently active services and pipeline definitions
+ * args = {}
+ **/
 function dump_services_and_pipelines(args, cb) {
 	cb(null, { services: this.services, pipelines: this.pipelines });
 }
 
+/**
+ * restore a dump created by dump_services_and_pipelines
+ * args = dump
+ **/
 function load_services_and_pipelines(args, cb) {
 	let skipped_services = [];
 	let started_services = [];
@@ -541,7 +592,9 @@ function start_pipeline(args, cb) {
     return(this.set_pipeline(args, cb));
 }
 
-// start a new session for log observation
+/**
+ * start a new session for log observation
+ **/
 function create_log_observer(args, cb) {
 	let missing = check_args(args, ['lines', 'timeout']);
 	if (missing) {
@@ -566,6 +619,9 @@ function create_log_observer(args, cb) {
 	this.set_logsession_timeout(l.id);
 }
 
+/*
+ * check a list of services whether they exist and have a log file configured
+ **/
 function check_services_and_logs(services) {
 	let missing_services = services.filter(s => !(s in this.services));
 	if (missing_services.length)
@@ -576,6 +632,9 @@ function check_services_and_logs(services) {
 		throw new Error(`services without logfiles: ${without_log.join(", ")}`);
 }
 
+/*
+ * add services to an existing log session
+ **/
 function add_services_to_logsession(sessionid, services) {
 	this.check_services_and_logs(services);
 	let l = this.logsessions[sessionid];
@@ -584,6 +643,10 @@ function add_services_to_logsession(sessionid, services) {
 	return l.session.watch_files(services.map(s => this.services[s].params.logging.filename));
 }
 
+/*
+ * create a reqexp for service log line filtering
+ * assumes that a service will put 'service:servicenam' into its log lines
+ **/
 function service_log_filter(services) {
 	// WARNING: this depends on the service log format - changing the layout may break this
 	// when every service get its own log file we won't need this crutch anymore
@@ -591,6 +654,9 @@ function service_log_filter(services) {
 	return line => line.search(re) >= 0;
 }
 
+/**
+ * set or refresh a timeout for session cleanup
+ **/
 function set_logsession_timeout(sessionid) {
 	let l = this.logsessions[sessionid];
 	if ('timerid' in l)
@@ -602,6 +668,15 @@ function set_logsession_timeout(sessionid) {
 	}, l.timeout);
 }
 
+/**
+ * remove services from observation or delete the whole session
+ * this was put into the same function in order to provide a single endpoint
+ * DELETE log_observer
+ * for both operations
+ * args = { sessionid: "...", services: [....] }
+ * the services parameter is optional, if present the services are removed from observation
+ * otherwise the whole session is deleted
+ **/
 function delete_log_observer(args, cb) {
 	let missing = check_args(args, ['sessionid']);
 	if (missing) {
@@ -641,6 +716,10 @@ function delete_log_observer(args, cb) {
 	cb(null, {ok: args.sessionid});
 }
 
+/*
+ * receive the gathered lines from a logsession
+ * args = { sessionid: "..." }
+ **/
 function get_log_lines(args, cb) {
 	let missing = check_args(args, ['sessionid']);
 	if (missing) {
