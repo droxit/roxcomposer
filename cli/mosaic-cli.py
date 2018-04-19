@@ -165,7 +165,7 @@ class MessageTraceWidget(Pile):
         for key in self.message_map.keys():
             msg_hist = []
             try:
-                msg_hist = json.loads(run_cmd(('get_msg_history', key)))
+                msg_hist = json.loads(run_cmd('get_msg_history', key))
             except Exception as e:
                 self.parent.log.addline(str(e))
             msg_hist = "\n".join([json.dumps(msg) for msg in msg_hist])
