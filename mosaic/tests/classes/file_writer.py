@@ -25,7 +25,7 @@ class FileWriter(base_service.BaseService):
 
     def on_message(self, msg):
         self.msg = msg
-        self.logger.info("received: {}".format(msg))
+        self.logger.info("received: {} bytes".format(len(msg)))
         self.write_file()
 
     def write_file(self):
