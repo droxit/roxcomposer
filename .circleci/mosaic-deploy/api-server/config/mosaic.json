@@ -121,6 +121,13 @@
                   "name": "mosaic",
                   "function": "load_and_start_pipeline"
               }
+          },
+          "add_services_to_logsession": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "mosaic",
+                  "function": "post_services_to_logsession"
+              }
           }
       },
       "DELETE": {
