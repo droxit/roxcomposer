@@ -17,22 +17,22 @@ let fs = require('fs');
 let _files = {};
 
 module.exports = function (cb) {
-	this.register = register;
-	this.unregister = unregister;
+	this.register = register.bind(this);
+	this.unregister = unregister.bind(this);
 	this.files = new Set();
 	this.cb = cb;
 }
 
 function register(...files) {
-	let proms = {};
+	let proms = []; 
 	files.forEach((f) => {
 		if (this.files.has(f))
 			return;
 		if (!(f in _files)) {
 			_files[f] = new FileListener();
-			proms[f] = _files[f].watch(f);
+			proms.push(_files[f].watch(f));
 		} else {
-			proms[f] = Promise.resolve();
+			proms.push(Promise.resolve());
 		}
 		_files[f].subscribers.add(this);
 		this.files.add(f);
@@ -42,6 +42,10 @@ function register(...files) {
 }
 
 function unregister(...files) {
+	// if called without any arguments we unregister all files
+	if (files.length == 0)
+		files = this.files;
+
 	files.forEach((f) => {
 		if (this.files.has(f) && (f in _files)) {
 			_files[f].subscribers.delete(this);
@@ -56,12 +60,11 @@ function unregister(...files) {
 }
 
 function FileListener(bufsize=2048) {
-	this.cleanup = cleanup_listener;
+	this.cleanup = cleanup_listener.bind(this);
 	this.subscribers = new Set();
 	this.watcher = null;
 	this.fd = null;
-	this.watch = watch_file;
-
+	this.watch = watch_file.bind(this);
 	this.bufsize = bufsize; 
 	this.buffer = Buffer.alloc(bufsize);
 }
