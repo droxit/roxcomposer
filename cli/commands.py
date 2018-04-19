@@ -117,7 +117,7 @@ def shutdown_service(*args):
     if r.status_code == 200:
         return r.text
     else:
-        raise RuntimeError('ERROR: {} - {}'.format(r.status_code, r.text))
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 
 def dump_everything(*args):

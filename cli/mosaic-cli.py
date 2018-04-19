@@ -103,18 +103,18 @@ class MainFrame(Frame):
         cmdt = tokenize(cmd)
 
         # interpret command
-        if cmdt[0] not in cmd_map:
-            self.log.addline(run_cmd(*['help']))
-        elif cmdt[0] == "post_to_pipeline":
-            try:
+        try:
+            if cmdt[0] not in cmd_map:
+                self.log.addline(run_cmd(('help')))
+            elif cmdt[0] == "post_to_pipeline":
                 msg_id = json.loads(run_cmd(*cmdt))['message_id']
                 pipelines = run_cmd(*['pipelines'])
                 pipe_len = len(json.loads(pipelines)[cmdt[1]]['services'])
                 self.mtw.add_message(msg_id, pipe_len)
-            except Exception as e:
-                self.log.addline(str(e))
-        else:
-            self.log.addline(run_cmd(*cmdt))
+            else:
+                self.log.addline(run_cmd(*cmdt))
+        except Exception as e:
+            self.log.addline(str(e))
 
         self.cmdh.addline(cmd)
         self.cmdl.clear()
@@ -163,7 +163,11 @@ class MessageTraceWidget(Pile):
         # do update with collecting the finished
         finished = []
         for key in self.message_map.keys():
-            msg_hist = json.loads(run_cmd(*['get_msg_history', key]))
+            msg_hist = []
+            try:
+                msg_hist = json.loads(run_cmd(('get_msg_history', key)))
+            except Exception as e:
+                self.parent.log.addline(str(e))
             msg_hist = "\n".join([json.dumps(msg) for msg in msg_hist])
 
             sub = '"event": "message_dispatched"'
