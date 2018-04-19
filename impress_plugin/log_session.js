@@ -16,7 +16,7 @@ module.exports = LogSession;
 // constructor
 function LogSession(nlines) {
 	this.id = uuid();
-	this.nlines = lines;
+	this.nlines = nlines;
 	this.lines = [];
 	this.filters = [];
 	this.receive_lines = receive_lines.bind(this);
