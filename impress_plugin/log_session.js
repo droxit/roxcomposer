@@ -1,5 +1,6 @@
 //
 // Class LogSession: Session management for log observation
+// a log session has a uuid and 
 //
 // devs@droxit.de - droxIT GmbH
 //
@@ -17,10 +18,10 @@ function LogSession(lines) {
 	this.lines = [];
 	this.filters = [];
 	this.receive_lines = receive_lines.bind(this);
-	this.watch_files = watch_files;
-	this.unwatch_files = unwatch_files;
-	this.cleanup = cleanup;
-	this.get_lines = get_lines;
+	this.watch_files = watch_files.bind(this);
+	this.unwatch_files = unwatch_files.bind(this);
+	this.cleanup = cleanup.bind(this);
+	this.get_lines = get_lines.bind(this);
 	this.logobs = new logobs(this.receive_lines);
 }
 
