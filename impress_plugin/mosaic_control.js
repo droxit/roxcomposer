@@ -633,6 +633,19 @@ function check_services_and_logs(services) {
 }
 
 /*
+ * endpoint handler for adding services to a log session
+ **/
+function post_services_to_logsession(args, cb) {
+	let missing = check_args(args, ['sessionid', 'services']);
+	if (missing) {
+		cb({code: 400, message: missing});
+		return;
+	}
+    // CONTINUE HERE
+
+}
+
+/*
  * add services to an existing log session
  **/
 function add_services_to_logsession(sessionid, services) {
