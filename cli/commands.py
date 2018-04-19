@@ -73,7 +73,7 @@ def start_service(*args):
 def get_msg_history(*args):
     if len(args) > 1:
         return 'WARNING: superfluous arguments to get msg history: {}'.format(args)
-    msg_id = args[0]
+    msg_id = args[0].strip("'\"")
     d = {'message_id': msg_id}
 
     headers = {'Content-Type': 'application/json'}
