@@ -60,13 +60,29 @@ class TestCliCommands(unittest.TestCase):
             f.close()
 
             sent = commands.load_services_and_pipelines(*[dummy_path])
+            self.maxDiff = None
             self.assertEqual(json.dumps(resp), sent)
 
     def test_set_pipeline(self):
-        args = {"name": "dummy_test", "pipeline": ["html_generator", "file_writer"]}
-        sent = commands.set_pipeline(*[json.dumps(args)])
+        pipename = 'dummy_test'
+        services = ['html_generator']
+        sent = commands.set_pipeline(pipename, services)
 
-        print(sent)
+        response = {"services": [["html_generator"]], "name": "dummy_test"}
+        self.assertEqual(json.dumps(response), sent)
+
+    def test_shutdown_service(self):
+        service = 'html_generator'
+        sent = commands.shutdown_service(service)
+        response = {"name": "html_generator"}
+
+        self.assertEqual(json.dumps(response), sent)
+
+    def test_shutdown_service_false(self):
+        sent = commands.shutdown_service()
+        response = 'ERROR: exactly one service needs to be specified for shutdown'
+
+        self.assertEqual(response, sent)
 
     def tearDown(self):
         self.server.stop()
