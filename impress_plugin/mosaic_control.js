@@ -170,16 +170,20 @@ function start_service(mcp, args, cb) {
 	}
 
     // add default values to params if not set
-    if (!args.params.hasOwnProperty('logging'))
-        args.params.logging = {
-            'filename': mcp.default.log,
-            'level': mcp.default.log_level
-        };
-    if (!args.params.hasOwnProperty('monitoring'))
-        args.params.monitoring = {
-            'filename': mcp.default.monitoring,
-            'monitor_class': mcp.default.monitoring_class
-        };
+    try {
+        if (!args.params.hasOwnProperty('logging'))
+            args.params.logging = {
+                'filename': mcp.default.log,
+                'level': mcp.default.log_level
+            };
+        if (!args.params.hasOwnProperty('monitoring'))
+            args.params.monitoring = {
+                'filename': mcp.default.monitoring,
+                'monitor_class': mcp.default.monitoring_class
+            };
+    } catch (e) {
+        mcp.logger.error({error: e}, 'unable to load default logging and monitoring');
+    }
 
 	let name = args.params.name;
 	let params = args.params;
