@@ -72,13 +72,7 @@ function init(mcp, args) {
 	}
 
 	if (args && ('default' in args)) {
-		start_service(mcp, args.reporting_service, (err) => {
-			if (err) {
-				let msg = err.message;
-				throw new Error(msg);
-			}
-			mcp.reporting_service = args.reporting_service.params.name;
-		});
+		mcp.default = args.default;
 	}
 
 	mcp.service_config = false;
