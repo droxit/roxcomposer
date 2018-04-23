@@ -8,6 +8,7 @@
 # Copyright (c) 2018 droxIT GmbH
 #
 
+from functools import partial
 from urwid import *
 from commands import cmd_map, list_commands, run_cmd
 from cmdparser import tokenize
@@ -36,8 +37,27 @@ class MainFrame(Frame):
         self.cmdh = Window(u"Command History")
         self.cmdl = CommandLine()
         self.cmd_walk = 0
+        self.watchers = []
+        self.loop = None
         body = Pile([self.log, self.cmdh])
         super(MainFrame, self).__init__(body, footer=self.cmdl)
+
+    def store_loop(self, loop):
+        self.loop = loop
+
+    def call_and_refresh(self, loop, data):
+        callback, refresh_interval = data
+        try:
+            ret = callback()
+            if len(ret):
+                self.log.addline(ret)
+            self.loop.set_alarm_in(refresh_interval, self.call_and_refresh, (callback, refresh_interval))
+        except Exception as e:
+            self.log.addline("Watcher terminated: {}".format(e))
+
+    def add_watcher(self, callback, refresh_interval):
+        if self.loop is not None:
+            self.loop.set_alarm_in(refresh_interval, self.call_and_refresh, (callback, refresh_interval))
 
     def keypress(self, size, key):
         if self.focus_position == 'footer':
@@ -73,7 +93,13 @@ class MainFrame(Frame):
         if cmdt[0] not in cmd_map:
             self.log.addline(list_commands())
         else:
-            self.log.addline(run_cmd(*cmdt))
+            ret = run_cmd(*cmdt)
+            if isinstance(ret, str):
+                self.log.addline(ret)
+            elif isinstance(ret, dict):
+                self.log.addline(ret['response'])
+                if 'callback' in ret:
+                    self.add_watcher(ret['callback'], 0.2)
 
         self.cmdh.addline(cmd)
         self.cmdl.clear()
@@ -98,4 +124,5 @@ if __name__ == "__main__":
     frame = MainFrame()
     frame.focus_position = 'footer'
     loop = MainLoop(frame)
+    frame.store_loop(loop)
     loop.run()
