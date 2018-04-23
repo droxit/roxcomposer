@@ -71,7 +71,7 @@ class TestCliCommands(unittest.TestCase):
 
         response = {"name": "dummy_test","services": [["html_generator"]]}
         response2 = {"services": [["html_generator"]], "name": "dummy_test",}
-        self.assertEqual(json.dumps(response2), sent)
+        #self.assertEqual(json.dumps(response2), sent)
         self.assertDictEqual(response2, json.loads(sent))
 
     def test_shutdown_service(self):
