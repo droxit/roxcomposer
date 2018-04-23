@@ -47,6 +47,7 @@ function __mosaic_control_private() {
 	this.set_logsession_timeout = set_logsession_timeout.bind(this);
 	this.delete_log_observer = delete_log_observer.bind(this);
 	this.get_log_lines = get_log_lines.bind(this);
+	this.post_services_to_logsession = post_services_to_logsession.bind(this);
 }
 
 module.exports = function (container) {
@@ -66,6 +67,7 @@ module.exports = function (container) {
 	container['create_log_observer'] = mcp.create_log_observer;
 	container['delete_log_observer'] = mcp.delete_log_observer;
 	container['get_log_lines'] = mcp.get_log_lines;
+	container['post_services_to_logsession'] = mcp.post_services_to_logsession;
 };
 
 /**
@@ -641,8 +643,19 @@ function post_services_to_logsession(args, cb) {
 		cb({code: 400, message: missing});
 		return;
 	}
-    // CONTINUE HERE
 
+	if (!Array.isArray(args.services) || args.services.length == 0) {
+		cb({code: 400, message: "services parameter needs to be a non-empty array"})
+		return;
+	}
+
+	let sid = args.sessionid;
+	this.add_services_to_logsession(sid, args.services).
+		then(
+			() => cb(null, { sessionid: sid }),
+			error => cb({code: 400, error: error})
+		).
+		catch(error => cb({code: 400, message: error}));
 }
 
 /*
@@ -651,6 +664,9 @@ function post_services_to_logsession(args, cb) {
 function add_services_to_logsession(sessionid, services) {
 	this.check_services_and_logs(services);
 	let l = this.logsessions[sessionid];
+	if (!l) {
+		return Promise.reject(`session ${sessionid} invalid/timed out`);
+	}
 	services.map(s => l.services.add(s));
 	l.session.filters[0] = service_log_filter(Array.from(l.services.values()));
 	return l.session.watch_files(services.map(s => this.services[s].params.logging.filename));
