@@ -14,6 +14,7 @@ import requests
 roxconnector = 'localhost:7475'
 service_file_dir = 'services'
 
+
 def list_service_files(*args):
     ret = []
     for f in os.scandir(service_file_dir):
@@ -21,6 +22,21 @@ def list_service_files(*args):
             ret.append(f.name)
 
     return "\n".join(ret)
+
+
+# post a message to pipeline
+# needs the pipeline name and the message as args
+def post_to_pipeline(*args):
+    if len(args) < 2:
+        raise RuntimeError('ERROR: a pipeline name and a message must be specified')
+
+    d = {'name': args[0], 'data': " ".join(args[1:])}
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/post_to_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        raise RuntimeError('ERROR: {} - {}'.format(r.status_code, r.text))
 
 
 def get_services(*args):
@@ -31,12 +47,12 @@ def get_services(*args):
         return r.text
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
-    
+
+
 def start_service(*args):
     if len(args) > 1:
         return 'WARNING: superfluous arguments to start service: {}'.format(args)
     service = args[0]
-    print(args)
 
     service_args = None
     try:
@@ -52,12 +68,28 @@ def start_service(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+
+# get message history by message id
+def get_msg_history(*args):
+    if len(args) > 1:
+        return 'WARNING: superfluous arguments to get msg history: {}'.format(args)
+    msg_id = args[0].strip("'\"")
+    d = {'message_id': msg_id}
+
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/get_msg_history'.format(roxconnector), data=json.dumps(d), headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
+
 def set_pipeline(*args):
     if len(args) < 2:
         return 'ERROR: a pipeline name and at least one service must be specified'
     pipename = args[0]
     services = args[1:]
-    d = { 'name': pipename, 'services': services }
+    d = {'name': pipename, 'services': services}
     headers = {'Content-Type': 'application/json'}
     r = requests.post('http://{}/set_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
     if r.status_code == 200:
@@ -65,12 +97,14 @@ def set_pipeline(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+
 def get_pipelines(*args):
     r = requests.get('http://{}/pipelines'.format(roxconnector))
     if r.status_code == 200:
         return r.text
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
 
 def shutdown_service(*args):
     if len(args) != 1:
@@ -84,6 +118,7 @@ def shutdown_service(*args):
         return r.text
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
 
 def dump_everything(*args):
     if len(args) > 1:
@@ -124,7 +159,9 @@ cmd_map = {
         'pipelines': get_pipelines,
         'start_service': start_service,
         'set_pipeline': set_pipeline,
+        'post_to_pipeline': post_to_pipeline,
         'shutdown_service': shutdown_service,
+        'get_msg_history': get_msg_history,
         'dump': dump_everything,
         'help': list_commands
 }
