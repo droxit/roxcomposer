@@ -1,0 +1,12 @@
+{
+  "classpath": "mosaic.tests.classes.delay_service.DelayService",
+  "params": {
+    "ip": "127.0.0.1",
+    "port": 4007,
+    "name": "delay_service",
+	"logging": {
+	  "filename": "pipeline.log",
+	  "level": "INFO"
+	}
+  }
+}
