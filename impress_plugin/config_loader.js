@@ -38,13 +38,13 @@ function load_config(file) {
 	}
 	try {
 		config = JSON.parse(s);
-		if !(config.hasOwnProperty('logging')) {
+		if !config.hasOwnProperty('logging') {
 		    config.logging = {
                 'filename': default_log,
                 'level': default_log_level
             }
 		}
-		if !(config.hasOwnProperty('monitoring')) {
+		if !config.hasOwnProperty('monitoring') {
             config.monitoring = {
                 'filename': default_monitoring,
                 'monitor_class': default_monitoring_class

@@ -1,5 +1,5 @@
 //
-// Classe mosaic deploy: standard functionalities from mosaic
+// Class mosaic deploy: standard functionalities from mosaic
 //
 // devs@droxit.de - droxIT GmbH
 //
