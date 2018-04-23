@@ -61,7 +61,6 @@ class TestCliCommands(unittest.TestCase):
 
             sent = commands.load_services_and_pipelines(*[dummy_path])
             self.maxDiff = None
-            #self.assertEqual(json.dumps(resp), sent)
             self.assertDictEqual(resp, json.loads(sent))
 
     def test_set_pipeline(self):
@@ -69,17 +68,15 @@ class TestCliCommands(unittest.TestCase):
         services = ['html_generator']
         sent = commands.set_pipeline(pipename, services)
 
-        response = {"name": "dummy_test","services": [["html_generator"]]}
-        response2 = {"services": [["html_generator"]], "name": "dummy_test",}
-        #self.assertEqual(json.dumps(response2), sent)
-        self.assertDictEqual(response2, json.loads(sent))
+        response = {"services": [["html_generator"]], "name": "dummy_test",}
+        self.assertDictEqual(response, json.loads(sent))
 
     def test_shutdown_service(self):
         service = 'html_generator'
         sent = commands.shutdown_service(service)
         response = {"name": "html_generator"}
 
-        self.assertEqual(json.dumps(response), sent)
+        self.assertEqual(response, json.loads(sent))
 
     def test_shutdown_service_false(self):
         sent = commands.shutdown_service()
