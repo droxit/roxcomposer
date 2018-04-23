@@ -122,7 +122,7 @@
                   "function": "load_and_start_pipeline"
               }
           },
-          "add_services_to_logsession": {
+          "log_observer": {
               "handler": {
                   "type": "plugin",
                   "name": "mosaic",
