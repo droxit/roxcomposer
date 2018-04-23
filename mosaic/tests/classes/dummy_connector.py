@@ -11,7 +11,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
 
 HOST = 'localhost'
-PORT = 7777
+PORT = 7475
 
 
 class SingleRequestHandler(BaseHTTPRequestHandler):

@@ -118,9 +118,9 @@ def load_services_and_pipelines(*args):
         return 'WARNING: superfluous arguments to services: {}'.format(args[1:])
 
     if os.path.isfile(args[0]):
-        restore_json = json.loads(open(args[0]).read())
-        #with open(args[0]) as json_file:
-        #    restore_json = json.load(json_file)
+        f = open(args[0], "r")
+        restore_json = json.loads(f.read())
+        f.close()
 
     else:
         return 'file {} not found'.format(args[0])
