@@ -8,21 +8,27 @@
       "mosaic": {
           "path": "./plugins/mosaic_control.js",
           "params": {
-		  "service_container": "plugins/service_container.py",
-		  "reporting_service": {
-			  "classpath": "mosaic.monitor.basic_reporting_service.BasicReportingService",
-			  "params": {
-				  "logging": { "filename": "pipeline.log" },
-				  "name": "basic_reporting",
-				  "filename": "monitoring.log",
-				  "ip": "127.0.0.1",
-				  "port": 6690,
-				  "monitoring": {
-					  "filename": "monitoring.log"
-				  }
-			  }
-		  }
-	  }
+            "service_container": "plugins/service_container.py",
+            "reporting_service": {
+                "classpath": "mosaic.monitor.basic_reporting_service.BasicReportingService",
+                "params": {
+                    "logging": { "filename": "pipeline.log" },
+                    "name": "basic_reporting",
+                    "filename": "monitoring.log",
+                    "ip": "127.0.0.1",
+                    "port": 6690,
+                    "monitoring": {
+                        "filename": "monitoring.log"
+                    }
+                }
+            },
+            "default": {
+                "log": "pipeline.log",
+                "log_level": "INFO",
+                "monitoring": "monitoring.log",
+                "monitoring_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
+            }
+        }
       }
   },
   "REST": {
@@ -47,7 +53,7 @@
                 "name": "mosaic",
                 "function": "dump_services_and_pipelines"
             }
-	}
+	    }
     },
     "POST": {
         "start_service": {
@@ -78,13 +84,13 @@
                 "function": "shutdown_service"
             }
         },
-	"load_services_and_pipelines": {
+	    "load_services_and_pipelines": {
             "handler": {
                 "type": "plugin",
                 "name": "mosaic",
                 "function": "load_services_and_pipelines"
             }
-	},
+	    },
         "get_msg_history": {
                 "handler": {
                     "type": "plugin",

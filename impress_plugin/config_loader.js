@@ -14,11 +14,6 @@ let fs = require('fs');
 
 module.exports = ConfigModule;
 
-let default_log = 'pipeline.log'
-let default_log_level = 'INFO'
-let default_monitoring = 'monitoring.log'
-let default_monitoring_class = 'mosaic.monitor.basic_monitoring.BasicMonitoring'
-
 function load_config(file) {
 	let f;
 	if (file)
@@ -38,16 +33,6 @@ function load_config(file) {
 	}
 	try {
 		config = JSON.parse(s);
-		if (!config.hasOwnProperty('logging'))
-		    config.logging = {
-                'filename': default_log,
-                'level': default_log_level
-            };
-		if (!config.hasOwnProperty('monitoring'))
-            config.monitoring = {
-                'filename': default_monitoring,
-                'monitor_class': default_monitoring_class
-            };
 	} catch(e) {
 		throw(`config file needs to be correct JSON - ${f}`);
 	}

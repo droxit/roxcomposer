@@ -20,6 +20,7 @@ function __mosaic_control_private() {
 	this.logger;
 	this.service_container_path;
 	this.reporting_service;
+	this.default;
 }
 
 module.exports = function (container) {
@@ -61,6 +62,16 @@ function init(mcp, args) {
 	}
 
 	if (args && ('reporting_service' in args)) {
+		start_service(mcp, args.reporting_service, (err) => {
+			if (err) {
+				let msg = err.message;
+				throw new Error(msg);
+			}
+			mcp.reporting_service = args.reporting_service.params.name;
+		});
+	}
+
+	if (args && ('default' in args)) {
 		start_service(mcp, args.reporting_service, (err) => {
 			if (err) {
 				let msg = err.message;
@@ -163,6 +174,18 @@ function start_service(mcp, args, cb) {
 				return;
 			}
 	}
+
+    // add default values to params if not set
+    if (!args.params.hasOwnProperty('logging'))
+        args.params.logging = {
+            'filename': mcp.default.log,
+            'level': mcp.default.log_level
+        };
+    if (!args.params.hasOwnProperty('monitoring'))
+        args.params.monitoring = {
+            'filename': mcp.default.monitoring,
+            'monitor_class': mcp.default.monitoring_class
+        };
 
 	let name = args.params.name;
 	let params = args.params;
