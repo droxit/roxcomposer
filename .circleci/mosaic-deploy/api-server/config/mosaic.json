@@ -23,10 +23,14 @@
                 }
             },
             "default": {
-                "log": "pipeline.log",
-                "log_level": "INFO",
-                "monitoring": "monitoring.log",
-                "monitoring_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
+                "logging": {
+                    "filename": "pipeline.log",
+                    "level": "INFO"
+                },
+                "monitoring": {
+                    "filename": "monitoring.log",
+                    "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
+                }
             }
         }
       }
