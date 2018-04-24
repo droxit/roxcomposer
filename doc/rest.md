@@ -129,7 +129,7 @@ shutdown_service my_service.service
 
 #### dump
 
-Retrieve a dump of the running services and defined pipelines
+Retrieve a dump of the running services and defined pipelines as dump.json file in <MOSAIC_HOME>
 
 ```command-line
 dump
@@ -145,7 +145,7 @@ restore_server /path/to/dump.json
 
 #### restore\_pipeline
 
-Load the pipelines configuration from path and activate this.
+Load the pipelines configuration from (server) path and activate this.
 
 ```command-line
 restore_pipeline path_pipe

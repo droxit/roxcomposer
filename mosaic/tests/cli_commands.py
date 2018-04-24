@@ -114,6 +114,5 @@ class TestCliCommands(unittest.TestCase):
     def tearDown(self):
         self.server.stop()
 
-
 if __name__ == '__main__':
     unittest.main()
