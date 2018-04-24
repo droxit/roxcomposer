@@ -237,7 +237,6 @@ class CommandLine(LineBox):
 if __name__ == "__main__":
     frame = MainFrame()
     frame.focus_position = 'footer'
-    frame.store_loop(loop)
 
     # palette introduces colors with labels 'normal' and 'complete'
     # the colors are used for the progress bars
@@ -246,6 +245,7 @@ if __name__ == "__main__":
         ('complete', 'white', 'dark magenta'),
     ]
     loop = MainLoop(frame, palette)
+    frame.store_loop(loop)
 
     # start refreshing loop for the message trace widget
     loop.set_alarm_in(0.1, frame.mtw.refresh)
