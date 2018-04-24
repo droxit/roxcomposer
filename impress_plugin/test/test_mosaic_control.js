@@ -233,9 +233,11 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                         "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
                     }
                 }
-                mc.init({logger: logger, default: default_values});
+				let mc_def = {};
+				require('../mosaic_control.js')(mc_def);
+                mc_def.init({logger: logger, default: default_values});
 
-                mc.start_service({
+                mc_def.start_service({
                     'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
                     'params': {
                         'name': 'html_generator_default',
@@ -243,20 +245,26 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                         'port': 1772
                     }
                 }, function (err) {
-                    if (err && err.code === 400) {
-                        done(err);
-                    }
+					if (err && err.code === 400) {
+						done(err);
+						return;
+					}
+
+					mc_def.get_services({}, (err, services) => {
+						if (err) {
+							done(err);
+						} else {
+							if ((!services['html_generator_default']['params'].hasOwnProperty("logging")) ||
+								(!services['html_generator_default']['params'].hasOwnProperty("monitoring")) ) {
+								done("Default values are not passed.");
+							} else
+								done()
+						}
+
+						setTimeout(mc_def.shutdown_service, 200, {'name': 'html_generator_default'}, (err) => console.error(err));
+					});
                 });
 
-                mc.get_services({}, (args, services) => {
-                    if ((!services['html_generator_default']['params'].hasOwnProperty("logging")) ||
-                        (!services['html_generator_default']['params'].hasOwnProperty("monitoring")) ) {
-                        throw "Default values are not passed.";
-                    }
-                });
-
-                sleep(100);
-                mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
             });
 
             it('should contain an active state when a pipeline is created', function (done) {
