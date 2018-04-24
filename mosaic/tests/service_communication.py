@@ -17,7 +17,7 @@ class AppendService(base_service.BaseService):
         self.msg = msg
         super().__init__(args)
 
-    def on_message(self, msg):
+    def on_message(self, msg, msg_id):
         self.dispatch(msg + self.msg)
 
 
