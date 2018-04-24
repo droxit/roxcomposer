@@ -146,7 +146,7 @@ container that calls `listen_thread()` at this point since we would need to impo
 Since writing curl requests can be quite cumbersome the mosaic package includes a cli that streamlines the process.
 
 ```bash
-./mosaic-cli <COMMAND> [ARGUMENTS]
+./mosaic-cli
 ```
 
 This will open an new terminal ui with two windows and a text input. The first window is for logging while the second is a command history.  
@@ -243,4 +243,9 @@ unwatch_services serv2 serv3
 #### reset\_watchers
 
 This cleans up the log session - services are no longer watched.
+
+```bash
+reset_watchers
+```
+
 
