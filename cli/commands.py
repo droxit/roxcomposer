@@ -111,7 +111,7 @@ def shutdown_service(*args):
         return 'ERROR: exactly one service needs to be specified for shutdown'
 
     service = args[0]
-    d = { 'name': service }
+    d = {'name': service}
     headers = {'Content-Type': 'application/json'}
     r = requests.post('http://{}/shutdown_service'.format(roxconnector), data=json.dumps(d), headers=headers)
     if r.status_code == 200:
@@ -167,6 +167,7 @@ def load_services_and_pipelines(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
+
 def load_and_start_pipeline(*args):
     if len(args) > 1:
         return 'WARNING: superfluous arguments to services: {}'.format(args[1:])
@@ -181,23 +182,73 @@ def load_and_start_pipeline(*args):
     else:
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
-def list_commands(*args):
-    return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
+
+def help(*args):
+    if len(args) > 1:
+        return 'WARNING: superfluous arguments to services: {}'.format(args[1:])
+    if len(args) == 1:
+        if args[0] not in cmd_map:
+            return "command '{}' is not defined".format(args[0])
+        return cmd_map[args[0]]['doc_string']
+    return "available commands: \n  " + "\n  ".join([x for x in sorted(cmd_map)])
 
 
 cmd_map = {
-        'list_service_files': list_service_files,
-        'services': get_services,
-        'pipelines': get_pipelines,
-        'start_service': start_service,
-        'set_pipeline': set_pipeline,
-        'post_to_pipeline': post_to_pipeline,
-        'shutdown_service': shutdown_service,
-        'get_msg_history': get_msg_history,
-        'dump': dump_everything,
-        'restore_server': load_services_and_pipelines,
-        'restore_pipeline': load_and_start_pipeline,
-        'help': list_commands
+    'help': {
+        'function_call': help,
+        'doc_string': "help - "
+                      +"Use 'help' to get a list of all commands or 'help <COMMAND>' to get help for a certain command."
+    },
+    'list_service_files': {
+        'function_call': list_service_files,
+        'doc_string': "list_service_files - "
+                      +"Lists the available service files."
+    },
+    'services': {
+        'function_call': get_services,
+        'doc_string': "services - "
+                      +"Lists the running services."
+    },
+    'pipelines': {
+        'function_call': get_pipelines,
+        'doc_string': "pipelines - "
+                      +"Lists the stored pipelines."
+    },
+    'start_service': {
+        'function_call': start_service,
+        'doc_string': "start_service <SERVICE_FILE> - "
+                      +"Starts a service from the service file."
+                      +"Use 'list_service_files' to get a list of available services"
+    },
+    'set_pipeline': {
+        'function_call': set_pipeline,
+        'doc_string': "set_pipeline <NAME> [SERVICES] - "
+                      +"Sets up a linear pipeline on a given service list.\n"
+                       "Example: 'set_pipeline name serv1 serv2 serv3'"
+    },
+    'shutdown_service': {
+        'function_call': shutdown_service,
+        'doc_string': "shutdown_service <NAME> - "
+                      +"Shuts down a service and sets all pipelines to inactive if the service is part of it."
+                      +"Use 'services' to get a list of all running services."
+    },
+    'dump': {
+        'function_call': dump_everything,
+        'doc_string': "dump - "
+                      +"Dumps of the running services and defined pipelines."
+    },
+    'restore_server': {
+        'function_call': load_services_and_pipelines,
+        'doc_string': "restore_server <DUMP_FILE_PATH> "
+                      + "Restore a previously taken service and pipeline dump.\n"
+                        "Example: 'restore_server dump.json'"
+    },
+    'restore_pipeline': {
+        'function_call': load_and_start_pipeline,
+        'doc_string': "restore_pipeline <PIPELINE_DUMP_FILE_PATH> "
+                      + "Load the pipelines configuration from (server) path and activate this.\n"
+                        "Example: 'restore_pipeline pipeline_backup.json'"
+    }
 }
 
 
@@ -207,4 +258,4 @@ def run_cmd(*args):
     if args[0] not in cmd_map:
         raise RuntimeError("command '{}' is not defined".format(args[0]))
 
-    return cmd_map[args[0]](*args[1:])
+    return cmd_map[args[0]]['function_call'](*args[1:])
