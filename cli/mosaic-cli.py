@@ -133,7 +133,6 @@ class MainFrame(Frame):
                 pipe_len = len(json.loads(pipelines)[cmdt[1]]['services'])
                 self.mtw.add_message(msg_id, pipe_len)
             else:
-                self.log.addline(run_cmd(*cmdt))
                 ret = run_cmd(*cmdt)
                 if isinstance(ret, str):
                     self.log.addline(ret)
