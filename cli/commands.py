@@ -273,7 +273,7 @@ def reset_watchers():
 
 def get_service_logs():
     if logobs_session is None:
-        return 'no services are currently under observation'
+        raise RuntimeError('no services are currently under observation')
 
     data = { 'sessionid': logobs_session['id'] }
     headers = {'Content-Type': 'application/json'}
@@ -283,7 +283,7 @@ def get_service_logs():
         return "ERROR: no connection to server - {}".format(e)
 
     if r.status_code != 200:
-        return 'ERROR: {}'.format(r.text)
+        raise RuntimeError(r.text)
 
     return "\n".join(r.json()['loglines'])
 
@@ -304,6 +304,7 @@ cmd_map = {
         'dump': dump_everything,
         'watch_services': watch_services,
         'unwatch_services': unwatch_services,
+        'reset_watchers': reset_watchers,
         'help': list_commands
 }
 
