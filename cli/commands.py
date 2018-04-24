@@ -190,10 +190,15 @@ def help(*args):
         if args[0] not in cmd_map:
             return "command '{}' is not defined".format(args[0])
         return cmd_map[args[0]]['doc_string']
-    return "available commands: \n  " + "\n  ".join([x for x in cmd_map])
+    return "available commands: \n  " + "\n  ".join([x for x in sorted(cmd_map)])
 
 
 cmd_map = {
+    'help': {
+        'function_call': help,
+        'doc_string': "help - "
+                      +"Use 'help' to get a list of all commands or 'help <COMMAND>' to get help for a certain command."
+    },
     'list_service_files': {
         'function_call': list_service_files,
         'doc_string': "list_service_files - "
@@ -243,11 +248,6 @@ cmd_map = {
         'doc_string': "restore_pipeline <PIPELINE_DUMP_FILE_PATH> "
                       + "Load the pipelines configuration from (server) path and activate this.\n"
                         "Example: 'restore_pipeline pipeline_backup.json'"
-    },
-    'help': {
-        'function_call': help,
-        'doc_string': "help - "
-                      +"Use 'help' to get a list of all commands or 'help <COMMAND>' to get help for a certain command."
     }
 }
 
