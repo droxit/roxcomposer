@@ -7,7 +7,7 @@ class TestCliHelp(unittest.TestCase):
         commands = list(cmd.cmd_map.keys())
         help_commands = [w.strip() for w in cmd.run_cmd('help').split("\n")][1:]
 
-        self.assertEqual(commands, help_commands)
+        self.assertEqual(sorted(commands), help_commands)
 
     def test_help_commands(self):
         commands = list(cmd.cmd_map.keys())
