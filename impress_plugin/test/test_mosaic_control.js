@@ -265,9 +265,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     mc.shutdown_service({'name': 'file_writer_test'}, function (err) {});
                 }
             });
-        });
-        describe('default_values', function () {
-            it('should work with default values', function () {
+            it('should work with default values', function (done) {
                 let logger = bunyan.createLogger({
                     name: 'mosaic-control-testing',
                     streams: [{level: 'fatal', path: '/dev/null'}]
@@ -283,8 +281,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     }
                 }
                 mc.init({logger: logger, default: default_values});
-            });
-            it('should run a service', function (done) {
+
                 mc.start_service({
                     'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
                     'params': {
@@ -295,28 +292,18 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 }, function (err) {
                     if (err && err.code === 400) {
                         done(err);
-                    } else {
-                        done()
                     }
                 });
-            });
-            it('should contain the default values', function () {
+
                 mc.get_services({}, (args, services) => {
                     if ((!services['html_generator']['params'].hasOwnProperty("logging")) ||
                         (!services['html_generator']['params'].hasOwnProperty("monitoring")) ) {
                         throw "Default values are not passed.";
                     }
                 });
-            });
-            sleep(100)
-            it('should shutdown service', function (done) {
-                mc.shutdown_service({'name': 'html_generator_test'}, function (err) {
-                    if (err && err.code === 400) {
-                        done(err);
-                    } else {
-                        done()
-                    }
-                });
+
+                sleep(100);
+                mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
             });
         });
     });
