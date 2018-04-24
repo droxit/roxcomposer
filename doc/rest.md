@@ -143,7 +143,7 @@ container that calls `listen_thread()` at this point since we would need to impo
 
 ### Using the mosaic-cli
 
-Since writing curl requests can be quite cumbersome the mosaic package includes a cli that streamlines the process.
+Since writing curl requests can be quite cumbersome the mosaic package includes a cli shell that streamlines the process.
 
 ```bash
 ./mosaic-cli
@@ -215,12 +215,27 @@ Retrieve a dump of the running services and defined pipelines and write it into 
 ```bash
 dump dump.json
 ```
+
 #### get\_msg\_history
 
 Retrieve a message trace given a message id
 
 ```bash
 get_msg_history 3af-3413fa-234faa-908a-394800
+```
+
+#### restore\_server
+
+```command-line
+restore_server /path/to/dump.json
+```
+
+#### restore\_pipeline
+
+Load the pipelines configuration from (server) path and activate this.
+
+```bash
+restore_pipeline path_pipe
 ```
 
 #### watch\_services
@@ -247,5 +262,4 @@ This cleans up the log session - services are no longer watched.
 ```bash
 reset_watchers
 ```
-
 

@@ -287,6 +287,38 @@ def get_service_logs():
 
     return "\n".join(r.json()['loglines'])
 
+def load_services_and_pipelines(*args):
+    if len(args) > 1:
+        return 'WARNING: superfluous arguments to services: {}'.format(args[1:])
+
+    if os.path.isfile(args[0]):
+        f = open(args[0], "r")
+        restore_json = json.loads(f.read())
+        f.close()
+
+    else:
+        return 'file {} not found'.format(args[0])
+
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/load_services_and_pipelines'.format(roxconnector), data=json.dumps(restore_json), headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
+def load_and_start_pipeline(*args):
+    if len(args) > 1:
+        return 'WARNING: superfluous arguments to services: {}'.format(args[1:])
+
+    pipe_path = args[0]
+    d = { 'pipe_path': pipe_path }
+
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post('http://{}/load_and_start_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    if r.status_code == 200:
+        return r.text
+    else:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
 
 def list_commands(*args):
     return "available commands: \n\t" + "\n\t".join([x for x in cmd_map])
@@ -305,6 +337,8 @@ cmd_map = {
         'watch_services': watch_services,
         'unwatch_services': unwatch_services,
         'reset_watchers': reset_watchers,
+        'restore_server': load_services_and_pipelines,
+        'restore_pipeline': load_and_start_pipeline,
         'help': list_commands
 }
 
