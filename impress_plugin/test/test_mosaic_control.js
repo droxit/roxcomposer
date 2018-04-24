@@ -264,7 +264,6 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
                     mc.shutdown_service({'name': 'file_writer_test'}, function (err) {});
                 }
-                done();
             });
         });
         describe('default_values', function () {
@@ -313,7 +312,6 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                         done(err);
                     }
                 });
-                done();
             });
         });
     });
