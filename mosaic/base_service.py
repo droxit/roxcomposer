@@ -114,7 +114,7 @@ class BaseService:
         self.mosaic_message = mosaic_message.Message()
 
     # need to be overwritten by inhertied classes.
-    def on_message(self, msg):
+    def on_message(self, msg, msg_id):
         pass
 
     # need to be overwritten by inherited classes. This funciton gets the whole message object as a MosaicMessage.
@@ -218,7 +218,7 @@ class BaseService:
 
                 self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
 
-                self.on_message(self.mosaic_message.payload)
+                self.on_message(self.mosaic_message.payload, self.mosaic_message.id)
                 self.on_message_ext(self.mosaic_message)
 
                 if not data:
