@@ -100,6 +100,17 @@ class TestCliCommands(unittest.TestCase):
 
         self.assertEqual(response, sent)
 
+    def test_services(self):
+        sent = commands.get_services('blabla')
+        response = 'WARNING: superfluous arguments to services: (\'blabla\',)'
+
+        self.assertEqual(response, sent)
+
+    def test_pipelines(self):
+        sent = commands.get_pipelines('blabla')
+        response = "{'json': 'test'}"
+        self.assertEqual(response, sent)
+
     def tearDown(self):
         self.server.stop()
 
