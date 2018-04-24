@@ -219,7 +219,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
             });
 
             it('should contain an active state when a pipeline is created', function (done) {
-		let service_startup_error = false;
+		        let service_startup_error = false;
                 mc.start_service({
                     'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
                     'params': {
@@ -230,7 +230,6 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 }, function (err) {
                     if (err && err.code === 400) {
                         done(err);
-			return;
                     }
                 });
                 mc.start_service({
@@ -243,27 +242,78 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 }, function (err) {
                     if (err && err.code === 400) {
                         done(err);
-			service_startup_error = true;
+			            service_startup_error = true;
                     }
                 });
 
-		if(service_startup_error == false) {
-			mc.load_and_start_pipeline({pipe_path: pipeline_file}, function (err) {
-				if (err === null) {
-					mc.get_pipelines({}, (args, pipelines) => {
-						if (pipelines['pipe_test']['active']) {
-							done();
-						}
-					});
-				} else {
-					done(err);
-				}
-			});
-		}
+                if(service_startup_error == false) {
+                    mc.load_and_start_pipeline({pipe_path: pipeline_file}, function (err) {
+                        if (err === null) {
+                            mc.get_pipelines({}, (args, pipelines) => {
+                                if (pipelines['pipe_test']['active']) {
+                                    done();
+                                }
+                            });
+                        } else {
+                            done(err);
+                        }
+                    });
+                }
                 sleep(100);
-		if(service_startup_error == false)
-                	mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
-  	        mc.shutdown_service({'name': 'file_writer_test'}, function (err) {});
+                if(service_startup_error == false){
+                    mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
+                    mc.shutdown_service({'name': 'file_writer_test'}, function (err) {});
+                }
+                done();
+            });
+        });
+        describe('default_values', function () {
+            it('should work with default values', function () {
+                let logger = bunyan.createLogger({
+                    name: 'mosaic-control-testing',
+                    streams: [{level: 'fatal', path: '/dev/null'}]
+                });
+                default_values = {
+                    "logging": {
+                        "filename": "pipeline.log",
+                        "level": "INFO"
+                    },
+                    "monitoring": {
+                        "filename": "monitoring.log",
+                        "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
+                    }
+                }
+                mc.init({logger: logger, default: default_values);
+            });
+            it('should run a service', function (done) {
+                mc.start_service({
+                    'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
+                    'params': {
+                        'name': 'html_generator',
+                        'ip': '127.0.0.1',
+                        'port': 1234
+                    }
+                }, function (err) {
+                    if (err && err.code === 400) {
+                        done(err);
+                    }
+                });
+            });
+            it('should contain the default values', function (done) {
+                mc.get_services({}, (args, services) => {
+                    if (services['html_generator']['params'].indexOf("logging") == -1 ||
+                        services['html_generator']['params'].indexOf("monitoring") == -1 ) {
+                        done(throw "Default values not passed.");
+                    }
+                });
+            });
+            it('should shutdown service', function (done) {
+                mc.shutdown_service({'name': 'html_generator_test'}, function (err) {
+                    if (err && err.code === 400) {
+                        done(err);
+                    }
+                });
+                done();
             });
         });
     });
