@@ -232,6 +232,18 @@ cmd_map = {
         'doc_string': "dump - "
                       +"Dumps of the running services and defined pipelines."
     },
+    'restore_server': {
+        'function_call': load_services_and_pipelines,
+        'doc_string': "restore_server <DUMP_FILE_PATH> "
+                      + "Restore a previously taken service and pipeline dump.\n"
+                        "Example: 'restore_server dump.json'"
+    },
+    'restore_pipeline': {
+        'function_call': load_and_start_pipeline,
+        'doc_string': "restore_pipeline <PIPELINE_DUMP_FILE_PATH> "
+                      + "Load the pipelines configuration from (server) path and activate this.\n"
+                        "Example: 'restore_pipeline pipeline_backup.json'"
+    },
     'help': {
         'function_call': help,
         'doc_string': "help - "
