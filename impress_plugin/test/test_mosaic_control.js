@@ -283,7 +283,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                         "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
                     }
                 }
-                mc.init({logger: logger, default: default_values);
+                mc.init({logger: logger, default: default_values});
             });
             it('should run a service', function (done) {
                 mc.start_service({
