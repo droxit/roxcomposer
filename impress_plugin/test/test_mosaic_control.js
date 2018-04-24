@@ -295,6 +295,8 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 }, function (err) {
                     if (err && err.code === 400) {
                         done(err);
+                    } else {
+                        done()
                     }
                 });
             });
@@ -310,6 +312,8 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 mc.shutdown_service({'name': 'html_generator_test'}, function (err) {
                     if (err && err.code === 400) {
                         done(err);
+                    } else {
+                        done()
                     }
                 });
             });
