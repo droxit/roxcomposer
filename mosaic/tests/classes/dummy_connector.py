@@ -37,7 +37,7 @@ class SingleRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
 
-class ConnectorDummy(HTTPServer, threading.Thread):
+class DummyConnector(HTTPServer, threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
