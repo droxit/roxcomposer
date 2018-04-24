@@ -299,11 +299,11 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     }
                 });
             });
-            it('should contain the default values', function (done) {
+            it('should contain the default values', function () {
                 mc.get_services({}, (args, services) => {
                     if (services['html_generator']['params'].indexOf("logging") == -1 ||
                         services['html_generator']['params'].indexOf("monitoring") == -1 ) {
-                        done(throw "Default values not passed.");
+                        throw "Default values are not passed.";
                     }
                 });
             });
