@@ -257,7 +257,6 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 
                 sleep(100);
                 mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
-                done();
             });
 
             it('should contain an active state when a pipeline is created', function (done) {
