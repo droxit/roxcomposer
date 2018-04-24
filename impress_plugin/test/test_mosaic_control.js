@@ -250,8 +250,8 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     mc.load_and_start_pipeline({pipe_path: pipeline_file}, function (err) {
                         if (err === null) {
                             mc.get_pipelines({}, (args, pipelines) => {
-                                if (pipelines['pipe_test']['active']) {
-                                    done();
+                                if (!pipelines['pipe_test']['active']) {
+                                    throw "The pipeline is still inactive."
                                 }
                             });
                         } else {
@@ -264,6 +264,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
                     mc.shutdown_service({'name': 'file_writer_test'}, function (err) {});
                 }
+                done()
             });
             it('should work with default values', function (done) {
                 let logger = bunyan.createLogger({
