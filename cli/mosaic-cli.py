@@ -249,3 +249,4 @@ if __name__ == "__main__":
     # start refreshing loop for the message trace widget
     loop.set_alarm_in(0.1, frame.mtw.refresh)
     loop.run()
+
