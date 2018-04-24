@@ -264,6 +264,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
                     mc.shutdown_service({'name': 'file_writer_test'}, function (err) {});
                 }
+                done();
             });
             it('should work with default values', function (done) {
                 let logger = bunyan.createLogger({
@@ -287,7 +288,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     'params': {
                         'name': 'html_generator',
                         'ip': '127.0.0.1',
-                        'port': 1234
+                        'port': 1772
                     }
                 }, function (err) {
                     if (err && err.code === 400) {
@@ -304,6 +305,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 
                 sleep(100);
                 mc.shutdown_service({'name': 'html_generator_test'}, function (err) {});
+                done();
             });
         });
     });
