@@ -238,7 +238,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 mc.start_service({
                     'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
                     'params': {
-                        'name': 'html_generator',
+                        'name': 'html_generator_default',
                         'ip': '127.0.0.1',
                         'port': 1772
                     }
@@ -249,8 +249,8 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 });
 
                 mc.get_services({}, (args, services) => {
-                    if ((!services['html_generator']['params'].hasOwnProperty("logging")) ||
-                        (!services['html_generator']['params'].hasOwnProperty("monitoring")) ) {
+                    if ((!services['html_generator_default']['params'].hasOwnProperty("logging")) ||
+                        (!services['html_generator_default']['params'].hasOwnProperty("monitoring")) ) {
                         throw "Default values are not passed.";
                     }
                 });
