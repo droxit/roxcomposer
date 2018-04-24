@@ -9,6 +9,7 @@
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
+import json
 
 HOST = 'localhost'
 PORT = 7475
@@ -35,6 +36,31 @@ class SingleRequestHandler(BaseHTTPRequestHandler):
         self._set_headers()
         data = self.rfile.read(length)
         self.wfile.write(data)
+
+    def do_PUT(self):
+        request_headers = self.headers
+        content_length = request_headers.get("Content-Length")
+        length = int(content_length) if content_length else 0
+
+        self._set_headers()
+        if self.path == '/log_observer':
+            data = b'{"sessionid": "123"}'
+        else:
+            data = self.rfile.read(length)
+
+        self.wfile.write(data)
+
+    def do_DELETE(self):
+        request_headers = self.headers
+        content_length = request_headers.get("Content-Length")
+        length = int(content_length) if content_length else 0
+
+        self._set_headers()
+        data = self.rfile.read(length)
+        self.wfile.write(data)
+
+    def log_message(self, format, *args):
+        pass
 
 
 class ConnectorDummy(HTTPServer, threading.Thread):

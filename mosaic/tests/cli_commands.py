@@ -35,9 +35,35 @@ class TestCliCommands(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             commands.post_to_pipeline(*['pipe'])
 
+    def test_watch_services(self):
+        ret = commands.watch_services()
+        self.assertRegex(ret, "ERROR")
+        commands.watch_services("s1", "s2")
+        ret = commands.watch_services("s1")
+        self.assertEqual(ret, "Services already watched")
+        commands.unwatch_services("s1", "s2")
+        ret = commands.watch_services("s1")
+        self.assertNotEqual(ret, "Services already watched")
+        
+
     def tearDown(self):
         self.server.stop()
 
+class TestCliCommandsDisconnected(unittest.TestCase):
+
+    def test_msg_history_disconnected(self):
+        command = '{"message_id": "msg_id"}'
+        ret = commands.get_msg_history(*['msg_id'])
+        self.assertIn("ERROR: no connection to server", ret)
+
+    def test_post_to_pipeline_disconnected(self):
+        command = '{"name": "pipe", "data": "Hello World"}'
+        ret = commands.post_to_pipeline(*['pipe', 'Hello', 'World'])
+        self.assertIn("ERROR: no connection to server", ret)
+
+    def test_watch_services_disconnected(self):
+        ret = commands.watch_services("bla", "blub")
+        self.assertIn("ERROR: no connection to server", ret)
 
 if __name__ == '__main__':
     unittest.main()
