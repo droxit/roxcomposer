@@ -34,7 +34,12 @@ def post_to_pipeline(*args):
 
     d = {'name': args[0], 'data': " ".join(args[1:])}
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/post_to_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+
+    try:
+        r = requests.post('http://{}/post_to_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
     if r.status_code == 200:
         return r.text
     else:
@@ -44,7 +49,12 @@ def post_to_pipeline(*args):
 def get_services(*args):
     if len(args) != 0:
         return 'WARNING: superfluous arguments to services: {}'.format(args)
-    r = requests.get('http://{}/services'.format(roxconnector))
+
+    try:
+        r = requests.get('http://{}/services'.format(roxconnector))
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
     if r.status_code == 200:
         return r.text
     else:
@@ -64,7 +74,10 @@ def start_service(*args):
         return 'ERROR unable to load service {} - {}'.format(service, e)
 
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/start_service'.format(roxconnector), json=service_args, headers=headers)
+    try:
+        r = requests.post('http://{}/start_service'.format(roxconnector), json=service_args, headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
     if r.status_code == 200:
         return r.text
     else:
@@ -79,7 +92,10 @@ def get_msg_history(*args):
     d = {'message_id': msg_id}
 
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/get_msg_history'.format(roxconnector), data=json.dumps(d), headers=headers)
+    try:
+        r = requests.post('http://{}/get_msg_history'.format(roxconnector), data=json.dumps(d), headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
     if r.status_code == 200:
         return r.text
     else:
@@ -93,7 +109,10 @@ def set_pipeline(*args):
     services = args[1:]
     d = {'name': pipename, 'services': services}
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/set_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    try:
+        r = requests.post('http://{}/set_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
     if r.status_code == 200:
         return r.text
     else:
@@ -115,7 +134,11 @@ def shutdown_service(*args):
     service = args[0]
     d = { 'name': service }
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/shutdown_service'.format(roxconnector),json=d, headers=headers)
+    try:
+        r = requests.post('http://{}/shutdown_service'.format(roxconnector),json=d, headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
     if r.status_code == 200:
         return r.text
     else:
@@ -135,7 +158,11 @@ def dump_everything(*args):
     except Exception as e:
         return 'ERROR unable to open file {} - {}'.format(dumpfile, e)
 
-    r = requests.get('http://{}/dump_services_and_pipelines'.format(roxconnector))
+    try:
+        r = requests.get('http://{}/dump_services_and_pipelines'.format(roxconnector))
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
     if r.status_code == 200:
         o = r.json()
         try:
@@ -152,7 +179,7 @@ def dump_everything(*args):
 
 def watch_services(*services):
     if len(services) is 0:
-        return "No services specified"
+        return "ERROR - no services specified"
 
     global logobs_session
     global logobs_session_timeout
@@ -162,7 +189,10 @@ def watch_services(*services):
         logobs_session['services'] = set()
         data = { 'lines': 100, 'timeout': logobs_session_timeout, 'services': services }
         headers = {'Content-Type': 'application/json'}
-        r = requests.put('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+        try:
+            r = requests.put('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+        except requests.exceptions.ConnectionError as e:
+            return "ERROR: no connection to server - {}".format(e)
 
         if r.status_code != 200:
             return 'ERROR: {}'.format(r.text)
@@ -180,14 +210,66 @@ def watch_services(*services):
         if len(s):
             data = { 'sessionid': logobs_session['id'], 'services': s }
             headers = {'Content-Type': 'application/json'}
-            r = requests.post('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+            try:
+                r = requests.post('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+            except requests.exceptions.ConnectionError as e:
+                return "ERROR: no connection to server - {}".format(e)
 
             if r.status_code != 200:
                 return 'ERROR: {}'.format(r.text)
 
             return 'services added {}'.format(s)
 
-        return 'services already watched'
+        return 'Services already watched'
+
+def unwatch_services(*services):
+    if len(services) is 0:
+        return "No services specified"
+
+    global logobs_session
+
+    if logobs_session is None:
+        return "No services are being watched at the moment"
+
+    s = [x for x in filter(lambda s: s in logobs_session['services'], services)]
+
+    if len(s) == 0:
+        return "The spcified services are not being watched"
+
+    data = { 'sessionid': logobs_session['id'], 'services': s }
+    headers = {'Content-Type': 'application/json'}
+    try:
+        r = requests.delete('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
+    if r.status_code != 200:
+        return 'ERROR: {}'.format(r.text)
+
+    else:
+        logobs_session['services'] = logobs_session['services'].difference(set(s))
+        return "Services no longer watched: {}".format(s)
+
+def reset_watchers():
+    global logobs_session
+
+    if logobs_session is None:
+        return
+
+    data = { 'sessionid': logobs_session['id'] }
+    headers = {'Content-Type': 'application/json'}
+    try:
+        r = requests.delete('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
+    # we don't care about the return value - an error in almost all cases means that the session
+    # has expired, in the remaining cases it is ok to abandon the session and to let it time out
+    # on the server
+
+    logobs_session = None
+
+    return "Watchers removed"
 
 def get_service_logs():
     if logobs_session is None:
@@ -195,13 +277,15 @@ def get_service_logs():
 
     data = { 'sessionid': logobs_session['id'] }
     headers = {'Content-Type': 'application/json'}
-    r = requests.get('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+    try:
+        r = requests.get('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
 
     if r.status_code != 200:
         return 'ERROR: {}'.format(r.text)
 
     return "\n".join(r.json()['loglines'])
-
 
 
 def list_commands(*args):
@@ -219,6 +303,7 @@ cmd_map = {
         'get_msg_history': get_msg_history,
         'dump': dump_everything,
         'watch_services': watch_services,
+        'unwatch_services': unwatch_services,
         'help': list_commands
 }
 
