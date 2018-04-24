@@ -302,12 +302,13 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
             });
             it('should contain the default values', function () {
                 mc.get_services({}, (args, services) => {
-                    if (services['html_generator']['params'].indexOf("logging") == -1 ||
-                        services['html_generator']['params'].indexOf("monitoring") == -1 ) {
+                    if ((!services['html_generator']['params'].hasOwnProperty("logging")) ||
+                        (!services['html_generator']['params'].hasOwnProperty("monitoring")) ) {
                         throw "Default values are not passed.";
                     }
                 });
             });
+            sleep(100)
             it('should shutdown service', function (done) {
                 mc.shutdown_service({'name': 'html_generator_test'}, function (err) {
                     if (err && err.code === 400) {
