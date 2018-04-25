@@ -41,16 +41,6 @@ class BaseService:
             # the config will be loaded by the passed params directly
             self.params = params
 
-        # if self.params is None:
-        #     #logger need the service name
-        #     self.params['name'] = 'not defined'
-        #     self.logger.critical('BaseService.__init__() - params is None.')
-        #     raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
-        # elif 'name' not in self.params:
-        #     # service name as param
-        #     # load the config from services.json
-        #     self.params['name'] = 'not defined'
-        #     self.logger.critical('BaseService.__init__() - name is undefined')
 
         # buffer size to read a msg in specified byte chunks
         self.BUFFER_SIZE = 4096
