@@ -203,10 +203,15 @@ def watch_services(*services):
             session['services'].add(s)
 
         logobs_session = session
-        return { 'response': 'service observation initiated - session timout is {}s'.format(logobs_session_timeout), 'callback': get_service_logs }
+        return { 'response': r.text, 'callback': get_service_logs }
 
     else:
         s = [x for x in filter(lambda s: s not in logobs_session['services'], services)]
+        nots = [x for x in filter(lambda s: s in logobs_session['services'], services)]
+
+        ret = ''
+        if len(nots):
+            ret = 'already watched: {}\n'.format(nots)
 
         if len(s):
             data = { 'sessionid': logobs_session['id'], 'services': s }
@@ -214,14 +219,18 @@ def watch_services(*services):
             try:
                 r = requests.post('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
             except requests.exceptions.ConnectionError as e:
-                return "ERROR: no connection to server - {}".format(e)
+                return ret + "ERROR: no connection to server - {}".format(e)
 
             if r.status_code != 200:
-                return 'ERROR: {}'.format(r.text)
+                return ret + 'ERROR: {}'.format(r.text)
 
-            return 'services added {}'.format(s)
+            ml = r.json()
+            for s in ml['ok']:
+                logobs_session['services'].add(s)
 
-        return 'Services already watched'
+            return ret + r.text
+
+        return 'All services already watched'
 
 def unwatch_services(*services):
     if len(services) is 0:
