@@ -80,15 +80,16 @@ The package provides a basic logger implementation which will be used out of the
 }
 ```
 
-Filename and level would be passed on to the basic logger. When left out the default values provided are:
+logpath and level would be passed on to the basic logger. When left out the default values provided are:
 
 ```json
 "logging": {
-  "logpath": "pipeline.log",
+  "logpath": "/path/to/logs/pipeline.log",
   "level": "INFO"
 }
 ```
 
+If logpath is a directory path then should be created a file with the service name otherwise will be create a file, names logpath
 To overwrite the default values you might add default parameters for logging in the impress plugin parameter configs:
 
 ```json
