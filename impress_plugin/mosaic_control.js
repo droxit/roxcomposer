@@ -769,7 +769,7 @@ function delete_log_observer(args, cb) {
 		let remove = args.services.map(s => this.services[s].params.logging.filename);
 		remove = remove.filter(f => !keep.has(f));
 		if (remove.length)
-			l.session.unwatch(remove);
+			l.session.unwatch_files(remove);
 	} else {
 		if ('timerid' in l)
 			clearTimeout(l.timerid);
