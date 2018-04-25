@@ -5,7 +5,7 @@
     "port": 7001,
     "name": "sent_mail",
     "logging": {
-      "filename": "pipeline.log",
+      "logpath": "../logs/",
       "level": "INFO"
     },
     "smtp": {
