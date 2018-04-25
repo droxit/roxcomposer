@@ -5,7 +5,7 @@
     "port": 5001,
     "name": "image_adder",
     "logging": {
-      "filename": "pipeline.log",
+      "logpath": "../logs/",
       "level": "INFO"
     }
   }

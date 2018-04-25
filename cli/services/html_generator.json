@@ -5,8 +5,8 @@
 	"port": 6001,
 	"name": "html_generator",
 	"logging": {
-	  "filename": "pipeline.log",
-	  "level": "INFO"
+		"logpath": "../logs/",
+		"level": "INFO"
 	}
   }
 }
