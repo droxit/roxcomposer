@@ -1,5 +1,7 @@
 import logging
+import os
 import time
+
 from mosaic import exceptions
 
 level_map = {
@@ -17,11 +19,16 @@ class BasicLogger:
         self.servicename = servicename
         self.logger = logging.getLogger(servicename)
         handler = None
-        if 'filename' in kwargs:
+        if 'logpath' in kwargs:
             try:
-                handler = logging.FileHandler(kwargs['filename'], encoding='utf8')
+                logname = kwargs['logpath']
+                if os.path.isdir(kwargs['logpath']):
+                    logname += servicename + '.log'
+                handler = logging.FileHandler(logname, encoding='utf8')
+
             except Exception as e:
-                raise exceptions.ConfigError('unable to set up file logging: {} - {}'.format(kwargs['filename'],e)) from e
+                raise exceptions.ConfigError(
+                    'unable to set up file logging: {} - {}'.format(kwargs['logpath'], e)) from e
         else:
             handler = logging.StreamHandler()
         time.tzset()
