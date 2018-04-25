@@ -23,7 +23,7 @@ class FileWriter(base_service.BaseService):
         self.msg = ''
         self.listen()
 
-    def on_message(self, msg):
+    def on_message(self, msg, msg_id):
         self.msg = msg
         self.logger.info("received: {} bytes".format(len(msg)))
         self.write_file()

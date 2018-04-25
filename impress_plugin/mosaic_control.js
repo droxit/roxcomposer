@@ -48,6 +48,7 @@ function __mosaic_control_private() {
 	this.delete_log_observer = delete_log_observer.bind(this);
 	this.get_log_lines = get_log_lines.bind(this);
 	this.post_services_to_logsession = post_services_to_logsession.bind(this);
+	this.default;
 }
 
 module.exports = function (container) {
@@ -103,6 +104,10 @@ function init(args) {
 	}
 
 	this.service_config = false;
+	if (args && ('default' in args)) {
+		this.default = args.default;
+	}
+
 	try {
 		this.service_config = new config_loader();
 	} catch(e) {
@@ -214,6 +219,14 @@ function start_service(args, cb) {
 				return;
 			}
 	}
+
+    // add default values if given to params if logging or monitoring is not set
+    if(this.hasOwnProperty('default')) {
+        if (!args.params.hasOwnProperty('logging') && this.default.hasOwnProperty('logging'))
+            args.params.logging = this.default.logging;
+        if (!args.params.hasOwnProperty('monitoring') && this.default.hasOwnProperty('monitoring'))
+            args.params.monitoring = this.default.monitoring;
+    }
 
 	// now we actually start the child process
 	let name = args.params.name;

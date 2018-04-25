@@ -13,7 +13,7 @@ class DummyLog:
         self.name = name
         self.file = kwargs['filename']
 
-    def debug(self, msg):
+    def debug(self, msg, msg_id = None):
         f = open(self.file, 'w')
         f.write(msg)
         f.close()
