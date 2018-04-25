@@ -185,8 +185,8 @@ def watch_services(*services):
     global logobs_session_timeout
 
     if logobs_session is None:
-        logobs_session = dict()
-        logobs_session['services'] = set()
+        session = dict()
+        session['services'] = set()
         data = { 'lines': 100, 'timeout': logobs_session_timeout, 'services': services }
         headers = {'Content-Type': 'application/json'}
         try:
@@ -197,11 +197,12 @@ def watch_services(*services):
         if r.status_code != 200:
             return 'ERROR: {}'.format(r.text)
 
-        logobs_session['id'] = r.json()['sessionid']
+        session['id'] = r.json()['sessionid']
 
         for s in services:
-            logobs_session['services'].add(s)
+            session['services'].add(s)
 
+        logobs_session = session
         return { 'response': 'service observation initiated - session timout is {}s'.format(logobs_session_timeout), 'callback': get_service_logs }
 
     else:
