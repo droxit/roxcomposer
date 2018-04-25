@@ -14,10 +14,11 @@
 
 import socket
 import threading
-from mosaic.communication import mosaic_message
-from mosaic.service_loader import load_class
+
 from mosaic import exceptions
+from mosaic.communication import mosaic_message
 from mosaic.config import configuration_loader
+from mosaic.service_loader import load_class
 
 
 class BaseService:
@@ -50,7 +51,7 @@ class BaseService:
 
         # initialize logger
         logger_params = {
-            'filename': 'pipeline.log',
+            'logpath': 'logs/',
             'level': 'INFO'
         }
         if 'logging' in self.params:
