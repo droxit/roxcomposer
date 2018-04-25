@@ -44,10 +44,10 @@ class TestCliCommands(unittest.TestCase):
         self.assertRegex(ret, "ERROR")
         commands.watch_services("s1", "s2")
         ret = commands.watch_services("s1")
-        self.assertEqual(ret, "Services already watched")
+        self.assertEqual(ret, "All services already watched")
         commands.unwatch_services("s1", "s2")
         ret = commands.watch_services("s1")
-        self.assertNotEqual(ret, "Services already watched")
+        self.assertNotEqual(ret, "All services already watched")
         
     def test_load_services_and_pipeline(self):
         resp = {"pipelines": {"composer_test": {"services": ["html_generator", "file_writer"]}}, "services": {"file_writer": {"params": {"ip": "127.0.0.1", "name": "file_writer", "filepath": "mosaic_demo.html", "port": 5001}, "classpath": "mosaic.tests.classes.file_writer.FileWriter"}, "html_generator": {"params": {"ip": "127.0.0.1", "name": "html_generator", "port": 5002}, "classpath": "mosaic.tests.classes.html_generator.HtmlGenerator"}}}

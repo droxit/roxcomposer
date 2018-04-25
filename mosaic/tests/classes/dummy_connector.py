@@ -35,6 +35,10 @@ class SingleRequestHandler(BaseHTTPRequestHandler):
 
         self._set_headers()
         data = self.rfile.read(length)
+        if self.path == '/log_observer':
+            d = json.loads(data)
+            data = json.dumps({ 'sessionid': "123", "ok": d["services"] }).encode()
+
         self.wfile.write(data)
 
     def do_PUT(self):
@@ -43,10 +47,10 @@ class SingleRequestHandler(BaseHTTPRequestHandler):
         length = int(content_length) if content_length else 0
 
         self._set_headers()
+        data = self.rfile.read(length)
         if self.path == '/log_observer':
-            data = b'{"sessionid": "123"}'
-        else:
-            data = self.rfile.read(length)
+            d = json.loads(data)
+            data = json.dumps({ 'sessionid': "123", "ok": d["services"] }).encode()
 
         self.wfile.write(data)
 
