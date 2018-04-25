@@ -74,7 +74,7 @@ The package provides a basic logger implementation which will be used out of the
   "ip": "127.0.0.1",
   "port": 1337,
   "logging": {
-      "filename": "/path/to/file.log",
+      "logpath": "/path/to/file.log",
       "level": "info"
   }
 }
@@ -84,7 +84,7 @@ Filename and level would be passed on to the basic logger. When left out the def
 
 ```json
 "logging": {
-  "filename": "pipeline.log",
+  "logpath": "pipeline.log",
   "level": "INFO"
 }
 ```
@@ -94,7 +94,7 @@ To overwrite the default values you might add default parameters for logging in 
 ```json
 "default": {
   "logging": {
-    "filename": "pipeline.log",
+    "logpath": "pipeline.log",
     "level": "INFO"
   }
 }
@@ -148,7 +148,7 @@ By default monitoring messages of the whole pipeline get logged in a `monitoring
   "ip": "127.0.0.1",
   "port": 1337,
   "logging": {
-      "filename": "/path/to/file.log",
+      "logpath": "/path/to/file.log",
       "level": "info"
   },
   "monitoring": {
