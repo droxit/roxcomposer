@@ -611,7 +611,7 @@ function create_log_observer(args, cb) {
 		this.add_services_to_logsession(l.id, args.services).
 			then(
 				() => cb(null, { sessionid: l.id }),
-				error => cb({code: 400, error: error})
+				error => cb({code: 400, message: error})
 			).
 			catch(error => cb({code: 400, message: error}));
 	} else {
@@ -627,11 +627,11 @@ function create_log_observer(args, cb) {
 function check_services_and_logs(services) {
 	let missing_services = services.filter(s => !(s in this.services));
 	if (missing_services.length)
-		throw new Error(`unknown services: ${missing_services.join(", ")}`);
+		throw `unknown services: ${missing_services.join(", ")}`;
 
 	let without_log = services.filter(s => !(('logging' in this.services[s].params) && ('filename' in this.services[s].params.logging)));
 	if (without_log.length)
-		throw new Error(`services without logfiles: ${without_log.join(", ")}`);
+		throw `services without logfiles: ${without_log.join(", ")}`;
 }
 
 /*
@@ -653,7 +653,7 @@ function post_services_to_logsession(args, cb) {
 	this.add_services_to_logsession(sid, args.services).
 		then(
 			() => cb(null, { sessionid: sid }),
-			error => cb({code: 400, error: error})
+			error => cb({code: 400, message: error})
 		).
 		catch(error => cb({code: 400, message: error}));
 }
@@ -662,7 +662,12 @@ function post_services_to_logsession(args, cb) {
  * add services to an existing log session
  **/
 function add_services_to_logsession(sessionid, services) {
-	this.check_services_and_logs(services);
+	try {
+		this.check_services_and_logs(services);
+	} catch (e) {
+		this.logger.error(e);
+		return Promise.reject(e);
+	}
 	let l = this.logsessions[sessionid];
 	if (!l) {
 		return Promise.reject(`session ${sessionid} invalid/timed out`);
