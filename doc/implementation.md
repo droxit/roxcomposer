@@ -34,7 +34,7 @@ So how do we generate messages and define pipelines? If you want to generate you
 
 ## Config handling
 
-Since passing the configuration manually is cumbersome, services have a machanism to access their configuration via files:
+Since passing the configuration manually is cumbersome, services have a mechanism to access their configuration via files:
 
 ```bash
 python3 myservice.py '{"service_key": "services.myservice", "config_file": "/path/to/config.json"}'
@@ -78,12 +78,23 @@ The package provides a basic logger implementation which will be used out of the
 }
 ```
 
-filename and level would be passed on to the basic logger. When left out the default values provided are:
+Filename and level would be passed on to the basic logger. When left out the default values provided are:
 
 ```json
 "logging": {
   "filename": "pipeline.log",
   "level": "INFO"
+}
+```
+
+To overwrite the default values you might add default parameters for logging in the impress plugin parameter configs:
+
+```json
+"default": {
+  "logging": {
+    "filename": "pipeline.log",
+    "level": "INFO"
+  }
 }
 ```
 
@@ -125,6 +136,17 @@ By default monitoring messages of the whole pipeline get logged in a `monitoring
   },
   "monitoring": {
       "filename": "/path/to/monitoring/file.log"
+  }
+}
+```
+
+To overwrite the default values you might add default parameters for logging in the impress plugin parameter configs:
+
+```json
+"default": {
+  "monitoring": {
+    "filename": "monitoring.log",
+    "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
   }
 }
 ```

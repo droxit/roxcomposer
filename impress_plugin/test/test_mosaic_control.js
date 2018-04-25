@@ -218,6 +218,55 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 });
             });
 
+            it('should work with default values', function (done) {
+                let logger = bunyan.createLogger({
+                    name: 'mosaic-control-testing',
+                    streams: [{level: 'fatal', path: '/dev/null'}]
+                });
+                let default_values = {
+                    "logging": {
+                        "filename": "pipeline.log",
+                        "level": "INFO"
+                    },
+                    "monitoring": {
+                        "filename": "monitoring.log",
+                        "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
+                    }
+                }
+				let mc_def = {};
+				require('../mosaic_control.js')(mc_def);
+                mc_def.init({logger: logger, default: default_values});
+
+                mc_def.start_service({
+                    'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
+                    'params': {
+                        'name': 'html_generator_default',
+                        'ip': '127.0.0.1',
+                        'port': 1772
+                    }
+                }, function (err) {
+					if (err && err.code === 400) {
+						done(err);
+						return;
+					}
+
+					mc_def.get_services({}, (err, services) => {
+						if (err) {
+							done(err);
+						} else {
+							if ((!services['html_generator_default']['params'].hasOwnProperty("logging")) ||
+								(!services['html_generator_default']['params'].hasOwnProperty("monitoring")) ) {
+								done("Default values are not passed.");
+							} else
+								done()
+						}
+
+						setTimeout(mc_def.shutdown_service, 200, {'name': 'html_generator_default'}, (err) => console.error(err));
+					});
+                });
+
+            });
+
             it('should contain an active state when a pipeline is created', function (done) {
 		let service_startup_error = false;
                 mc.start_service({

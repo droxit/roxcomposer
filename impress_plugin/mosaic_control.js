@@ -1,5 +1,5 @@
 //
-// Classe mosaic deploy: standard functionalities from mosaic
+// Class mosaic deploy: standard functionalities from mosaic
 //
 // devs@droxit.de - droxIT GmbH
 //
@@ -20,6 +20,7 @@ function __mosaic_control_private() {
 	this.logger;
 	this.service_container_path;
 	this.reporting_service;
+	this.default;
 }
 
 module.exports = function (container) {
@@ -68,6 +69,10 @@ function init(mcp, args) {
 			}
 			mcp.reporting_service = args.reporting_service.params.name;
 		});
+	}
+
+	if (args && ('default' in args)) {
+		mcp.default = args.default;
 	}
 
 	mcp.service_config = false;
@@ -163,6 +168,14 @@ function start_service(mcp, args, cb) {
 				return;
 			}
 	}
+
+    // add default values if given to params if logging or monitoring is not set
+    if(mcp.hasOwnProperty('default')) {
+        if (!args.params.hasOwnProperty('logging') && mcp.default.hasOwnProperty('logging'))
+            args.params.logging = mcp.default.logging;
+        if (!args.params.hasOwnProperty('monitoring') && mcp.default.hasOwnProperty('monitoring'))
+            args.params.monitoring = mcp.default.monitoring;
+    }
 
 	let name = args.params.name;
 	let params = args.params;
