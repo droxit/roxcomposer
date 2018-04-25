@@ -61,6 +61,10 @@ class TestLogging(unittest.TestCase):
             self.assertIn(msg, logline, "original message not contained in log line")
             self.assertIn('DEBUG', logline, "log level missing/or incorrect")
 
+            lt.logdebug(msg, 'test-id')
+            logline = f.readline()
+            self.assertIn('message_id:test-id', logline, "message id not present in log line")
+
             lt.loginfo(msg)
             logline = f.readline()
             self.assertIn(msg, logline, "original message not contained in log line")

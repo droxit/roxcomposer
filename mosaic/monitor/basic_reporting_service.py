@@ -9,7 +9,7 @@ class BasicReportingService(base_service.BaseService):
         basic_monitoring.check_args(self.params, "filename")
         self.reporter = basic_monitoring.BasicReporting(filename=self.params['filename'])
 
-    def on_message(self, msg):
+    def on_message(self, msg, msg_id):
         try:
             m = json.loads(msg)
         except Exception as e:

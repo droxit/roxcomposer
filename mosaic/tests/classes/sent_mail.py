@@ -59,7 +59,7 @@ class SentMail(base_service.BaseService):
         self.msg = ''
         self.listen()
 
-    def on_message(self, msg):
+    def on_message(self, msg, msg_id):
         self.msg = msg
         self.sendmail(self.params['mail']['recipient'], self.params['mail']['subject'], msg)
 

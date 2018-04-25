@@ -14,6 +14,7 @@ level_map = {
 # the logging configuration. If the specified logfile already exists logs will get appended to the file.
 class BasicLogger:
     def __init__(self, servicename, **kwargs):
+        self.servicename = servicename
         self.logger = logging.getLogger(servicename)
         handler = None
         if 'filename' in kwargs:
@@ -29,7 +30,7 @@ class BasicLogger:
         if 'format' in kwargs:
             fmt = kwargs['format']
         else:
-            fmt = '[%(asctime)-15s.%(msecs)d' + time.strftime('%z') + '][%(created)s][%(levelname)s] service:' + servicename + ' - %(message)s'
+            fmt = '[%(asctime)-15s.%(msecs)d' + time.strftime('%z') + '][%(created)s][%(levelname)s] service:%(servicename)s %(message_id)s - %(message)s'
         # kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S.%f%z'
         # %(msecs)
         dtfmt = None
@@ -50,22 +51,48 @@ class BasicLogger:
         self.logger.addHandler(handler)
 
     # log a message for information
-    def info(self, msg):
-        self.logger.info(msg)
+    def info(self, msg, msg_id = None):
+        extra = { 'servicename': self.servicename }
+        if msg_id is not None:
+            extra['message_id'] = 'message_id:{}'.format(msg_id)
+        else:
+            extra['message_id'] = ''
+
+        self.logger.info(msg, extra=extra)
 
     # log a message for debug purposes
-    def debug(self, msg):
-        self.logger.debug(msg)
+    def debug(self, msg, msg_id = None):
+        extra = { 'servicename': self.servicename }
+        if msg_id is not None:
+            extra['message_id'] = 'message_id:{}'.format(msg_id)
+        else:
+            extra['message_id'] = ''
+        self.logger.debug(msg, extra=extra)
 
     # log a message for warning purposes
-    def warn(self, msg):
-        self.logger.warning(msg)
+    def warn(self, msg, msg_id = None):
+        extra = { 'servicename': self.servicename }
+        if msg_id is not None:
+            extra['message_id'] = 'message_id:{}'.format(msg_id)
+        else:
+            extra['message_id'] = ''
+        self.logger.warning(msg, extra=extra)
 
     # log a message for error issues
-    def error(self, msg):
-        self.logger.error(msg)
+    def error(self, msg, msg_id = None):
+        extra = { 'servicename': self.servicename }
+        if msg_id is not None:
+            extra['message_id'] = 'message_id:{}'.format(msg_id)
+        else:
+            extra['message_id'] = ''
+        self.logger.error(msg, extra=extra)
 
     # log a message for fatal issues
-    def critical(self, msg):
-        self.logger.critical(msg)
+    def critical(self, msg, msg_id = None):
+        extra = { 'servicename': self.servicename }
+        if msg_id is not None:
+            extra['message_id'] = 'message_id:{}'.format(msg_id)
+        else:
+            extra['message_id'] = ''
+        self.logger.critical(msg, extra=extra)
 

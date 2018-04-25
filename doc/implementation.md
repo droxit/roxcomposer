@@ -12,13 +12,15 @@ class MyService(base_service.BaseService):
         super().__init__(args)
         self.listen()
  
-    def on_message(self, msg):
+    def on_message(self, msg, msg_id):
         new_msg = do_stuff_with(msg)
         self.dispatch(new_msg)
  
 args = json_loads(sys.argv[1])
 ms = MyService(args)
 ```
+
+The `msg` parameter is the message payload that was posted into the pipeline. The `msg_id` is a unique identifier for this particular message and is provided for logging purposes (explained later).
 
 An example invocation for our service with arguments passed directly would look like this
 
@@ -109,8 +111,23 @@ If not overridden upon invocation a sample log message looks like this:
 ### Logging messages
 
 The basic logger has functions for logging on different log levels: debug, info, warn, error and critical which are easily accessible from within the base service class:
+
+```python
 self.logger.info("Hello World!")
 self.logger.error(errorObject) # we can log anything that has a string representation
+```
+
+The within the `on_message` or `on_message_ext` functions the current message id can also be added to the logging call:
+
+```python
+self.logger.error("something went wrong", msg_id)
+```
+
+```bash
+[ISO8601 TIMESTAMP][TIMESTAMP][INFO] service:myservice_instance message_id:1234-34134-14134-14314 - something went wrong
+```
+
+This is useful for tracing a message through the service logs.
 
 ### Logging exceptions
 
