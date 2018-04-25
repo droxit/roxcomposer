@@ -610,10 +610,17 @@ function create_log_observer(args, cb) {
 	if ('services' in args) {
 		this.add_services_to_logsession(l.id, args.services).
 			then(
-				() => cb(null, { sessionid: l.id }),
-				error => cb({code: 400, message: error})
+				ml => {
+					ml.sessionid = l.id;
+					cb(null, ml);
+				},
+				error => {
+					cb({code: 400, message: error});
+				}
 			).
-			catch(error => cb({code: 400, message: error}));
+			catch(error => {
+				cb({code: 400, message: error});
+			});
 	} else {
 		cb(null, {sessionid: l.id});
 	}
@@ -625,13 +632,14 @@ function create_log_observer(args, cb) {
  * check a list of services whether they exist and have a log file configured
  **/
 function check_services_and_logs(services) {
+	let set = new Set(services);
 	let missing_services = services.filter(s => !(s in this.services));
-	if (missing_services.length)
-		throw `unknown services: ${missing_services.join(", ")}`;
+	missing_services.forEach(s => set.delete(s));
 
-	let without_log = services.filter(s => !(('logging' in this.services[s].params) && ('filename' in this.services[s].params.logging)));
-	if (without_log.length)
-		throw `services without logfiles: ${without_log.join(", ")}`;
+	let without_log = Array.from(set).filter(s => !(('logging' in this.services[s].params) && ('filename' in this.services[s].params.logging)));
+	without_log.forEach(s => set.delete(s));
+
+	return { 'ok': Array.from(set), 'missing': missing_services, 'without_log': without_log };
 }
 
 /*
@@ -652,7 +660,7 @@ function post_services_to_logsession(args, cb) {
 	let sid = args.sessionid;
 	this.add_services_to_logsession(sid, args.services).
 		then(
-			() => cb(null, { sessionid: sid }),
+			ml => { ml.sessionid = sid; cb(null, ml) },
 			error => cb({code: 400, message: error})
 		).
 		catch(error => cb({code: 400, message: error}));
@@ -662,19 +670,28 @@ function post_services_to_logsession(args, cb) {
  * add services to an existing log session
  **/
 function add_services_to_logsession(sessionid, services) {
-	try {
-		this.check_services_and_logs(services);
-	} catch (e) {
-		this.logger.error(e);
-		return Promise.reject(e);
-	}
 	let l = this.logsessions[sessionid];
-	if (!l) {
+	if (!l)
 		return Promise.reject(`session ${sessionid} invalid/timed out`);
+
+	ml = this.check_services_and_logs(services);
+
+	if (ml.ok.length == 0) {
+		ret = "no valid services provided: ";
+		if (ml.missing.length)
+			ret += `missing services: [${ml.missing.join(", ")}] `;
+		if (ml.without_log.length)
+			ret += `services without logfile: [${ml.without_log.join(", ")}]`;
+		return Promise.reject(ret);
 	}
-	services.map(s => l.services.add(s));
+
+	ml.ok.forEach(s => l.services.add(s));
+	this.logger.info(ml, 'adding services to watcher');
+
 	l.session.filters[0] = service_log_filter(Array.from(l.services.values()));
-	return l.session.watch_files(services.map(s => this.services[s].params.logging.filename));
+	return new Promise((resolve, reject) => {
+		l.session.watch_files(ml.ok.map(s => this.services[s].params.logging.filename)).then(() => resolve(ml), reject);
+	});
 }
 
 /*
