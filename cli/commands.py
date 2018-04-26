@@ -322,6 +322,8 @@ def reset_watchers():
     if logobs_session is None:
         return
 
+    logobs_session = None
+
     data = { 'sessionid': logobs_session['id'] }
     headers = {'Content-Type': 'application/json'}
     try:
@@ -332,8 +334,6 @@ def reset_watchers():
     # we don't care about the return value - an error in almost all cases means that the session
     # has expired, in the remaining cases it is ok to abandon the session and to let it time out
     # on the server
-
-    logobs_session = None
 
     return "Watchers removed"
 
