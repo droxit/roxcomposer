@@ -649,7 +649,7 @@ function check_services_and_logs(services) {
 	let missing_services = services.filter(s => !(s in this.services));
 	missing_services.forEach(s => set.delete(s));
 
-	let without_log = Array.from(set).filter(s => !(('logging' in this.services[s].params) && ('filename' in this.services[s].params.logging)));
+	let without_log = Array.from(set).filter(s => !(('logging' in this.services[s].params) && ('logpath' in this.services[s].params.logging)));
 	without_log.forEach(s => set.delete(s));
 
 	return { 'ok': Array.from(set), 'missing': missing_services, 'without_log': without_log };
@@ -703,7 +703,7 @@ function add_services_to_logsession(sessionid, services) {
 
 	l.session.filters[0] = service_log_filter(Array.from(l.services.values()));
 	return new Promise((resolve, reject) => {
-		l.session.watch_files(ml.ok.map(s => this.services[s].params.logging.filename)).then(() => resolve(ml), reject);
+		l.session.watch_files(ml.ok.map(s => this.services[s].params.logging.logpath)).then(() => resolve(ml), reject);
 	});
 }
 
@@ -765,8 +765,8 @@ function delete_log_observer(args, cb) {
 		for (s in args.services)
 			l.services.delete(args.services[s]);
 		l.session.filters[0] = service_log_filter(Array.from(l.services.values()));
-		let keep = new Set(Array.from(l.services.values()).map(s => this.services[s].params.logging.filename));
-		let remove = args.services.map(s => this.services[s].params.logging.filename);
+		let keep = new Set(Array.from(l.services.values()).map(s => this.services[s].params.logging.logpath));
+		let remove = args.services.map(s => this.services[s].params.logging.logpath);
 		remove = remove.filter(f => !keep.has(f));
 		if (remove.length)
 			l.session.unwatch_files(remove);

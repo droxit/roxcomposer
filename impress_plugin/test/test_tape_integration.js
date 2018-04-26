@@ -30,7 +30,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 		let filepath = path.join(tmpdir, "file_writer.out");
 		let filewriter_params = {name: 'fwriter', ip: '127.0.0.1', port: 6889, filepath: filepath,
 			logging: {
-			"filename": "pipeline.log",
+			"logpath": "pipeline.log",
 				"level": "DEBUG"}
 	};
 		let test_msg = 'test _mesage from hell';
