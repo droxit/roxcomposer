@@ -265,7 +265,7 @@ def unwatch_services(*services):
 
 def watch_pipelines(*pipelines):
     if len(pipelines) is 0:
-        return "No pipelines specified"
+        return "ERROR - no pipelines specified"
 
     # get pipelines
     r = requests.get('http://{}/pipelines'.format(roxconnector))

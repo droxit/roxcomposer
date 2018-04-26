@@ -23,7 +23,11 @@ class SingleRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        self.wfile.write(b"{'json': 'test'}")
+        data = json.dumps({"json": "test"}).encode()
+        if self.path == '/pipelines':
+            data = json.dumps({"pipe":{"services":["s1","s2"],"active":True}}).encode()
+
+        self.wfile.write(data)
 
     def do_HEAD(self):
         self._set_headers()

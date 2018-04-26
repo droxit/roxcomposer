@@ -48,6 +48,17 @@ class TestCliCommands(unittest.TestCase):
         commands.unwatch_services("s1", "s2")
         ret = commands.watch_services("s1")
         self.assertNotEqual(ret, "All services already watched")
+
+    def test_watch_pipelines(self):
+        ret = commands.watch_pipelines()
+        self.assertRegex(ret, "ERROR")
+        ret = commands.watch_pipelines("notapipe")
+        self.assertRegex(ret, "ERROR")
+        ret = commands.watch_pipelines("pipe")
+        self.assertNotEqual(ret, "All services already watched")
+        ret = commands.watch_pipelines("pipe")
+        self.assertEqual(ret, "All services already watched")
+        commands.unwatch_pipelines("pipe")
         
     def test_load_services_and_pipeline(self):
         resp = {"pipelines": {"composer_test": {"services": ["html_generator", "file_writer"]}}, "services": {"file_writer": {"params": {"ip": "127.0.0.1", "name": "file_writer", "filepath": "mosaic_demo.html", "port": 5001}, "classpath": "mosaic.tests.classes.file_writer.FileWriter"}, "html_generator": {"params": {"ip": "127.0.0.1", "name": "html_generator", "port": 5002}, "classpath": "mosaic.tests.classes.html_generator.HtmlGenerator"}}}
@@ -118,7 +129,7 @@ class TestCliCommands(unittest.TestCase):
 
     def test_pipelines(self):
         sent = commands.get_pipelines('blabla')
-        response = "{'json': 'test'}"
+        response = '{"pipe": {"services": ["s1", "s2"], "active": true}}'
         self.assertEqual(response, sent)
 
     def tearDown(self):
