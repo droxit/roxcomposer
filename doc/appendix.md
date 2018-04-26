@@ -65,7 +65,7 @@ def __init__(self, service_name, **kwargs):
 The `service_name` is the name of the service that owns this logger instance. The kwargs are passed on from the logging section service's invocation parameters. If omitted the default invocation would be
 
 ```python
-logger(servicename, filename="pipeline.log", level="INFO")
+logger(servicename, logpath="<log_path>", level="INFO"). If <log_path> is a directory path then should be created a file with the service name otherwise will be create a file, names <log_path>
 ```
 
 ## Log functions

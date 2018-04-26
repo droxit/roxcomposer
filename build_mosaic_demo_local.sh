@@ -49,6 +49,7 @@ else
     cp ../$API_PLUGIN_PATH/package.json ./api-server/plugins
     cp ../$MOSAIC_PACKAGE ./packages/
     cp ../.circleci/mosaic-deploy/services/*.json ./services
+    cp ../util/service_container.py ./api-server/plugins/.
 
     cd ..
 

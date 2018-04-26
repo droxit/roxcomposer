@@ -24,13 +24,13 @@ class TestLogging(unittest.TestCase):
             'port': 3,
             'logging': {
                 'level': 'WARNING',
-                'filename': '/does/not/exists.log'
+                'logpath': '/does/not/exists.log'
             }
         }
 
         self.assertRaises(exceptions.ConfigError, test_logging.LogTest, params)
 
-        del params['logging']['filename']
+        del params['logging']['logpath']
         params['logging']['level'] = 'totally dumb not existstant level name'
 
         self.assertRaises(exceptions.ConfigError, test_logging.LogTest, params)
@@ -47,7 +47,7 @@ class TestLogging(unittest.TestCase):
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
-                    'filename': log_path
+                    'logpath': log_path
                 }
             }
 
