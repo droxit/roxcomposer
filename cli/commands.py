@@ -233,6 +233,7 @@ def watch_services(*services):
 
         return 'All services already watched'
 
+
 def unwatch_services(*services):
     if len(services) is 0:
         return "No services specified"
@@ -245,7 +246,7 @@ def unwatch_services(*services):
     s = [x for x in filter(lambda s: s in logobs_session['services'], services)]
 
     if len(s) == 0:
-        return "The spcified services are not being watched"
+        return "The specified services are not being watched"
 
     data = { 'sessionid': logobs_session['id'], 'services': s }
     headers = {'Content-Type': 'application/json'}
@@ -261,16 +262,72 @@ def unwatch_services(*services):
         logobs_session['services'] = logobs_session['services'].difference(set(s))
         return "Services no longer watched: {}".format(s)
 
+
+def watch_pipelines(*pipelines):
+    if len(pipelines) is 0:
+        return "ERROR - no pipelines specified"
+
+    # get pipelines
+    r = requests.get('http://{}/pipelines'.format(roxconnector))
+    if r.status_code != 200:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
+    pipe_list = json.loads(r.text)
+    services_lists = [pipe_list[pipe]['services'] for pipe in pipelines if pipe in pipe_list]
+    services = list(set([service for sublist in services_lists for service in sublist]))
+    nots = list(set([pipe for pipe in pipelines if pipe not in pipe_list]))
+
+    ret = watch_services(*services)
+    ret_str = 'not defined: {}\n'.format(nots) if nots else ''
+    if isinstance(ret, dict):
+        ret_str += ret['response']
+        return {'response': ret_str, 'callback': ret['callback']}
+
+    ret_str += ret
+    return ret_str
+
+
+def unwatch_pipelines(*pipelines):
+    if len(pipelines) is 0:
+        return "No pipelines specified"
+
+    # get pipelines
+    r = requests.get('http://{}/pipelines'.format(roxconnector))
+    if r.status_code != 200:
+        return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
+    pipe_list = json.loads(r.text)
+    services_lists = [pipe_list[pipe]['services'] for pipe in pipelines if pipe in pipe_list]
+    services = list(set([service for sublist in services_lists for service in sublist]))
+    nots = list(set([pipe for pipe in pipelines if pipe not in pipe_list]))
+
+    ret = unwatch_services(*services)
+    ret_str = 'not defined: {}\n'.format(nots) if nots else ''
+
+    ret_str += ret
+    return ret_str
+
+
+def watch_all():
+    # get services
+    r = json.loads(get_services())
+    services = [key for key in r if not key == "basic_reporting"]
+
+    return watch_services(*services)
+
+
 def reset_watchers():
     global logobs_session
 
     if logobs_session is None:
         return
 
+    logobs_session = None
+
     data = { 'sessionid': logobs_session['id'] }
     headers = {'Content-Type': 'application/json'}
     try:
-        r = requests.delete('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+        requests.delete('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
     except requests.exceptions.ConnectionError as e:
         return "ERROR: no connection to server - {}".format(e)
 
@@ -278,9 +335,8 @@ def reset_watchers():
     # has expired, in the remaining cases it is ok to abandon the session and to let it time out
     # on the server
 
-    logobs_session = None
-
     return "Watchers removed"
+
 
 def get_service_logs():
     if logobs_session is None:
@@ -297,6 +353,7 @@ def get_service_logs():
         raise RuntimeError(r.text)
 
     return "\n".join(r.json()['loglines'])
+
 
 def load_services_and_pipelines(*args):
     if len(args) > 1:
@@ -347,22 +404,22 @@ cmd_map = {
     'help': {
         'function_call': help,
         'doc_string': "help - "
-                      +"Use 'help' to get a list of all commands or 'help <COMMAND>' to get help for a certain command."
+                      + "Use 'help' to get a list of all commands or 'help <COMMAND>' to get help for a certain command."
     },
     'list_service_files': {
         'function_call': list_service_files,
         'doc_string': "list_service_files - "
-                      +"Lists the available service files."
+                      + "Lists the available service files."
     },
     'services': {
         'function_call': get_services,
         'doc_string': "services - "
-                      +"Lists the running services."
+                      + "Lists the running services."
     },
     'pipelines': {
         'function_call': get_pipelines,
         'doc_string': "pipelines - "
-                      +"Lists the stored pipelines."
+                      + "Lists the stored pipelines."
     },
     'post_to_pipeline': {
         'function_call': post_to_pipeline,
@@ -378,7 +435,19 @@ cmd_map = {
     },
     'unwatch_services': {
         'function_call': unwatch_services,
-        'doc_string': "unwatch_services <SERVICE1 [,SERVICE2 [,...]]> - remove services to log observation"
+        'doc_string': "unwatch_services <SERVICE1 [,SERVICE2 [,...]]> - remove services from log observation"
+    },
+    'watch_pipelines': {
+        'function_call': watch_pipelines,
+        'doc_string': "watch_pipelines <PIPELINE1 [,PIPELINE2 [,...]]> - add pipelines to log observation"
+    },
+    'unwatch_pipelines': {
+        'function_call': unwatch_pipelines,
+        'doc_string': "unwatch_pipelines <PIPELINE1 [,PIPELINE2 [,...]]> - remove pipelines from log observation"
+    },
+    'watch_all': {
+        'function_call': watch_all,
+        'doc_string': "watch_all - complete log observation"
     },
     'reset_watchers': {
         'function_call': reset_watchers,
@@ -387,25 +456,25 @@ cmd_map = {
     'start_service': {
         'function_call': start_service,
         'doc_string': "start_service <SERVICE_FILE> - "
-                      +"Starts a service from the service file."
-                      +"Use 'list_service_files' to get a list of available services"
+                      + "Starts a service from the service file."
+                      + "Use 'list_service_files' to get a list of available services"
     },
     'set_pipeline': {
         'function_call': set_pipeline,
         'doc_string': "set_pipeline <NAME> [SERVICES] - "
-                      +"Sets up a linear pipeline on a given service list.\n"
-                       "Example: 'set_pipeline name serv1 serv2 serv3'"
+                      + "Sets up a linear pipeline on a given service list.\n"
+                      + "Example: 'set_pipeline name serv1 serv2 serv3'"
     },
     'shutdown_service': {
         'function_call': shutdown_service,
         'doc_string': "shutdown_service <NAME> - "
-                      +"Shuts down a service and sets all pipelines to inactive if the service is part of it."
-                      +"Use 'services' to get a list of all running services."
+                      + "Shuts down a service and sets all pipelines to inactive if the service is part of it."
+                      + "Use 'services' to get a list of all running services."
     },
     'dump': {
         'function_call': dump_everything,
         'doc_string': "dump - "
-                      +"Dumps of the running services and defined pipelines."
+                      + "Dumps of the running services and defined pipelines."
     },
     'restore_server': {
         'function_call': load_services_and_pipelines,
@@ -417,7 +486,7 @@ cmd_map = {
         'function_call': load_and_start_pipeline,
         'doc_string': "restore_pipeline <PIPELINE_DUMP_FILE_PATH> "
                       + "Load the pipelines configuration from (server) path and activate this.\n"
-                        "Example: 'restore_pipeline pipeline_backup.json'"
+                      + "Example: 'restore_pipeline pipeline_backup.json'"
     }
 }
 
