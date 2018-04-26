@@ -21,5 +21,6 @@ if [[ ($# -lt 1) ]]
 else
     rm -rf $MOSAIC_DEPLOY_DIR/$BUILD_DIR/mosaic-cli*
     cp ./cli/*.py $MOSAIC_DEPLOY_DIR/$BUILD_DIR/.
+    cp ../$API_PLUGIN_PATH/package.json ./api-server/plugins
 
 fi

@@ -14,10 +14,11 @@
 
 import socket
 import threading
-from mosaic.communication import mosaic_message
-from mosaic.service_loader import load_class
+
 from mosaic import exceptions
+from mosaic.communication import mosaic_message
 from mosaic.config import configuration_loader
+from mosaic.service_loader import load_class
 
 
 class BaseService:
@@ -41,16 +42,6 @@ class BaseService:
             # the config will be loaded by the passed params directly
             self.params = params
 
-        # if self.params is None:
-        #     #logger need the service name
-        #     self.params['name'] = 'not defined'
-        #     self.logger.critical('BaseService.__init__() - params is None.')
-        #     raise exceptions.ParameterMissing('BaseService.__init__() - params is None.')
-        # elif 'name' not in self.params:
-        #     # service name as param
-        #     # load the config from services.json
-        #     self.params['name'] = 'not defined'
-        #     self.logger.critical('BaseService.__init__() - name is undefined')
 
         # buffer size to read a msg in specified byte chunks
         self.BUFFER_SIZE = 4096
@@ -60,7 +51,7 @@ class BaseService:
 
         # initialize logger
         logger_params = {
-            'filename': 'pipeline.log',
+            'logpath': 'logs/',
             'level': 'INFO'
         }
         if 'logging' in self.params:

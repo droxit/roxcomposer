@@ -225,7 +225,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                 });
                 let default_values = {
                     "logging": {
-                        "filename": "pipeline.log",
+                        "logpath": "pipeline.log",
                         "level": "INFO"
                     },
                     "monitoring": {

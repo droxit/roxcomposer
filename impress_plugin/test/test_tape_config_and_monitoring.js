@@ -41,7 +41,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 			reporting_service: {
 				classpath: 'mosaic.monitor.basic_reporting_service.BasicReportingService',
 				params: {
-					logging: { filename: servicelog_file },
+					logging: { logpath: servicelog_file },
 					name: 'basic_reporting',
 					filename: monitoring_file,
 					ip: '127.0.0.1',

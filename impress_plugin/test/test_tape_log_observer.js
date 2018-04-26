@@ -29,7 +29,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 				classpath: "mosaic.monitor.basic_reporting_service.BasicReportingService",
 				params: {
 					logging: {
-						filename: path.join(tmpdir, "pipeline.log")
+						logpath: path.join(tmpdir, "pipeline.log")
 					},
 					name: "basic_reporting",
 					filename: "monitoring.log",
@@ -48,7 +48,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 					port: 5001,
 					filepath: "mosaic_demo.html",
 					logging: {
-						filename: path.join(tmpdir, "service.log"),
+						logpath: path.join(tmpdir, "service.log"),
 						level: "INFO"
 					}
 				}
@@ -61,7 +61,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 					port: 5003,
 					image: "./assets/minions-yeah.jpg",
 					logging: {
-						filename: path.join(tmpdir, "service.log"),
+						logpath: path.join(tmpdir, "service.log"),
 						level: "INFO"
 					}
 				}
@@ -73,7 +73,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 					ip: "127.0.0.1",
 					port: 5002,
 					logging: {
-						filename: path.join(tmpdir, "service.log"),
+						logpath: path.join(tmpdir, "service.log"),
 						level: "INFO"
 					}
 				}
