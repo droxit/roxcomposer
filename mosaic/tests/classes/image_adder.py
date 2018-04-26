@@ -30,6 +30,7 @@ class ImageAdder(base_service.BaseService):
     def on_message_ext(self, extended_msg):
         # access the message's payload
         self.msg = extended_msg.payload
+        self.logger.info("received: {} bytes".format(len(extended_msg.payload)))
         self.to_html()
 
     def to_html(self):

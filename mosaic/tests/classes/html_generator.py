@@ -22,6 +22,7 @@ class HtmlGenerator(base_service.BaseService):
 
     def on_message(self, msg, msg_id):
         self.msg = msg
+        self.logger.info("received: {} bytes".format(len(msg)))
         self.to_html()
 
     def to_html(self):

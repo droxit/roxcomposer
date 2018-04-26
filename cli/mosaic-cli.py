@@ -10,6 +10,7 @@
 # Copyright (c) 2018 droxIT GmbH
 #
 
+from functools import partial
 from urwid import *
 from commands import cmd_map, run_cmd
 from cmdparser import tokenize
@@ -66,7 +67,27 @@ class MainFrame(Frame):
         self.cmd_walk = 0
         self.body = Pile([])
         self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 0)), (self.cmdh, (WEIGHT, 1))]
-        super(MainFrame, self).__init__(self.body, footer=self.cmdl)
+        self.watchers = []
+        self.loop = None
+        body = Pile([self.log, self.cmdh])
+        super(MainFrame, self).__init__(body, footer=self.cmdl)
+
+    def store_loop(self, loop):
+        self.loop = loop
+
+    def call_and_refresh(self, loop, data):
+        callback, refresh_interval = data
+        try:
+            ret = callback()
+            if len(ret):
+                self.log.addline(ret)
+            self.loop.set_alarm_in(refresh_interval, self.call_and_refresh, (callback, refresh_interval))
+        except Exception as e:
+            self.log.addline("Watcher terminated: {}".format(e))
+
+    def add_watcher(self, callback, refresh_interval):
+        if self.loop is not None:
+            self.loop.set_alarm_in(refresh_interval, self.call_and_refresh, (callback, refresh_interval))
 
     # key input handling function
     def keypress(self, size, key):
@@ -112,7 +133,13 @@ class MainFrame(Frame):
                 pipe_len = len(json.loads(pipelines)[cmdt[1]]['services'])
                 self.mtw.add_message(msg_id, pipe_len)
             else:
-                self.log.addline(run_cmd(*cmdt))
+                ret = run_cmd(*cmdt)
+                if isinstance(ret, str):
+                    self.log.addline(ret)
+                elif isinstance(ret, dict):
+                    self.log.addline(ret['response'])
+                    if 'callback' in ret:
+                        self.add_watcher(ret['callback'], 0.2)
         except Exception as e:
             self.log.addline(str(e))
 
@@ -217,8 +244,9 @@ if __name__ == "__main__":
         ('complete', 'white', 'dark magenta'),
     ]
     loop = MainLoop(frame, palette)
+    frame.store_loop(loop)
 
     # start refreshing loop for the message trace widget
     loop.set_alarm_in(0.1, frame.mtw.refresh)
-
     loop.run()
+

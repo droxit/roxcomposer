@@ -13,6 +13,8 @@ import requests
 
 roxconnector = 'localhost:7475'
 service_file_dir = 'services'
+logobs_session = None
+logobs_session_timeout = 3600
 
 
 def list_service_files(*args):
@@ -32,7 +34,12 @@ def post_to_pipeline(*args):
 
     d = {'name': args[0], 'data': " ".join(args[1:])}
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/post_to_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+
+    try:
+        r = requests.post('http://{}/post_to_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
     if r.status_code == 200:
         return r.text
     else:
@@ -42,7 +49,12 @@ def post_to_pipeline(*args):
 def get_services(*args):
     if len(args) != 0:
         return 'WARNING: superfluous arguments to services: {}'.format(args)
-    r = requests.get('http://{}/services'.format(roxconnector))
+
+    try:
+        r = requests.get('http://{}/services'.format(roxconnector))
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
     if r.status_code == 200:
         return r.text
     else:
@@ -57,12 +69,15 @@ def start_service(*args):
     service_args = None
     try:
         f = open('./services/{}.json'.format(service))
-        service_args = f.read()
+        service_args = json.load(f)
     except Exception as e:
         return 'ERROR unable to load service {} - {}'.format(service, e)
 
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/start_service'.format(roxconnector), data=service_args, headers=headers)
+    try:
+        r = requests.post('http://{}/start_service'.format(roxconnector), json=service_args, headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
     if r.status_code == 200:
         return r.text
     else:
@@ -77,7 +92,10 @@ def get_msg_history(*args):
     d = {'message_id': msg_id}
 
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/get_msg_history'.format(roxconnector), data=json.dumps(d), headers=headers)
+    try:
+        r = requests.post('http://{}/get_msg_history'.format(roxconnector), data=json.dumps(d), headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
     if r.status_code == 200:
         return r.text
     else:
@@ -91,7 +109,10 @@ def set_pipeline(*args):
     services = args[1:]
     d = {'name': pipename, 'services': services}
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/set_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    try:
+        r = requests.post('http://{}/set_pipeline'.format(roxconnector), data=json.dumps(d), headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
     if r.status_code == 200:
         return r.text
     else:
@@ -113,7 +134,11 @@ def shutdown_service(*args):
     service = args[0]
     d = {'name': service}
     headers = {'Content-Type': 'application/json'}
-    r = requests.post('http://{}/shutdown_service'.format(roxconnector), data=json.dumps(d), headers=headers)
+    try:
+        r = requests.post('http://{}/shutdown_service'.format(roxconnector),json=d, headers=headers)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
     if r.status_code == 200:
         return r.text
     else:
@@ -133,7 +158,11 @@ def dump_everything(*args):
     except Exception as e:
         return 'ERROR unable to open file {} - {}'.format(dumpfile, e)
 
-    r = requests.get('http://{}/dump_services_and_pipelines'.format(roxconnector))
+    try:
+        r = requests.get('http://{}/dump_services_and_pipelines'.format(roxconnector))
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
     if r.status_code == 200:
         o = r.json()
         try:
@@ -147,6 +176,126 @@ def dump_everything(*args):
     else:
         f.close()
         return 'ERROR: {} - {}'.format(r.status_code, r.text)
+
+def watch_services(*services):
+    if len(services) is 0:
+        return "ERROR - no services specified"
+
+    global logobs_session
+    global logobs_session_timeout
+
+    if logobs_session is None:
+        session = dict()
+        session['services'] = set()
+        data = { 'lines': 100, 'timeout': logobs_session_timeout, 'services': services }
+        headers = {'Content-Type': 'application/json'}
+        try:
+            r = requests.put('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+        except requests.exceptions.ConnectionError as e:
+            return "ERROR: no connection to server - {}".format(e)
+
+        if r.status_code != 200:
+            return 'ERROR: {}'.format(r.text)
+
+        session['id'] = r.json()['sessionid']
+
+        for s in services:
+            session['services'].add(s)
+
+        logobs_session = session
+        return { 'response': r.text, 'callback': get_service_logs }
+
+    else:
+        s = [x for x in filter(lambda s: s not in logobs_session['services'], services)]
+        nots = [x for x in filter(lambda s: s in logobs_session['services'], services)]
+
+        ret = ''
+        if len(nots):
+            ret = 'already watched: {}\n'.format(nots)
+
+        if len(s):
+            data = { 'sessionid': logobs_session['id'], 'services': s }
+            headers = {'Content-Type': 'application/json'}
+            try:
+                r = requests.post('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+            except requests.exceptions.ConnectionError as e:
+                return ret + "ERROR: no connection to server - {}".format(e)
+
+            if r.status_code != 200:
+                return ret + 'ERROR: {}'.format(r.text)
+
+            ml = r.json()
+            for s in ml['ok']:
+                logobs_session['services'].add(s)
+
+            return ret + r.text
+
+        return 'All services already watched'
+
+def unwatch_services(*services):
+    if len(services) is 0:
+        return "No services specified"
+
+    global logobs_session
+
+    if logobs_session is None:
+        return "No services are being watched at the moment"
+
+    s = [x for x in filter(lambda s: s in logobs_session['services'], services)]
+
+    if len(s) == 0:
+        return "The spcified services are not being watched"
+
+    data = { 'sessionid': logobs_session['id'], 'services': s }
+    headers = {'Content-Type': 'application/json'}
+    try:
+        r = requests.delete('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
+    if r.status_code != 200:
+        return 'ERROR: {}'.format(r.text)
+
+    else:
+        logobs_session['services'] = logobs_session['services'].difference(set(s))
+        return "Services no longer watched: {}".format(s)
+
+def reset_watchers():
+    global logobs_session
+
+    if logobs_session is None:
+        return
+
+    data = { 'sessionid': logobs_session['id'] }
+    headers = {'Content-Type': 'application/json'}
+    try:
+        r = requests.delete('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
+    # we don't care about the return value - an error in almost all cases means that the session
+    # has expired, in the remaining cases it is ok to abandon the session and to let it time out
+    # on the server
+
+    logobs_session = None
+
+    return "Watchers removed"
+
+def get_service_logs():
+    if logobs_session is None:
+        raise RuntimeError('no services are currently under observation')
+
+    data = { 'sessionid': logobs_session['id'] }
+    headers = {'Content-Type': 'application/json'}
+    try:
+        r = requests.get('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+    except requests.exceptions.ConnectionError as e:
+        return "ERROR: no connection to server - {}".format(e)
+
+    if r.status_code != 200:
+        raise RuntimeError(r.text)
+
+    return "\n".join(r.json()['loglines'])
 
 def load_services_and_pipelines(*args):
     if len(args) > 1:
@@ -213,6 +362,26 @@ cmd_map = {
         'function_call': get_pipelines,
         'doc_string': "pipelines - "
                       +"Lists the stored pipelines."
+    },
+    'post_to_pipeline': {
+        'function_call': post_to_pipeline,
+        'doc_string': "post_to_pipeline <PIPELINE_NAME> <MESSAGE> - post the given message into the pipeline"
+    },
+    'get_msg_history': {
+        'function_call': get_msg_history,
+        'doc_string': "get_msg_history <MESSAGE ID> - retrieve a message trace for the given message"
+    },
+    'watch_services': {
+        'function_call': watch_services,
+        'doc_string': "watch_services <SERVICE1 [,SERVICE2 [,...]]> - add services to log observation"
+    },
+    'unwatch_services': {
+        'function_call': unwatch_services,
+        'doc_string': "unwatch_services <SERVICE1 [,SERVICE2 [,...]]> - remove services to log observation"
+    },
+    'reset_watchers': {
+        'function_call': reset_watchers,
+        'doc_string': "reset_watchers - clear log observation, all services are removed"
     },
     'start_service': {
         'function_call': start_service,

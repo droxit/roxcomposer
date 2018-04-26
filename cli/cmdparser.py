@@ -13,9 +13,9 @@
 import re
 
 token_patterns = [
-        ('FLOAT', r'\d+\.\d*'),
-        ('HEX_INT', r'0x[a-zA-Z0-9]+'),
-        ('INTEGER', r'\d+'),
+        ('FLOAT', r'\b\d+\.\d*\b'),
+        ('HEX_INT', r'\b0x[a-zA-Z0-9]+\b'),
+        ('INTEGER', r'\b\d+\b'),
         ('STRING', r'\S+')
 ]
 

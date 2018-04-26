@@ -1,4 +1,4 @@
 google
 protobuf>=3.3.*
-urwid
+urwid>=2.*
 requests
