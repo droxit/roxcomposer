@@ -308,6 +308,14 @@ def unwatch_pipelines(*pipelines):
     return ret_str
 
 
+def watch_all():
+    # get services
+    r = json.loads(get_services())
+    services = [key for key in r if not key == "basic_reporting"]
+
+    return watch_services(*services)
+
+
 def reset_watchers():
     global logobs_session
 
@@ -436,6 +444,10 @@ cmd_map = {
     'unwatch_pipelines': {
         'function_call': unwatch_pipelines,
         'doc_string': "unwatch_pipelines <PIPELINE1 [,PIPELINE2 [,...]]> - remove pipelines from log observation"
+    },
+    'watch_all': {
+        'function_call': watch_all,
+        'doc_string': "watch_all - complete log observation"
     },
     'reset_watchers': {
         'function_call': reset_watchers,
