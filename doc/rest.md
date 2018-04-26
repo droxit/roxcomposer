@@ -146,7 +146,7 @@ container that calls `listen_thread()` at this point since we would need to impo
 Since writing curl requests can be quite cumbersome the mosaic package includes a cli shell that streamlines the process.
 
 ```bash
-./mosaic-cli
+./mosaic-cli.py
 ```
 
 This will open an new terminal ui with two windows and a text input. The first window is for logging while the second is a command history.  
@@ -253,6 +253,23 @@ Remove watched services from the session.
 
 ```bash
 unwatch_services serv2 serv3
+```
+
+#### watch\_pipelines
+
+Starts a new log observation session for the provided pipelines or adds them to an existing session. The cli manages the session in the background and regularly polls the
+API for new log lines which will be written into the log window.
+
+```bash
+watch_pipelines pipe1 pipe2 pipe3
+```
+
+#### unwatch\_pipelines
+
+Remove watched pipelines from the session.
+
+```bash
+unwatch_pipelines pipe2 pipe3
 ```
 
 #### reset\_watchers
