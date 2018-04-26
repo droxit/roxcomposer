@@ -317,7 +317,7 @@ def reset_watchers():
     data = { 'sessionid': logobs_session['id'] }
     headers = {'Content-Type': 'application/json'}
     try:
-        r = requests.delete('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
+        requests.delete('http://{}/log_observer'.format(roxconnector), headers=headers, json=data)
     except requests.exceptions.ConnectionError as e:
         return "ERROR: no connection to server - {}".format(e)
 
