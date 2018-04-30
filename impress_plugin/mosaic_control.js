@@ -714,8 +714,8 @@ function add_services_to_logsession(sessionid, services) {
 function service_log_filter(services) {
 	// WARNING: this depends on the service log format - changing the layout may break this
 	// when every service get its own log file we won't need this crutch anymore
-	let re = RegExp(`service:(${services.join("|")})`);
-	return line => line.search(re) >= 0;
+        let service_set = new Set(services);
+	return line => { let o = JSON.parse(line); return ('service' in o) && service_set.has(o.service); }
 }
 
 /**

@@ -182,8 +182,8 @@ function run_tests(t) {
 							t.notOk(err, 'get_log_lines should not return an error'); // TEST
 							t.ok('loglines' in r, 'get_log_lines should return an object with a loglines field'); // TEST
 							t.ok(r.loglines.length >= 2, 'there should be at least 3 loglines present in the returned object'); // TEST
-							let re = /service:(html_generator|image_adder)/;
-							let all_match = r.loglines.map(line => line.search(re) >= 0).reduce((a,b) => a && b, true);
+							let servs = new Set(['html_generator', 'image_adder']);
+							let all_match = r.loglines.map(line => { l = JSON.parse(line); return servs.has(l.service); }).reduce((a,b) => a && b, true);
 							t.ok(all_match, 'all returned lines should be from the correct services'); // TEST
 							mc.delete_log_observer({'sessionid': ret.sessionid, services: ['html_generator']}, (err, r) => {
 								t.notOk(err, 'removing one services from log observation should not cause an error'); // TEST
@@ -191,8 +191,8 @@ function run_tests(t) {
 									setTimeout(() => {
 										mc.get_log_lines({sessionid: ret.sessionid}, (err, r) => {
 											t.notOk(err, 'get_log_lines should not return an error'); // TEST
-											let re = /service:image_adder/;
-											let all_match = r.loglines.map(line => line.search(re) > 0).reduce((a,b) => a && b, true);
+							                                let servs = new Set(['html_generator']);
+							                                let all_match = r.loglines.map(line => { l = JSON.parse(line); return !servs.has(l.service); }).reduce((a,b) => a && b, true);
 											t.ok(all_match, 'no lines from the removed service should appear'); // TEST
 											resolve();
 										});
