@@ -91,7 +91,7 @@ class BasicReporting:
             re = RuntimeError('unable to open monitoring file {} - {}'.format(self.arguments['filename'], e))
             raise re from e
 
-        content = [x for x in map(eval, lines)]
+        content = [x for x in map(json.loads, lines)]
         if len(content):
             def f(x):
                 if "message_id" in x['args']:
