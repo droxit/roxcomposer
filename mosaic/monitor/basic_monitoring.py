@@ -10,6 +10,7 @@
 #
 
 import time
+import json
 from mosaic import exceptions
 
 
@@ -53,7 +54,7 @@ class BasicMonitoring:
         msg = { "event": event, "status": status, "time": time.time(), "args": args }
         try:
             fh = open(self.arguments['filename'], 'a')
-            fh.write(repr(msg) + '\n')
+            fh.write(json.dumps(msg) + '\n')
             fh.close()
         except Exception as e:
             re = RuntimeError('unable to commit monitoring message to file: {}'.format(e))
