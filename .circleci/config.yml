@@ -42,6 +42,13 @@ jobs:
           working_directory: roxconnector_plugin
           command: npm install
 
+      - run:
+          name: get ROXconnector package
+          command: |
+            curl -u "artifacts:$ARTIFACTS_PASS" https://artifacts.droxit.de/opt/artifacts/roxconnector/release/roxconnector-0.2.0.tgz > rc.tgz
+            tar xf rc.tgz
+            cp package/src/*.js .circleci/roxcomposer-deploy/api-server/
+            cp package/package.json .circleci/roxcomposer-deploy/api-server/
       - save_cache:
           paths:
             - ./venv
@@ -114,6 +121,7 @@ workflows:
   build_and_deploy:
     jobs:
       - build:
+          context: artifacts.droxit
           filters:
             branches:
               ignore: cli-proto

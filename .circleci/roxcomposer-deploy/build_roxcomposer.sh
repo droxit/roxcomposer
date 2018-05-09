@@ -12,13 +12,13 @@ mkdir packages
 mkdir services
 
 # copy files
-cp ../../../cli/roxcomposer-cli.py .
+cp ../../../cli/*.py .
 cp ../scripts/* .
 cp -r ../api-server/ .
 cp ../$API_PLUGIN_PATH/*.js ./api-server/plugins
 cp ../$API_PLUGIN_PATH/package.json ./api-server/plugins
 cp ../$ROXCOMPOSER_PACKAGE ./packages/
-cp ../services/*.json ./services
+cp ../../../cli/services/*.json ./services
 cp ../util/service_container.py ./api-server/plugins/.
 
 cd ..
