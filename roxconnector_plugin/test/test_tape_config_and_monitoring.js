@@ -29,11 +29,11 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 		let service_file = path.join(tmpdir, "config.json");
 		let service_file2 = path.join(tmpdir, "config2.json");
 		let monitoring_file = path.join(tmpdir, "monitoring.log");
-		let impresslog_file = path.join(tmpdir, "config_and_monitoring.log");
+		let roxcomposerlog_file = path.join(tmpdir, "config_and_monitoring.log");
 		let servicelog_file = path.join(tmpdir, "service.log");
 		let logger = bunyan.createLogger({
 			name: 'roxcomposer-control-testing',
-			streams: [{level: 'debug', path: impresslog_file}]
+			streams: [{level: 'debug', path: roxcomposerlog_file}]
 		});
 		let init_params = {
 			logger: logger,

@@ -90,7 +90,7 @@ logpath and level would be passed on to the basic logger. When left out the defa
 ```
 
 If logpath is a directory path then should be created a file with the service name otherwise will be create a file, names logpath
-To overwrite the default values you might add default parameters for logging in the impress plugin parameter configs:
+To overwrite the default values you might add default parameters for logging in the roxconnector plugin parameter configs:
 
 ```json
 "default": {
@@ -158,7 +158,7 @@ By default monitoring messages of the whole pipeline get logged in a `monitoring
 }
 ```
 
-To overwrite the default values you might add default parameters for logging in the impress plugin parameter configs:
+To overwrite the default values you might add default parameters for logging in the roxconnector plugin parameter configs:
 
 ```json
 "default": {

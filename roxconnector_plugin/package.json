@@ -1,7 +1,7 @@
 {
   "name": "roxcomposer-control",
   "version": "0.1.1",
-  "description": "plugin for droxIT impress - to control the roxcomposer framework",
+  "description": "plugin for droxIT ROXconnector - to control the roxcomposer framework",
   "main": "droxitApi.js",
   "dependencies": {
     "bunyan": "latest",

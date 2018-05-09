@@ -11,7 +11,7 @@
 # v0.2.0
 
 * Added new endpoints `dump_services_and_pipelines` and `load_services_and_pipelines` to dump and restore the current service pipeline setup
-* Added new endpoint `load_and_start_pipeline` which allows pipelines to be read from files on the impress host
+* Added new endpoint `load_and_start_pipeline` which allows pipelines to be read from files on the roxconnector host
 * Logging and monitoring classes can now be injected
 * Improved error handling and reporting
 * Reworked `roxcomposer.communication.roxcomposer_message.ROXcomposerMessage`. It now has it's own internal data structure and serialization functions for JSON, protobuf and a default binary format which is a protobuf binary message
@@ -23,6 +23,6 @@
 * Added a `BasicReportingService` which exposes `BasicReporting` to the `roxcomposer_control` Plugin.
 * Added message monitoring endpoints to `roxcomposer_control`
 * roxcomposer now supports IPv6 addresses for services, except the monitoring reporting service. The feature is currently not used because of problems on systems without dual stack support.
-* `BaseService` now supports config loading by key via a `config_loader` module. impress got a similar plugin to mirror the python functionality.
+* `BaseService` now supports config loading by key via a `config_loader` module. roxconnector got a similar plugin to mirror the python functionality.
 * `roxcomposer_control` can now be required multiple times. Each time a new set of internal data structures is created so the instances can coexist.
 

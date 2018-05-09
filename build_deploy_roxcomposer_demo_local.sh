@@ -14,7 +14,7 @@ ROXCOMPOSER_DEPLOY_DIR=$3
 BUILD_DIR="roxcomposer_demo"
 
 function usage {
-    echo "usage: build_deploy_roxcomposer_demo_local <ROXCOMPOSER_PACKAGE_PATH> <IMPRESS_PLUGING_PATH> <TO_INSTALL_DEMO_PATH>"
+    echo "usage: build_deploy_roxcomposer_demo_local <ROXCOMPOSER_PACKAGE_PATH> <ROXCONNECTOR_PLUGING_PATH> <TO_INSTALL_DEMO_PATH>"
     exit 0
 }
 

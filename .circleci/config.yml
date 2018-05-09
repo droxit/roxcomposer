@@ -19,7 +19,7 @@ jobs:
             - python-dependencies-{{ checksum "requirements.txt" }}
             # fallback to using the latest cache if no exact match is found
             - python-dependencies-
-            - node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
+            - node-dependency-cache-{{ checksum "roxconnector_plugin/package.json" }}
             - node-dependency-cache-
 
       - run:
@@ -39,7 +39,7 @@ jobs:
 
       - run:
           name: Install node dependencies
-          working_directory: impress_plugin
+          working_directory: roxconnector_plugin
           command: npm install
 
       - save_cache:
@@ -48,7 +48,7 @@ jobs:
           key: python-dependencies-{{ checksum "requirements.txt" }}
 
       - save_cache:
-          key: node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
+          key: node-dependency-cache-{{ checksum "roxconnector_plugin/package.json" }}
           paths:
             - ./node_modules
 
@@ -72,7 +72,7 @@ jobs:
 
       # run node tests
       - run:
-          working_directory: impress_plugin
+          working_directory: roxconnector_plugin
           name: Run node tests
           command: |
             . ../venv/bin/activate
@@ -91,7 +91,7 @@ jobs:
           name: Create demo package
           command: |
             cd .circleci/roxcomposer-deploy
-            ./build_roxcomposer.sh ../../dist/roxcomposer-*.tar.gz ../../impress_plugin
+            ./build_roxcomposer.sh ../../dist/roxcomposer-*.tar.gz ../../roxconnector_plugin
             cp roxcomposer-demo-*.tar.gz ../../packages/
 
       ### artifacts

@@ -55,7 +55,7 @@ python3 setup.py test
 
 and
 
-cd impress_plugin && npm test
+cd roxconnector_plugin && npm test
 
 Deploy Config
 -------------
@@ -69,7 +69,7 @@ Build Tasks
 
 e.g
 
-    >>> ./build_roxcomposer_demo_local.sh ./dist/roxcomposer-*.tar.gz impress_plugin
+    >>> ./build_roxcomposer_demo_local.sh ./dist/roxcomposer-*.tar.gz roxconnector_plugin
 
 Deploy Tasks
 ------------
@@ -85,4 +85,4 @@ Build & Deploy Tasks
 
 e.g
 
-    >>> ./build_deploy_roxcomposer_demo_local.sh ./dist/roxcomposer-*.tar.gz impress_plugin ../../test_installation/
+    >>> ./build_deploy_roxcomposer_demo_local.sh ./dist/roxcomposer-*.tar.gz roxconnector_plugin ../../test_installation/

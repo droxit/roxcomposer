@@ -2,8 +2,8 @@
 
 If you don't have installed roxcomposer so far please read the [installation](installation.md) manual.
 
-First of all we need to start up `impress` the api-server, to get the roxcomposer-CLI (Command Line Interface) going. So 
-please navigate to `$ROXCOMPOSER_DEMO_HOME` and execute the start_server shell script:
+First of all we need to start up `roxconnector` the api-server, to get the roxcomposer-CLI (Command Line Interface) going. So 
+please navigate to `$ROXCOMPOSER_DEMO_HOME` and execute the start\_server shell script:
 ```bash
 	./start_server.sh
 ``` 
