@@ -19,35 +19,35 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='service_com.proto',
   package='service_communication',
   syntax='proto3',
-  serialized_pb=_b('\n\x11service_com.proto\x12\x15service_communication\"\x7f\n\rMosaicMessage\x12\x31\n\x08pipeline\x18\x01 \x01(\x0b\x32\x1f.service_communication.Pipeline\x12/\n\x07payload\x18\x02 \x01(\x0b\x32\x1e.service_communication.Payload\x12\n\n\x02id\x18\x03 \x01(\t\"<\n\x08Pipeline\x12\x30\n\x08services\x18\x04 \x03(\x0b\x32\x1e.service_communication.Service\"K\n\x07Service\x12\n\n\x02id\x18\x01 \x01(\t\x12\x34\n\nparameters\x18\x05 \x03(\x0b\x32 .service_communication.Parameter\"\"\n\tParameter\x12\x15\n\rserviceParams\x18\x06 \x01(\t\"\x17\n\x07Payload\x12\x0c\n\x04\x62ody\x18\x07 \x01(\tb\x06proto3')
+  serialized_pb=_b('\n\x11service_com.proto\x12\x15service_communication\"\x7f\n\rROXcomposerMessage\x12\x31\n\x08pipeline\x18\x01 \x01(\x0b\x32\x1f.service_communication.Pipeline\x12/\n\x07payload\x18\x02 \x01(\x0b\x32\x1e.service_communication.Payload\x12\n\n\x02id\x18\x03 \x01(\t\"<\n\x08Pipeline\x12\x30\n\x08services\x18\x04 \x03(\x0b\x32\x1e.service_communication.Service\"K\n\x07Service\x12\n\n\x02id\x18\x01 \x01(\t\x12\x34\n\nparameters\x18\x05 \x03(\x0b\x32 .service_communication.Parameter\"\"\n\tParameter\x12\x15\n\rserviceParams\x18\x06 \x01(\t\"\x17\n\x07Payload\x12\x0c\n\x04\x62ody\x18\x07 \x01(\tb\x06proto3')
 )
 
 
 
 
-_MOSAICMESSAGE = _descriptor.Descriptor(
-  name='MosaicMessage',
-  full_name='service_communication.MosaicMessage',
+_ROXCOMPOSERMESSAGE = _descriptor.Descriptor(
+  name='ROXcomposerMessage',
+  full_name='service_communication.ROXcomposerMessage',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='pipeline', full_name='service_communication.MosaicMessage.pipeline', index=0,
+      name='pipeline', full_name='service_communication.ROXcomposerMessage.pipeline', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='payload', full_name='service_communication.MosaicMessage.payload', index=1,
+      name='payload', full_name='service_communication.ROXcomposerMessage.payload', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='id', full_name='service_communication.MosaicMessage.id', index=2,
+      name='id', full_name='service_communication.ROXcomposerMessage.id', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -200,23 +200,23 @@ _PAYLOAD = _descriptor.Descriptor(
   serialized_end=371,
 )
 
-_MOSAICMESSAGE.fields_by_name['pipeline'].message_type = _PIPELINE
-_MOSAICMESSAGE.fields_by_name['payload'].message_type = _PAYLOAD
+_ROXCOMPOSERMESSAGE.fields_by_name['pipeline'].message_type = _PIPELINE
+_ROXCOMPOSERMESSAGE.fields_by_name['payload'].message_type = _PAYLOAD
 _PIPELINE.fields_by_name['services'].message_type = _SERVICE
 _SERVICE.fields_by_name['parameters'].message_type = _PARAMETER
-DESCRIPTOR.message_types_by_name['MosaicMessage'] = _MOSAICMESSAGE
+DESCRIPTOR.message_types_by_name['ROXcomposerMessage'] = _ROXCOMPOSERMESSAGE
 DESCRIPTOR.message_types_by_name['Pipeline'] = _PIPELINE
 DESCRIPTOR.message_types_by_name['Service'] = _SERVICE
 DESCRIPTOR.message_types_by_name['Parameter'] = _PARAMETER
 DESCRIPTOR.message_types_by_name['Payload'] = _PAYLOAD
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-MosaicMessage = _reflection.GeneratedProtocolMessageType('MosaicMessage', (_message.Message,), dict(
-  DESCRIPTOR = _MOSAICMESSAGE,
+ROXcomposerMessage = _reflection.GeneratedProtocolMessageType('ROXcomposerMessage', (_message.Message,), dict(
+  DESCRIPTOR = _ROXCOMPOSERMESSAGE,
   __module__ = 'service_com_pb2'
-  # @@protoc_insertion_point(class_scope:service_communication.MosaicMessage)
+  # @@protoc_insertion_point(class_scope:service_communication.ROXcomposerMessage)
   ))
-_sym_db.RegisterMessage(MosaicMessage)
+_sym_db.RegisterMessage(ROXcomposerMessage)
 
 Pipeline = _reflection.GeneratedProtocolMessageType('Pipeline', (_message.Message,), dict(
   DESCRIPTOR = _PIPELINE,

@@ -1,6 +1,6 @@
 import unittest
-from mosaic import service_loader
-from mosaic import exceptions
+from roxcomposer import service_loader
+from roxcomposer import exceptions
 
 
 class TestBaseService(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestBaseService(unittest.TestCase):
         self.assertRaises(exceptions.NotAClass, service_loader.load_class, 'logging.info')
 
         param = {'blub': 2, 'blorp': "yeah"}
-        c = service_loader.make_service_instance('mosaic.tests.classes.service_loader_test.DummyClass', param)
+        c = service_loader.make_service_instance('roxcomposer.tests.classes.service_loader_test.DummyClass', param)
         self.assertEqual(param, c.get_args())
 
 

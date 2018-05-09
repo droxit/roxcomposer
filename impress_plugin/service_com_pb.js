@@ -11,7 +11,7 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-goog.exportSymbol('proto.service_communication.MosaicMessage', null, global);
+goog.exportSymbol('proto.service_communication.ROXcomposerMessage', null, global);
 goog.exportSymbol('proto.service_communication.Parameter', null, global);
 goog.exportSymbol('proto.service_communication.Payload', null, global);
 goog.exportSymbol('proto.service_communication.Pipeline', null, global);
@@ -27,12 +27,12 @@ goog.exportSymbol('proto.service_communication.Service', null, global);
  * @extends {jspb.Message}
  * @constructor
  */
-proto.service_communication.MosaicMessage = function(opt_data) {
+proto.service_communication.ROXcomposerMessage = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.service_communication.MosaicMessage, jspb.Message);
+goog.inherits(proto.service_communication.ROXcomposerMessage, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.service_communication.MosaicMessage.displayName = 'proto.service_communication.MosaicMessage';
+  proto.service_communication.ROXcomposerMessage.displayName = 'proto.service_communication.ROXcomposerMessage';
 }
 
 
@@ -47,8 +47,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.service_communication.MosaicMessage.prototype.toObject = function(opt_includeInstance) {
-  return proto.service_communication.MosaicMessage.toObject(opt_includeInstance, this);
+proto.service_communication.ROXcomposerMessage.prototype.toObject = function(opt_includeInstance) {
+  return proto.service_communication.ROXcomposerMessage.toObject(opt_includeInstance, this);
 };
 
 
@@ -57,11 +57,11 @@ proto.service_communication.MosaicMessage.prototype.toObject = function(opt_incl
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.service_communication.MosaicMessage} msg The msg instance to transform.
+ * @param {!proto.service_communication.ROXcomposerMessage} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.service_communication.MosaicMessage.toObject = function(includeInstance, msg) {
+proto.service_communication.ROXcomposerMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     pipeline: (f = msg.getPipeline()) && proto.service_communication.Pipeline.toObject(includeInstance, f),
     payload: (f = msg.getPayload()) && proto.service_communication.Payload.toObject(includeInstance, f),
@@ -79,23 +79,23 @@ proto.service_communication.MosaicMessage.toObject = function(includeInstance, m
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.service_communication.MosaicMessage}
+ * @return {!proto.service_communication.ROXcomposerMessage}
  */
-proto.service_communication.MosaicMessage.deserializeBinary = function(bytes) {
+proto.service_communication.ROXcomposerMessage.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.service_communication.MosaicMessage;
-  return proto.service_communication.MosaicMessage.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.service_communication.ROXcomposerMessage;
+  return proto.service_communication.ROXcomposerMessage.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.service_communication.MosaicMessage} msg The message object to deserialize into.
+ * @param {!proto.service_communication.ROXcomposerMessage} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.service_communication.MosaicMessage}
+ * @return {!proto.service_communication.ROXcomposerMessage}
  */
-proto.service_communication.MosaicMessage.deserializeBinaryFromReader = function(msg, reader) {
+proto.service_communication.ROXcomposerMessage.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -129,9 +129,9 @@ proto.service_communication.MosaicMessage.deserializeBinaryFromReader = function
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.service_communication.MosaicMessage.prototype.serializeBinary = function() {
+proto.service_communication.ROXcomposerMessage.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.service_communication.MosaicMessage.serializeBinaryToWriter(this, writer);
+  proto.service_communication.ROXcomposerMessage.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -139,11 +139,11 @@ proto.service_communication.MosaicMessage.prototype.serializeBinary = function()
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.service_communication.MosaicMessage} message
+ * @param {!proto.service_communication.ROXcomposerMessage} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.service_communication.MosaicMessage.serializeBinaryToWriter = function(message, writer) {
+proto.service_communication.ROXcomposerMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getPipeline();
   if (f != null) {
@@ -175,19 +175,19 @@ proto.service_communication.MosaicMessage.serializeBinaryToWriter = function(mes
  * optional Pipeline pipeline = 1;
  * @return {?proto.service_communication.Pipeline}
  */
-proto.service_communication.MosaicMessage.prototype.getPipeline = function() {
+proto.service_communication.ROXcomposerMessage.prototype.getPipeline = function() {
   return /** @type{?proto.service_communication.Pipeline} */ (
     jspb.Message.getWrapperField(this, proto.service_communication.Pipeline, 1));
 };
 
 
 /** @param {?proto.service_communication.Pipeline|undefined} value */
-proto.service_communication.MosaicMessage.prototype.setPipeline = function(value) {
+proto.service_communication.ROXcomposerMessage.prototype.setPipeline = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.service_communication.MosaicMessage.prototype.clearPipeline = function() {
+proto.service_communication.ROXcomposerMessage.prototype.clearPipeline = function() {
   this.setPipeline(undefined);
 };
 
@@ -196,7 +196,7 @@ proto.service_communication.MosaicMessage.prototype.clearPipeline = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.service_communication.MosaicMessage.prototype.hasPipeline = function() {
+proto.service_communication.ROXcomposerMessage.prototype.hasPipeline = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -205,19 +205,19 @@ proto.service_communication.MosaicMessage.prototype.hasPipeline = function() {
  * optional Payload payload = 2;
  * @return {?proto.service_communication.Payload}
  */
-proto.service_communication.MosaicMessage.prototype.getPayload = function() {
+proto.service_communication.ROXcomposerMessage.prototype.getPayload = function() {
   return /** @type{?proto.service_communication.Payload} */ (
     jspb.Message.getWrapperField(this, proto.service_communication.Payload, 2));
 };
 
 
 /** @param {?proto.service_communication.Payload|undefined} value */
-proto.service_communication.MosaicMessage.prototype.setPayload = function(value) {
+proto.service_communication.ROXcomposerMessage.prototype.setPayload = function(value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
 
-proto.service_communication.MosaicMessage.prototype.clearPayload = function() {
+proto.service_communication.ROXcomposerMessage.prototype.clearPayload = function() {
   this.setPayload(undefined);
 };
 
@@ -226,7 +226,7 @@ proto.service_communication.MosaicMessage.prototype.clearPayload = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.service_communication.MosaicMessage.prototype.hasPayload = function() {
+proto.service_communication.ROXcomposerMessage.prototype.hasPayload = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -235,13 +235,13 @@ proto.service_communication.MosaicMessage.prototype.hasPayload = function() {
  * optional string id = 3;
  * @return {string}
  */
-proto.service_communication.MosaicMessage.prototype.getId = function() {
+proto.service_communication.ROXcomposerMessage.prototype.getId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.service_communication.MosaicMessage.prototype.setId = function(value) {
+proto.service_communication.ROXcomposerMessage.prototype.setId = function(value) {
   jspb.Message.setField(this, 3, value);
 };
 

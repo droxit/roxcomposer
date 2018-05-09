@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package service_communication;
 
-message MosaicMessage {
+message ROXcomposerMessage {
     Pipeline pipeline = 1;
     Payload payload = 2;
     string id = 3;

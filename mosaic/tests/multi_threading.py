@@ -5,9 +5,9 @@ import http.client
 
 from multiprocessing import Process
 import threading
-from mosaic.tests.classes import msg_concatenator
-from mosaic import base_service
-from mosaic.communication import mosaic_message
+from roxcomposer.tests.classes import msg_concatenator
+from roxcomposer import base_service
+from roxcomposer.communication import roxcomposer_message
 
 
 def start_service(serv):
@@ -64,9 +64,9 @@ class TestPipeline(unittest.TestCase):
         expected_payload = "".join(payloads).encode()
 
         for p in payloads:
-            mm = mosaic_message.Message()
+            mm = roxcomposer_message.Message()
             for serv in self.services:
-                 mm.add_service(mosaic_message.Service(serv['args']['ip'], serv['args']['port']))
+                 mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port']))
             mm.set_payload(p)
             bin_msg = mm.serialize()
 

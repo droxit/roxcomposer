@@ -1,7 +1,7 @@
 {
-  "name": "mosaic-control",
+  "name": "roxcomposer-control",
   "version": "0.1.1",
-  "description": "plugin for droxIT impress - to control the mosaic framework",
+  "description": "plugin for droxIT impress - to control the roxcomposer framework",
   "main": "droxitApi.js",
   "dependencies": {
     "bunyan": "latest",
@@ -21,12 +21,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/droxit/mosaic.git"
+    "url": "git+https://github.com/droxit/roxcomposer.git"
   },
   "author": "",
   "license": "None - don't use it",
   "bugs": {
-    "url": "https://github.com/droxit/mosaic/issues"
+    "url": "https://github.com/droxit/roxcomposer/issues"
   },
-  "homepage": "https://github.com/droxit/mosaic#readme"
+  "homepage": "https://github.com/droxit/roxcomposer#readme"
 }

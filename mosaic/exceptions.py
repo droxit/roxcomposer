@@ -5,7 +5,7 @@ class ParameterMissing(Exception):
     def __str__(self):
         return repr(self.value)
 
-class InvalidMosaicMessage(Exception):
+class InvalidROXcomposerMessage(Exception):
     def __init__(self, value):
         self.value = value
 

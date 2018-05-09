@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: droxops/mosaic-node-py:0.0.4
+      - image: droxops/roxcomposer-node-py:0.0.4
 
     working_directory: ~/repo
 
@@ -65,7 +65,7 @@ jobs:
 
       - run:
 #          working_directory: ~/repo
-          name: Install mosaic locally
+          name: Install roxcomposer locally
           command: |
             . venv/bin/activate
             pip3 install -e .
@@ -90,9 +90,9 @@ jobs:
       - run:
           name: Create demo package
           command: |
-            cd .circleci/mosaic-deploy
-            ./build_mosaic.sh ../../dist/mosaic-*.tar.gz ../../impress_plugin
-            cp mosaic-demo-*.tar.gz ../../packages/
+            cd .circleci/roxcomposer-deploy
+            ./build_roxcomposer.sh ../../dist/roxcomposer-*.tar.gz ../../impress_plugin
+            cp roxcomposer-demo-*.tar.gz ../../packages/
 
       ### artifacts
       # store artifact
@@ -105,9 +105,9 @@ jobs:
       - deploy:
           name: Deploy to gru
           command: |
-            export mosaic_folder='/opt/artifacts/mosaic/dev'
-            if [ $CIRCLE_BRANCH == 'master' ]; then export mosaic_folder='/opt/artifacts/mosaic/release'; fi
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:$mosaic_folder
+            export roxcomposer_folder='/opt/artifacts/roxcomposer/dev'
+            if [ $CIRCLE_BRANCH == 'master' ]; then export roxcomposer_folder='/opt/artifacts/roxcomposer/release'; fi
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/roxcomposer*.tar.gz devpi@176.9.144.37:$roxcomposer_folder
 
 workflows:
   version: 2

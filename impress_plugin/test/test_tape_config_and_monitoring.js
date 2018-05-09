@@ -1,5 +1,5 @@
 //
-// Test Classe test_config_and_monitoring: standard test for login and monitoring functionalities from mosaic
+// Test Classe test_config_and_monitoring: standard test for login and monitoring functionalities from roxcomposer
 //
 // devs@droxit.de - droxIT GmbH
 //
@@ -17,7 +17,7 @@ const { sep } = require('path');
 
 test.createStream().pipe(tapSpec()).pipe(process.stdout);
 
-let filewriter_module_path = path.join('..', 'mosaic', 'tests', 'classes', 'file_writer.py');
+let filewriter_module_path = path.join('..', 'roxcomposer', 'tests', 'classes', 'file_writer.py');
 
 let tmp = os.tmpdir();
 fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
@@ -32,14 +32,14 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 		let impresslog_file = path.join(tmpdir, "config_and_monitoring.log");
 		let servicelog_file = path.join(tmpdir, "service.log");
 		let logger = bunyan.createLogger({
-			name: 'mosaic-control-testing',
+			name: 'roxcomposer-control-testing',
 			streams: [{level: 'debug', path: impresslog_file}]
 		});
 		let init_params = {
 			logger: logger,
 			service_container: path.join('..', 'util', 'service_container.py'),
 			reporting_service: {
-				classpath: 'mosaic.monitor.basic_reporting_service.BasicReportingService',
+				classpath: 'roxcomposer.monitor.basic_reporting_service.BasicReportingService',
 				params: {
 					logging: { logpath: servicelog_file },
 					name: 'basic_reporting',
@@ -83,7 +83,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 		assert.plan(17);
 
 		let mc = {}
-		require('../mosaic_control.js')(mc);
+		require('../roxcomposer_control.js')(mc);
 		mc.init({logger: logger});
 		mc.start_service({path: filewriter_module_path, params: {service_key: "services.i_dont_exist"}}, function (err, msg) {
 			assert.ok(err, 'start_service should return an error when starting FileWriter with a service_key without a service config');
@@ -91,9 +91,9 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 
 		fs.writeFileSync(service_file, JSON.stringify(service_config));
 		fs.writeFileSync(service_file2, JSON.stringify(alternate_service_config));
-		process.env['DROXIT_MOSAIC_CONFIG'] = service_file;
+		process.env['DROXIT_ROXCOMPOSER_CONFIG'] = service_file;
 		mc = {}
-		require('../mosaic_control.js')(mc);
+		require('../roxcomposer_control.js')(mc);
 		mc.init(init_params);
 
 

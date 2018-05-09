@@ -1,8 +1,8 @@
 {
-  "name": "mosaic-control",
+  "name": "roxcomposer-control",
   "version": "0.0.3",
-  "description": "mosaic control plugin for the droxit API server",
-  "main": "mosaic-control.js",
+  "description": "roxcomposer control plugin for the droxit API server",
+  "main": "roxcomposer-control.js",
   "dependencies": {
     "google-protobuf": "latest"
   },

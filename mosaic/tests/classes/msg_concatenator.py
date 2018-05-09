@@ -2,7 +2,7 @@ import sys
 import json
 import time
 import http.server
-from mosaic import base_service
+from roxcomposer import base_service
 
 class SimpleRHandler(http.server.BaseHTTPRequestHandler):
     def log_request(code, size):

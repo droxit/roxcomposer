@@ -1,5 +1,5 @@
 //
-// Class mosaic control: ROXconnector control plugin for ROXcomposer
+// Class roxcomposer control: ROXconnector control plugin for ROXcomposer
 //
 // devs@droxit.de - droxIT GmbH
 //
@@ -11,11 +11,11 @@ let bunyan = require('bunyan');
 let spawn = require('child_process').spawn;
 let net = require('net');
 let uuid = require('uuid/v4');
-let mosaic_message = require('./mosaic_message.js');
+let roxcomposer_message = require('./roxcomposer_message.js');
 let config_loader = require('./config_loader.js');
 let LogSession = require('./log_session.js');
 
-function __mosaic_control_private() {
+function __roxcomposer_control_private() {
 	this.processes = {};
 	this.services = {};
 	this.pipelines = {};
@@ -26,8 +26,8 @@ function __mosaic_control_private() {
 	this.init = init.bind(this);
 	this.check_args = check_args.bind(this);
 	this.start_service = start_service.bind(this);
-	this.create_mosaic_message = create_mosaic_message.bind(this);
-	this.read_mosaic_message = read_mosaic_message.bind(this);
+	this.create_roxcomposer_message = create_roxcomposer_message.bind(this);
+	this.read_roxcomposer_message = read_roxcomposer_message.bind(this);
 	this.post_to_pipeline = post_to_pipeline.bind(this);
 	this.get_services = get_services.bind(this);
 	this.get_pipelines = get_pipelines.bind(this);
@@ -52,7 +52,7 @@ function __mosaic_control_private() {
 }
 
 module.exports = function (container) {
-	let mcp = new __mosaic_control_private();
+	let mcp = new __roxcomposer_control_private();
 	container['init'] = mcp.init;
 	container['start_service'] = mcp.start_service;
 	container['shutdown_service'] = mcp.shutdown_service;
@@ -79,7 +79,7 @@ function init(args) {
 	if (args && ('logger' in args))
 		this.logger = args.logger;
 	else
-		this.logger = bunyan.createLogger({name: 'mosaic_control'});
+		this.logger = bunyan.createLogger({name: 'roxcomposer_control'});
 
 	if (args && ('service_container' in args))
 		this.service_container_path = args.service_container;
@@ -277,10 +277,10 @@ function start_service(args, cb) {
 }
 
 /**
- * construct a mosaic message object given a pipeline and payload (data)
+ * construct a roxcomposer message object given a pipeline and payload (data)
  **/
-function create_mosaic_message(pline, data) {
-	let msg = new mosaic_message.Message();
+function create_roxcomposer_message(pline, data) {
+	let msg = new roxcomposer_message.Message();
 
 	for (let s in pline)
 		msg.add_service(pline[s]);
@@ -291,10 +291,10 @@ function create_mosaic_message(pline, data) {
 }
 
 /**
- * read a mosaic message from its binary representation
+ * read a roxcomposer message from its binary representation
  **/
-function read_mosaic_message(msg) {
-	let m = mosaic_message.deserialize(msg);
+function read_roxcomposer_message(msg) {
+	let m = roxcomposer_message.deserialize(msg);
 	return m.get_payload();
 }
 
@@ -319,13 +319,13 @@ function post_to_pipeline(args, cb) {
 	try {
 		servs = pline.services.map( (x) => {
 			let s = this.services[x];
-			return new mosaic_message.Service(s.params.ip, s.params.port);
+			return new roxcomposer_message.Service(s.params.ip, s.params.port);
 		});
 	} catch (e) {
 		this.logger.error({error: e}, 'invalid service in pipeline');
 		cb({'code': 500, 'message': `pipeline is broken: ${e}`});
 	}
-	let msg = create_mosaic_message(servs, args.data);
+	let msg = create_roxcomposer_message(servs, args.data);
 
 	let socket = new net.Socket();
 	let start = this.services[pline.services[0]];
@@ -442,7 +442,7 @@ function post_to_report_service(funcname, args, cb) {
 
 			let msg;
 			try {
-				msg = read_mosaic_message(doc);
+				msg = read_roxcomposer_message(doc);
 				let d = JSON.parse(msg);
 				cb(null, d);
 			} catch(e) {
@@ -454,8 +454,8 @@ function post_to_report_service(funcname, args, cb) {
 	server.listen(0, '0.0.0.0', () => {
 		let socket = net.createConnection( this.services[this.reporting_service].params.port, this.services[this.reporting_service].params.ip, () => {
 			let addr = socket.address();
-			let pline = [ new mosaic_message.Service(this.services[this.reporting_service].params.ip, this.services[this.reporting_service].params.port), new mosaic_message.Service(server.address().address, server.address().port) ];
-			let msg = create_mosaic_message(pline, JSON.stringify({'function': funcname, 'args': args}));
+			let pline = [ new roxcomposer_message.Service(this.services[this.reporting_service].params.ip, this.services[this.reporting_service].params.port), new roxcomposer_message.Service(server.address().address, server.address().port) ];
+			let msg = create_roxcomposer_message(pline, JSON.stringify({'function': funcname, 'args': args}));
 			let packet = msg.serialize();
 			socket.end(packet);
 		}).on('error', (e) => {

@@ -10,7 +10,7 @@
 #
 
 import time
-from mosaic import exceptions
+from roxcomposer import exceptions
 
 
 class BasicMonitoring:

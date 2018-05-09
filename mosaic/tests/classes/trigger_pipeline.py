@@ -1,20 +1,20 @@
-from mosaic.communication import mosaic_message
+from roxcomposer.communication import roxcomposer_message
 import socket
 
 if __name__ == '__main__':
-    mosaic_msg = mosaic_message.Message()
-    mosaic_msg.add_service('127.0.0.1', 6001)
-    mosaic_msg.add_service('127.0.0.1', 5001)
-    mosaic_msg.add_service('127.0.0.1', 4001)
-    mosaic_msg.add_service('127.0.0.1', 7001)
+    roxcomposer_msg = roxcomposer_message.Message()
+    roxcomposer_msg.add_service('127.0.0.1', 6001)
+    roxcomposer_msg.add_service('127.0.0.1', 5001)
+    roxcomposer_msg.add_service('127.0.0.1', 4001)
+    roxcomposer_msg.add_service('127.0.0.1', 7001)
 
     address_tuple = ('127.0.0.1', 6001)
-    mosaic_msg.set_content('Hallöle. Ich bin ein schöner Text. Wenn alles glatt geht, dürfte '
+    roxcomposer_msg.set_content('Hallöle. Ich bin ein schöner Text. Wenn alles glatt geht, dürfte '
                            'ich am Ende als wunderschöne HTML Datei erscheinen. Ich erweitere den Text auch einfach.'
                            'obwohl die services noch laufen, haha! Und ein Bild: ')
 
-    mosaic_msg = mosaic_message.Utils.serialize(mosaic_msg.get_protobuf_msg())
-    wiremsg = struct.pack('>I', len(mosaic_msg)) + mosaic_msg
+    roxcomposer_msg = roxcomposer_message.Utils.serialize(roxcomposer_msg.get_protobuf_msg())
+    wiremsg = struct.pack('>I', len(roxcomposer_msg)) + roxcomposer_msg
     connection = socket.create_connection(address_tuple)
     connection.send(wiremsg)
 

@@ -1,5 +1,5 @@
 //
-// Test Classe test_mosaic_control: standard test for mosaic functionalities
+// Test Classe test_roxcomposer_control: standard test for roxcomposer functionalities
 //
 // devs@droxit.de - droxIT GmbH
 //
@@ -29,18 +29,18 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 
 
 
-    describe('mosaic_control', function () {
+    describe('roxcomposer_control', function () {
         let mc = {};
-        require('../mosaic_control.js')(mc);
-        describe('new mosaic_control()', function () {
+        require('../roxcomposer_control.js')(mc);
+        describe('new roxcomposer_control()', function () {
             it('should work without passing any arguments', function () {
                 mc.init();
             });
         });
-        describe('new mosaic_control()', function () {
+        describe('new roxcomposer_control()', function () {
             it('should work with a bunyan logger', function () {
                 let logger = bunyan.createLogger({
-                    name: 'mosaic-control-testing',
+                    name: 'roxcomposer-control-testing',
                     streams: [{level: 'fatal', path: '/dev/null'}]
                 });
                 mc.init({logger: logger});
@@ -118,7 +118,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
             });
             it('should contain an active state when a pipeline is created', function (done) {
                 mc.start_service({
-                    'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
+                    'path': path.resolve(__dirname, '../../roxcomposer/tests/classes/html_generator.py'),
                     'params': {
                         'name': 'html_generator',
                         'ip': '127.0.0.1',
@@ -130,7 +130,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     }
                 });
                 mc.start_service({
-                    'path': path.resolve(__dirname, '../../mosaic/tests/classes/file_writer.py'),
+                    'path': path.resolve(__dirname, '../../roxcomposer/tests/classes/file_writer.py'),
                     'params': {
                         'name': 'file_writer',
                         'ip': '127.0.0.1',
@@ -220,7 +220,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 
             it('should work with default values', function (done) {
                 let logger = bunyan.createLogger({
-                    name: 'mosaic-control-testing',
+                    name: 'roxcomposer-control-testing',
                     streams: [{level: 'fatal', path: '/dev/null'}]
                 });
                 let default_values = {
@@ -230,15 +230,15 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     },
                     "monitoring": {
                         "filename": "monitoring.log",
-                        "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
+                        "monitor_class": "roxcomposer.monitor.basic_monitoring.BasicMonitoring"
                     }
                 }
 				let mc_def = {};
-				require('../mosaic_control.js')(mc_def);
+				require('../roxcomposer_control.js')(mc_def);
                 mc_def.init({logger: logger, default: default_values});
 
                 mc_def.start_service({
-                    'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
+                    'path': path.resolve(__dirname, '../../roxcomposer/tests/classes/html_generator.py'),
                     'params': {
                         'name': 'html_generator_default',
                         'ip': '127.0.0.1',
@@ -270,7 +270,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
             it('should contain an active state when a pipeline is created', function (done) {
 		let service_startup_error = false;
                 mc.start_service({
-                    'path': path.resolve(__dirname, '../../mosaic/tests/classes/html_generator.py'),
+                    'path': path.resolve(__dirname, '../../roxcomposer/tests/classes/html_generator.py'),
                     'params': {
                         'name': 'html_generator_test',
                         'ip': '127.0.0.1',
@@ -283,7 +283,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
                     }
                 });
                 mc.start_service({
-                    'path': path.resolve(__dirname, '../../mosaic/tests/classes/file_writer.py'),
+                    'path': path.resolve(__dirname, '../../roxcomposer/tests/classes/file_writer.py'),
                     'params': {
                         'name': 'file_writer_test',
                         'ip': '127.0.0.1',

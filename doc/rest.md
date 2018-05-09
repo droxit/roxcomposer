@@ -2,10 +2,10 @@
 
 ## Starting the API server
 
-The production package includes a NodeJS server that provides an interface to your services. You can easily start it from within the mosaic folder:
+The production package includes a NodeJS server that provides an interface to your services. You can easily start it from within the roxcomposer folder:
 
 ```bash
-cd mosaic
+cd roxcomposer
 ./start_server.sh
 ```
 
@@ -141,12 +141,12 @@ If you choose to provide a module path, e.g. `somepackage.subpackge.module`, a s
 container that calls `listen_thread()` at this point since we would need to impose a standard way of constructing the main thread functionality in order to call it generically.
 
 
-### Using the mosaic-cli
+### Using the roxcomposer-cli
 
-Since writing curl requests can be quite cumbersome the mosaic package includes a cli shell that streamlines the process.
+Since writing curl requests can be quite cumbersome the roxcomposer package includes a cli shell that streamlines the process.
 
 ```bash
-./mosaic-cli.py
+./roxcomposer-cli.py
 ```
 
 This will open an new terminal ui with two windows and a text input. The first window is for logging while the second is a command history.  

@@ -1,6 +1,6 @@
 import sys
 import json
-from mosaic import base_service
+from roxcomposer import base_service
 
 
 class ImageAdder(base_service.BaseService):

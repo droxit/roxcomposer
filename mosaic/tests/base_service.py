@@ -11,10 +11,10 @@ import unittest
 import os
 import json
 from tempfile import TemporaryDirectory
-from mosaic import base_service
-from mosaic import exceptions
-from mosaic.communication.mosaic_message import Service
-from mosaic.communication.mosaic_message import Message
+from roxcomposer import base_service
+from roxcomposer import exceptions
+from roxcomposer.communication.roxcomposer_message import Service
+from roxcomposer.communication.roxcomposer_message import Message
 from multiprocessing import Process
 import time
 
@@ -49,14 +49,14 @@ class TestBaseService(unittest.TestCase):
                 "level": "INFO"
             },
             'smtp': {
-                'sender': 'mosaic@droxit.de',
+                'sender': 'roxcomposer@droxit.de',
                 'smtpserver': 'smtp.server.de',
                 'smtpusername': 'usernamee',
                 'smtppassword': 'XXXXXXXXX',
                 'usetls': True
             },
             'mail': {
-                'subject': 'Mosaic-Demo: Test',
+                'subject': 'ROXcomposer-Demo: Test',
                 'recipient': 'info@droxit.de'
             }
         }
@@ -95,14 +95,14 @@ class TestBaseService(unittest.TestCase):
                 "level": "INFO"
             },
             'smtp': {
-                'sender': 'mosaic@droxit.de',
+                'sender': 'roxcomposer@droxit.de',
                 'smtpserver': 'smtp.server.de',
                 'smtpusername': 'usernamee',
                 'smtppassword': 'XXXXXXXXX',
                 'usetls': True
             },
             'mail': {
-                'subject': 'Mosaic-Demo: Test',
+                'subject': 'ROXcomposer-Demo: Test',
                 'recipient': 'info@droxit.de'
             }
         })
@@ -127,7 +127,7 @@ class TestBaseService(unittest.TestCase):
         msg = Message()
         msg.set_payload("TEST.")
         msg.add_service(serv)
-        s.mosaic_message = msg
+        s.roxcomposer_message = msg
 
         # since assertFalse also allows None, we do a assertTrue with the negated statement
         self.assertTrue(not s.dispatch("TEST."))
@@ -146,7 +146,7 @@ class TestBaseService(unittest.TestCase):
         msg = Message()
         msg.set_payload("TEST.")
         msg.add_service(serv)
-        s.mosaic_message = msg
+        s.roxcomposer_message = msg
 
         self.assertTrue(s.dispatch("TEST."))
 
@@ -154,7 +154,7 @@ class TestBaseService(unittest.TestCase):
 
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_config_loading(self):
-        os.environ['DROXIT_MOSAIC_CONFIG'] = '/bogus/path/from/hell.json'
+        os.environ['DROXIT_ROXCOMPOSER_CONFIG'] = '/bogus/path/from/hell.json'
         self.assertRaises(exceptions.ConfigError, base_service.BaseService, { "service_key": "nevermind" })
 
         with TemporaryDirectory() as tdir:
@@ -166,7 +166,7 @@ class TestBaseService(unittest.TestCase):
 
             self.assertDictEqual(s.params, self.test_params_1)
 
-            os.environ['DROXIT_MOSAIC_CONFIG'] = confname
+            os.environ['DROXIT_ROXCOMPOSER_CONFIG'] = confname
 
             self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, { "service_key": "nevermind" })
             s = base_service.BaseService({"service_key": "service.dummy"})

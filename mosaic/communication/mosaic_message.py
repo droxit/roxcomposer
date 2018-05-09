@@ -1,8 +1,8 @@
-from mosaic.communication import service_com_pb2 as proto
+from roxcomposer.communication import service_com_pb2 as proto
 import uuid
 import json
 import struct
-from mosaic import exceptions
+from roxcomposer import exceptions
 
 
 def get_packet_len(msg):
@@ -93,7 +93,7 @@ class Message:
         return len(self.pipeline) == 0
 
     def serialize_to_protobuf(self):
-        pmsg = proto.MosaicMessage()
+        pmsg = proto.ROXcomposerMessage()
         for p in self.pipeline:
             s = pmsg.pipeline.services.add()
             s.id = p.encodeId()
@@ -109,7 +109,7 @@ class Message:
     @staticmethod
     def deserialize_from_protobuf(binmsg):
         msg = Message()
-        pmsg = proto.MosaicMessage()
+        pmsg = proto.ROXcomposerMessage()
         pmsg.ParseFromString(binmsg)
         msg.set_payload(pmsg.payload.body)
         msg.id = pmsg.id

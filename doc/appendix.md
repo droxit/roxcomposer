@@ -6,7 +6,7 @@ syntax = "proto3";
  
 package service_communication;
  
-message MosaicMessage {
+message ROXcomposerMessage {
     Pipeline pipeline = 1;
     Payload payload = 2;
     string id = 3;
@@ -36,7 +36,7 @@ The individual fields server the following purposes:
 
 | Name | Function |
 | ---- | -------- |
-| MosaicMessage	| This is a container for the message as a whole. It has the subfields `payload`, `pipeline` and `id`. |
+| ROXcomposerMessage	| This is a container for the message as a whole. It has the subfields `payload`, `pipeline` and `id`. |
 | Pipeline | A pipeline is an array of services. This defines the message flow through the micro services (see below for a more detailed description of the process). |
 | Service | A service consists of an id and an optional list of parameters. `id` is a string containing a network address as ip and port separated by a colon. A parameter is simply a string containing options to be passed along to the service with this message |
 | Payload | This is a string that is passed on through the pipeline possibly being transformed along the way. |
@@ -52,7 +52,7 @@ Any logging class needs to adhere to the following interface to be compatible to
 
 # Logging injection
 
-mosaic supports injection of logging classes which must adhere to an interface to be compatible to the base service class:
+roxcomposer supports injection of logging classes which must adhere to an interface to be compatible to the base service class:
 
 ## Initialization
 
@@ -80,7 +80,7 @@ Upon invocation a logger class can be specified in the logging section of the pa
 {
     "logging": {
         "level": "ERROR",
-        "logger_class": "mosaic.log.basic_logger.BasicLogger"
+        "logger_class": "roxcomposer.log.basic_logger.BasicLogger"
     }
 }
 ```

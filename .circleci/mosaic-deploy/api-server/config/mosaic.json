@@ -5,12 +5,12 @@
     "logfile": "api-server.log"
   },
   "PLUGINS": {
-      "mosaic": {
-          "path": "./plugins/mosaic_control.js",
+      "roxcomposer": {
+          "path": "./plugins/roxcomposer_control.js",
           "params": {
             "service_container": "plugins/service_container.py",
             "reporting_service": {
-                "classpath": "mosaic.monitor.basic_reporting_service.BasicReportingService",
+                "classpath": "roxcomposer.monitor.basic_reporting_service.BasicReportingService",
                 "params": {
                     "logging": { "filename": "pipeline.log" },
                     "name": "basic_reporting",
@@ -29,7 +29,7 @@
                 },
                 "monitoring": {
                     "filename": "monitoring.log",
-                    "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
+                    "monitor_class": "roxcomposer.monitor.basic_monitoring.BasicMonitoring"
                 }
             }
         }
@@ -40,28 +40,28 @@
           "services": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "get_services"
               }
           },
           "pipelines": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "get_pipelines"
               }
           },
           "dump_services_and_pipelines": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "dump_services_and_pipelines"
               }
           },
           "log_observer": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "get_log_lines"
               }
           }
@@ -70,7 +70,7 @@
           "log_observer": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "create_log_observer"
               }
           }
@@ -79,63 +79,63 @@
           "start_service": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "start_service"
               }
           },
           "set_pipeline": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "set_pipeline"
               }
           },
           "post_to_pipeline": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "post_to_pipeline"
               }
           },
           "shutdown_service": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "shutdown_service"
               }
           },
           "load_services_and_pipelines": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "load_services_and_pipelines"
               }
           },
           "get_msg_history": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "get_msg_history"
               }
           },
           "get_msg_status": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "get_msg_status"
               }
           },
           "load_and_start_pipeline": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "load_and_start_pipeline"
               }
           },
           "log_observer": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "post_services_to_logsession"
               }
           }
@@ -144,7 +144,7 @@
           "log_observer": {
               "handler": {
                   "type": "plugin",
-                  "name": "mosaic",
+                  "name": "roxcomposer",
                   "function": "delete_log_observer"
               }
           }

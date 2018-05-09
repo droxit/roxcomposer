@@ -1,5 +1,5 @@
 //
-// Test Classe test_mosaic_control: standard test for mosaic functionalities
+// Test Classe test_roxcomposer_control: standard test for roxcomposer functionalities
 //
 // devs@droxit.de - droxIT GmbH
 //
@@ -23,10 +23,10 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 		throw err;
 	}
 
-	let mosaic_config = {
+	let roxcomposer_config = {
 		services: {
 			basic_reporting: {
-				classpath: "mosaic.monitor.basic_reporting_service.BasicReportingService",
+				classpath: "roxcomposer.monitor.basic_reporting_service.BasicReportingService",
 				params: {
 					logging: {
 						logpath: path.join(tmpdir, "pipeline.log")
@@ -41,12 +41,12 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 				}
 			},
 			file_writer: {
-				classpath: "mosaic.tests.classes.file_writer.FileWriter",
+				classpath: "roxcomposer.tests.classes.file_writer.FileWriter",
 				params: {
 					name: "file_writer",
 					ip: "127.0.0.1",
 					port: 5001,
-					filepath: "mosaic_demo.html",
+					filepath: "roxcomposer_demo.html",
 					logging: {
 						logpath: path.join(tmpdir, "service.log"),
 						level: "INFO"
@@ -54,7 +54,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 				}
 			},
 			image_adder: {
-				classpath: "mosaic.tests.classes.image_adder.ImageAdder",
+				classpath: "roxcomposer.tests.classes.image_adder.ImageAdder",
 				params: {
 					name: "image_adder",
 					ip: "127.0.0.1",
@@ -67,7 +67,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 				}
 			},
 			html_generator: {
-				classpath: "mosaic.tests.classes.html_generator.HtmlGenerator",
+				classpath: "roxcomposer.tests.classes.html_generator.HtmlGenerator",
 				params: {
 					name: "html_generator",
 					ip: "127.0.0.1",
@@ -91,13 +91,13 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 		}
 	}
 
-	require('../mosaic_control.js')(mc);
+	require('../roxcomposer_control.js')(mc);
 	let logger = bunyan.createLogger({
-		name: 'mosaic-control-testing',
+		name: 'roxcomposer-control-testing',
 		streams: [{level: 'fatal', path: '/dev/null'}]
 	});
 	mc.init({logger: logger, service_container: '../util/service_container.py'});
-	mc.load_services_and_pipelines(mosaic_config, function (err, ret) {
+	mc.load_services_and_pipelines(roxcomposer_config, function (err, ret) {
 		if(ret.errors.length) {
 			console.error('unable to setup services and pipelines');
 			console.error(ret.errors);

@@ -1,6 +1,6 @@
 # encoding: utf-8
 #
-# The BaseService class yields a full working base microservice, which is able to communicate over mosaic messages
+# The BaseService class yields a full working base microservice, which is able to communicate over roxcomposer messages
 # with other services. To test it out just create a service which inherits from this BaseService class. Simply use the
 # dispatch and listen (listen_to) functions to communicate with other services. The communication follows a
 # predefined pipeline structure. That means every service which is listed in a pipeline will get and send a message in
@@ -15,10 +15,10 @@
 import socket
 import threading
 
-from mosaic import exceptions
-from mosaic.communication import mosaic_message
-from mosaic.config import configuration_loader
-from mosaic.service_loader import load_class
+from roxcomposer import exceptions
+from roxcomposer.communication import roxcomposer_message
+from roxcomposer.config import configuration_loader
+from roxcomposer.service_loader import load_class
 
 
 class BaseService:
@@ -35,7 +35,7 @@ class BaseService:
             if 'config_file' in params:
                 config_file = params['config_file']
 
-            cfg = configuration_loader.MosaicConfig(config_file)
+            cfg = configuration_loader.ROXcomposerConfig(config_file)
             self.params = cfg.get_item(params['service_key'])
         else:
             # there isn't a configuration file
@@ -57,7 +57,7 @@ class BaseService:
         if 'logging' in self.params:
             logger_params = self.params['logging']
 
-        logger_class = 'mosaic.log.basic_logger.BasicLogger'
+        logger_class = 'roxcomposer.log.basic_logger.BasicLogger'
         if 'logger_class' in logger_params:
             logger_class = logger_params['logger_class']
         LoggingClass = load_class(logger_class)
@@ -95,38 +95,38 @@ class BaseService:
         if 'monitoring' in self.params:
             monitoring_params = self.params['monitoring']
 
-        monitor_class = 'mosaic.monitor.basic_monitoring.BasicMonitoring'
+        monitor_class = 'roxcomposer.monitor.basic_monitoring.BasicMonitoring'
         if 'monitor_class' in monitoring_params:
             monitor_class = monitoring_params['monitor_class']
         MonitoringClass = load_class(monitor_class)
         self.monitoring = MonitoringClass(**monitoring_params)
 
         self.logger.info({'msg': 'started', 'effective_params': self.params})
-        self.mosaic_message = mosaic_message.Message()
+        self.roxcomposer_message = roxcomposer_message.Message()
 
     # need to be overwritten by inhertied classes.
     def on_message(self, msg, msg_id):
         pass
 
-    # need to be overwritten by inherited classes. This funciton gets the whole message object as a MosaicMessage.
+    # need to be overwritten by inherited classes. This funciton gets the whole message object as a ROXcomposerMessage.
     # If you just need the payload's message, please user on_message instead.
     def on_message_ext(self, extended_msg):
         pass
 
-    # send a mosaic protobuf message to the next service in the pipeline.
+    # send a roxcomposer protobuf message to the next service in the pipeline.
     def dispatch(self, msg):
-        if self.mosaic_message.has_empty_pipeline():
+        if self.roxcomposer_message.has_empty_pipeline():
             return
 
-        self.mosaic_message.set_payload(msg)
+        self.roxcomposer_message.set_payload(msg)
 
         # check next destination
-        next_service = self.mosaic_message.peek_service()
-        message_id = self.mosaic_message.id
+        next_service = self.roxcomposer_message.peek_service()
+        message_id = self.roxcomposer_message.id
 
         address_tuple = (next_service.ip, next_service.port)
 
-        wiremsg = self.mosaic_message.serialize()
+        wiremsg = self.roxcomposer_message.serialize()
 
         try:
             connection = socket.create_connection(address_tuple)
@@ -142,7 +142,7 @@ class BaseService:
             self.logger.error(e.strerror + ' - ' + str(e.__traceback__))
             return False
 
-    # receive mosaic protobuf messages sent to a socket running on the specified ip and port. To handle the received
+    # receive roxcomposer protobuf messages sent to a socket running on the specified ip and port. To handle the received
     # message please implement the on_message funtion in your inherited service.
     def listen_to(self, ip, port):
         try:
@@ -160,7 +160,7 @@ class BaseService:
                 connection, sender_address = s.accept()
                 self.logger.debug('Accepted connection from: ' + sender_address[0] + ':' + str(sender_address[1]))
                 data = connection.recv(self.BUFFER_SIZE)
-                packet_len = mosaic_message.get_packet_len(data)
+                packet_len = roxcomposer_message.get_packet_len(data)
 
                 while len(data) < packet_len:
                     chunk = connection.recv(self.BUFFER_SIZE)
@@ -178,9 +178,9 @@ class BaseService:
                     pass
 
                 try:
-                    self.mosaic_message = mosaic_message.Message.deserialize(data)
+                    self.roxcomposer_message = roxcomposer_message.Message.deserialize(data)
                 except Exception as e:
-                    errmsg = 'unable to deserialize mosaic message {}'.format(e)
+                    errmsg = 'unable to deserialize roxcomposer message {}'.format(e)
                     self.logger.error(e)
                     self.monitoring.msg_error(
                         service_name=self.params['name'],
@@ -191,26 +191,26 @@ class BaseService:
 
                 self.monitoring.msg_received(
                     service_name=self.params['name'],
-                    message_id=self.mosaic_message.id
+                    message_id=self.roxcomposer_message.id
                 )
 
                 try:
-                    me = self.mosaic_message.pop_service()
+                    me = self.roxcomposer_message.pop_service()
                 except KeyError:
                     self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
                 finally:
-                    me = mosaic_message.Service(ip, port)
+                    me = roxcomposer_message.Service(ip, port)
 
-                if self.mosaic_message.has_empty_pipeline():
+                if self.roxcomposer_message.has_empty_pipeline():
                     self.monitoring.msg_reached_final_destination(
                         service_name=self.params['name'],
-                        message_id=self.mosaic_message.id
+                        message_id=self.roxcomposer_message.id
                     )
 
-                self.logger.debug('MosaicMessage received: ' + self.mosaic_message.__str__())
+                self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())
 
-                self.on_message(self.mosaic_message.payload, self.mosaic_message.id)
-                self.on_message_ext(self.mosaic_message)
+                self.on_message(self.roxcomposer_message.payload, self.roxcomposer_message.id)
+                self.on_message_ext(self.roxcomposer_message)
 
                 if not data:
                     break
@@ -219,7 +219,7 @@ class BaseService:
             raise e
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
-    # the mosaic protobuf message.
+    # the roxcomposer protobuf message.
     def listen(self):
         self.listen_to(self.params['ip'], self.params['port'])
 

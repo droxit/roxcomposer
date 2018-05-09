@@ -1,5 +1,5 @@
 {
-    "classpath": "mosaic.tests.classes.image_adder.ImageAdder",
+    "classpath": "roxcomposer.tests.classes.image_adder.ImageAdder",
     "params": {
         "name": "image_adder",
         "ip": "127.0.0.1",

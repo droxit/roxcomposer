@@ -119,7 +119,7 @@ function has_empty_pipeline() {
 }
 
 function serialize_to_protobuf() {
-	pmsg = new proto.MosaicMessage();
+	pmsg = new proto.ROXcomposerMessage();
 	let services = []
 	for (let i in this.pipeline) {
 		p = this.pipeline[i];
@@ -143,7 +143,7 @@ function serialize_to_protobuf() {
 // STATIC
 function deserialize_from_protobuf(binmsg) {
 	let msg = new Message();
-	let pmsg = proto.MosaicMessage.deserializeBinary(binmsg);
+	let pmsg = proto.ROXcomposerMessage.deserializeBinary(binmsg);
 	msg.set_payload(pmsg.getPayload().getBody());
 	msg.id = pmsg.getId()
 	let p = pmsg.getPipeline();

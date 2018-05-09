@@ -1,14 +1,14 @@
 import unittest
-from mosaic.communication import mosaic_message
-from mosaic import exceptions
+from roxcomposer.communication import roxcomposer_message
+from roxcomposer import exceptions
 import uuid
 import urllib.parse
 
 
-class TestMosaicMessage(unittest.TestCase):
+class TestROXcomposerMessage(unittest.TestCase):
     def setUp(self):
-        self.msg = mosaic_message.Message()
-        self.services = [ mosaic_message.Service('127.0.0.1', 5000), mosaic_message.Service('::1', 5001, ["blorp", "blub"]) ]
+        self.msg = roxcomposer_message.Message()
+        self.services = [ roxcomposer_message.Service('127.0.0.1', 5000), roxcomposer_message.Service('::1', 5001, ["blorp", "blub"]) ]
         self.payload = 'a;sdklfja0eifjq'
 
         self.msg.set_payload(self.payload)
@@ -31,7 +31,7 @@ class TestMosaicMessage(unittest.TestCase):
 
     def test_protobuf_serialization(self):
         protomsg = self.msg.serialize_to_protobuf()
-        msg2 = mosaic_message.Message.deserialize_from_protobuf(protomsg)
+        msg2 = roxcomposer_message.Message.deserialize_from_protobuf(protomsg)
         d1 = self.msg.get_content_as_dict()
         d2 = msg2.get_content_as_dict()
         self.assertEqual(d1, d2)
@@ -39,14 +39,14 @@ class TestMosaicMessage(unittest.TestCase):
     def test_json_serialization(self):
         d1 = self.msg.get_content_as_dict()
         jsonmsg = self.msg.serialize_to_json()
-        msg2 = mosaic_message.Message.deserialize_from_json(jsonmsg)
+        msg2 = roxcomposer_message.Message.deserialize_from_json(jsonmsg)
         d2 = msg2.get_content_as_dict()
         self.assertEqual(d1, d2)
 
     def test_wire_serialization(self):
         d1 = self.msg.get_content_as_dict()
         binmsg = self.msg.serialize()
-        msg2 = mosaic_message.Message.deserialize(binmsg)
+        msg2 = roxcomposer_message.Message.deserialize(binmsg)
         d2 = msg2.get_content_as_dict()
         self.assertEqual(d1, d2)
 

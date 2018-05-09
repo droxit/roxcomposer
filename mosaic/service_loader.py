@@ -1,6 +1,6 @@
 import importlib
 import inspect
-from mosaic import exceptions
+from roxcomposer import exceptions
 
 
 def load_class(classpath):

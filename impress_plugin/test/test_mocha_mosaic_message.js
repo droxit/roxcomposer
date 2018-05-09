@@ -1,5 +1,5 @@
 //
-// Test Classe test_message: standard test mosaic functionalities
+// Test Classe test_message: standard test roxcomposer functionalities
 // devs@droxit.de - droxIT GmbH
 //
 // Copyright (c) 2018 droxIT GmbH
@@ -11,15 +11,15 @@ let it = require('mocha').it;
 let beforeEach = require('mocha').beforeEach;
 let path = require('path');
 let sleep = require('system-sleep');
-let mosaic = require('../mosaic_message.js');
+let roxcomposer = require('../roxcomposer_message.js');
 
-describe('mosaic_message', function () {
+describe('roxcomposer_message', function () {
 	let msg;
 	let services;
 	let payload;
 	beforeEach(function() {
-        	msg = new mosaic.Message();
-		services = [ new mosaic.Service('127.0.0.1', 5000), new mosaic.Service('::1', 5001) ];
+        	msg = new roxcomposer.Message();
+		services = [ new roxcomposer.Service('127.0.0.1', 5000), new roxcomposer.Service('::1', 5001) ];
 		payload = 'a;sdklfja0eifjq';
 		msg.set_payload(payload);
 		for (let s in services) {
@@ -46,21 +46,21 @@ describe('mosaic_message', function () {
 	describe('test various serialization functions', function() {
 		it('should be able to serialize to json and deserialize to the same object', function() {
 			let jsonmsg = msg.serialize_to_json();
-			let msg2 = mosaic.deserialize_from_json(jsonmsg);
+			let msg2 = roxcomposer.deserialize_from_json(jsonmsg);
 			let d1 = msg.get_content_as_dict();
 			let d2 = msg2.get_content_as_dict();
 			expect(d1).to.eql(d2);
 		});
 		it('should be able to serialize to protobuf and deserialize to the same object', function() {
 			let jsonmsg = msg.serialize_to_protobuf();
-			let msg2 = mosaic.deserialize_from_protobuf(jsonmsg);
+			let msg2 = roxcomposer.deserialize_from_protobuf(jsonmsg);
 			let d1 = msg.get_content_as_dict();
 			let d2 = msg2.get_content_as_dict();
 			expect(d1).to.eql(d2);
 		});
 		it('should be able to serialize framed binary and deserialize to the same object', function() {
 			let binmsg = msg.serialize();
-			let msg2 = mosaic.deserialize(binmsg);
+			let msg2 = roxcomposer.deserialize(binmsg);
 			let d1 = msg.get_content_as_dict();
 			let d2 = msg2.get_content_as_dict();
 			expect(d1).to.eql(d2);
@@ -74,18 +74,18 @@ describe('mosaic_message', function () {
 
     def test_serialization(self):
         protomsg = self.msg.serialize_to_protobuf()
-        msg2 = mosaic_message.Message.deserialize_from_protobuf(protomsg)
+        msg2 = roxcomposer_message.Message.deserialize_from_protobuf(protomsg)
         d1 = self.msg.get_content_as_dict()
         d2 = msg2.get_content_as_dict()
         self.assertEqual(d1, d2)
 
         jsonmsg = self.msg.serialize_to_json()
-        msg2 = mosaic_message.Message.deserialize_from_json(jsonmsg)
+        msg2 = roxcomposer_message.Message.deserialize_from_json(jsonmsg)
         d2 = msg2.get_content_as_dict()
         self.assertEqual(d1, d2)
 
         binmsg = self.msg.serialize()
-        msg2 = mosaic_message.Message.deserialize(binmsg)
+        msg2 = roxcomposer_message.Message.deserialize(binmsg)
         d2 = msg2.get_content_as_dict()
         self.assertEqual(d1, d2)
 */

@@ -1,7 +1,7 @@
 import sys
 import json
 import time
-from mosaic import base_service
+from roxcomposer import base_service
 
 
 class DelayService(base_service.BaseService):

@@ -1,10 +1,10 @@
 {
-  "classpath": "mosaic.tests.classes.file_writer.FileWriter",
+  "classpath": "roxcomposer.tests.classes.file_writer.FileWriter",
   "params": {
 	"ip": "127.0.0.1",
 	"port": 4001,
 	"name": "file_writer",
-	"filepath": "mosaic_demo.html",
+	"filepath": "roxcomposer_demo.html",
 	"logging": {
 		"logpath": "../logs/",
 		"level": "INFO"

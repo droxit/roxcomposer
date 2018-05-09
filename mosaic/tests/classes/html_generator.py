@@ -1,6 +1,6 @@
 import sys
 import json
-from mosaic import base_service
+from roxcomposer import base_service
 
 
 class HtmlGenerator(base_service.BaseService):
@@ -32,14 +32,14 @@ class HtmlGenerator(base_service.BaseService):
                 <html>
                     <head>
                         <meta charset="utf-8">
-                        <title>droxIT - mosaic</title>
+                        <title>droxIT - roxcomposer</title>
                         <style>
                             body {margin: 3em;}
                             header {background: #eee; padding: 1em;}
                             article {padding: 2em;}
                         </style>
                     <body>
-                        <header><h1>MOSAIC - DEMO</h1></header>
+                        <header><h1>ROXCOMPOSER - DEMO</h1></header>
                         <article>
                             """ + received_text + """
                         </article>

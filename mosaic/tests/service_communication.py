@@ -3,8 +3,8 @@ import socket
 import time
 
 from multiprocessing import Process
-from mosaic import base_service
-from mosaic.communication import mosaic_message
+from roxcomposer import base_service
+from roxcomposer.communication import roxcomposer_message
 
 
 def start_service(serv):
@@ -75,14 +75,14 @@ class TestPipeline(unittest.TestCase):
         time.sleep(0.5)
         ip = "127.0.0.1"
         port = 10000
-        mm = mosaic_message.Message()
+        mm = roxcomposer_message.Message()
         payload = "original message" * 1000
         expected_payload = payload
         for serv in self.services:
             expected_payload += serv['msg']
         for serv in self.services:
-            mm.add_service(mosaic_message.Service(serv['args']['ip'], serv['args']['port']))
-        mm.add_service(mosaic_message.Service(ip, port))
+            mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port']))
+        mm.add_service(roxcomposer_message.Service(ip, port))
         mm.set_payload(payload)
         bin_msg = mm.serialize()
 
@@ -101,7 +101,7 @@ class TestPipeline(unittest.TestCase):
             with conn:
                 msg = conn.recv(len(payload) + 1024)
 
-        msg = mosaic_message.Message.deserialize(msg)
+        msg = roxcomposer_message.Message.deserialize(msg)
 
         # there should not be a pipeline cause it 
         self.assertEqual(msg.payload, expected_payload)

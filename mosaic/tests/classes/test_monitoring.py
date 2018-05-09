@@ -8,7 +8,7 @@
 #
 
 
-from mosaic.base_service import BaseService
+from roxcomposer.base_service import BaseService
 
 
 class MonitorTest(BaseService):

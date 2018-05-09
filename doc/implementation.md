@@ -5,7 +5,7 @@ Implementing your own service is as simple as sub classing our service base clas
 The basic service provides two options for the configuration of the service. The configuration parameters can be transferred directly:
 
 ```python
-from mosaic import base_service
+from roxcomposer import base_service
  
 class MyService(base_service.BaseService):
     def __init__(self, args):
@@ -59,12 +59,12 @@ The service will now try to parse the config file expecting JSON and will try to
 The `service_key` lookup allows you to have central config files containing multiple services and other information. At the moment the service parameters need to bested at least on level down, meaning you can't leave
 the `service_key` emtpy.
 
-The `config_file` parameter is optional. If left out the service will look for an environment variable named `DROXIT_MOSAIC_CONFIG`. If it is defined it is expected to contain a path to a valid configuration.
+The `config_file` parameter is optional. If left out the service will look for an environment variable named `DROXIT_ROXCOMPOSER_CONFIG`. If it is defined it is expected to contain a path to a valid configuration.
 If the variable is not defined the service will try to load a file named `config.json` from the current working directory as a last resort. If none of this works the service constructor will fail.
 
 ## Logging
 
-mosaic supports multiple logging implementations that can be injected into the service base class (see the appendix for more information).
+roxcomposer supports multiple logging implementations that can be injected into the service base class (see the appendix for more information).
 
 The package provides a basic logger implementation which will be used out of the box and can be configured upon service invocation:
 
@@ -164,7 +164,7 @@ To overwrite the default values you might add default parameters for logging in 
 "default": {
   "monitoring": {
     "filename": "monitoring.log",
-    "monitor_class": "mosaic.monitor.basic_monitoring.BasicMonitoring"
+    "monitor_class": "roxcomposer.monitor.basic_monitoring.BasicMonitoring"
   }
 }
 ```
@@ -173,9 +173,9 @@ To overwrite the default values you might add default parameters for logging in 
 
 There are several situations where the basic monitoring is creating messages. Currently the following events trigger a monitoring message automatically:
 
-* a MosaicMessage was received
-* a MosaicMessage was dispatched
-* a MosaicMessage reached it's final destination
+* a ROXcomposerMessage was received
+* a ROXcomposerMessage was dispatched
+* a ROXcomposerMessage reached it's final destination
 
 If everything works as expected a monitoring message like the following should be generated:
 

@@ -10,11 +10,11 @@
 
 import unittest
 import os
-import mosaic.tests.classes.test_monitoring as test_monitoring
+import roxcomposer.tests.classes.test_monitoring as test_monitoring
 from os.path import join
 from tempfile import TemporaryDirectory
-from mosaic.monitor import basic_monitoring
-from mosaic import exceptions
+from roxcomposer.monitor import basic_monitoring
+from roxcomposer import exceptions
 
 
 class TestMonitoring(unittest.TestCase):
@@ -83,7 +83,7 @@ class TestMonitoring(unittest.TestCase):
                 },
                 'monitoring': {
                     'filename': monitor_path,
-                    'monitor_class': 'mosaic.tests.classes.dummy_monitor.DummyMonitor'
+                    'monitor_class': 'roxcomposer.tests.classes.dummy_monitor.DummyMonitor'
                 }
             }
 
@@ -106,7 +106,7 @@ class TestMonitoring(unittest.TestCase):
                 'port': 7,
                 'monitoring': {
                     'filename': monitor_path,
-                    'monitor_class': 'mosaic.tests.classes.dummy_monitor.NotExistentDummyMonitor'
+                    'monitor_class': 'roxcomposer.tests.classes.dummy_monitor.NotExistentDummyMonitor'
                 }
             }
 
@@ -130,7 +130,7 @@ class TestMonitoring(unittest.TestCase):
                 'port': 7,
                 'monitoring': {
                     'filename': monitor_path,
-                    'monitor_class': 'mosaic.tests.classes.dummy_monitor.not_a_class'
+                    'monitor_class': 'roxcomposer.tests.classes.dummy_monitor.not_a_class'
                 }
             }
 

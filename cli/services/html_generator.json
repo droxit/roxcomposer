@@ -1,5 +1,5 @@
 {
-  "classpath": "mosaic.tests.classes.html_generator.HtmlGenerator",
+  "classpath": "roxcomposer.tests.classes.html_generator.HtmlGenerator",
   "params": {
 	"ip": "127.0.0.1",
 	"port": 6001,

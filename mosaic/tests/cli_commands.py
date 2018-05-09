@@ -12,7 +12,7 @@ import json
 from os.path import join
 from cli import commands
 from tempfile import TemporaryDirectory
-import mosaic.tests.classes.dummy_connector as dummy_connector
+import roxcomposer.tests.classes.dummy_connector as dummy_connector
 
 
 class TestCliCommands(unittest.TestCase):
@@ -61,11 +61,11 @@ class TestCliCommands(unittest.TestCase):
         commands.unwatch_pipelines("pipe")
         
     def test_load_services_and_pipeline(self):
-        resp = {"pipelines": {"composer_test": {"services": ["html_generator", "file_writer"]}}, "services": {"file_writer": {"params": {"ip": "127.0.0.1", "name": "file_writer", "filepath": "mosaic_demo.html", "port": 5001}, "classpath": "mosaic.tests.classes.file_writer.FileWriter"}, "html_generator": {"params": {"ip": "127.0.0.1", "name": "html_generator", "port": 5002}, "classpath": "mosaic.tests.classes.html_generator.HtmlGenerator"}}}
+        resp = {"pipelines": {"composer_test": {"services": ["html_generator", "file_writer"]}}, "services": {"file_writer": {"params": {"ip": "127.0.0.1", "name": "file_writer", "filepath": "roxcomposer_demo.html", "port": 5001}, "classpath": "roxcomposer.tests.classes.file_writer.FileWriter"}, "html_generator": {"params": {"ip": "127.0.0.1", "name": "html_generator", "port": 5002}, "classpath": "roxcomposer.tests.classes.html_generator.HtmlGenerator"}}}
         args = {
                 'services': {
                     'html_generator': {
-                        'classpath': 'mosaic.tests.classes.html_generator.HtmlGenerator',
+                        'classpath': 'roxcomposer.tests.classes.html_generator.HtmlGenerator',
                         'params': {
                             'ip': '127.0.0.1',
                             'name': 'html_generator',
@@ -73,11 +73,11 @@ class TestCliCommands(unittest.TestCase):
                         }
                     },
                     'file_writer': {
-                        'classpath': 'mosaic.tests.classes.file_writer.FileWriter',
+                        'classpath': 'roxcomposer.tests.classes.file_writer.FileWriter',
                         'params': {
                             'ip': '127.0.0.1',
                             'name': 'file_writer',
-                            'filepath': 'mosaic_demo.html',
+                            'filepath': 'roxcomposer_demo.html',
                             'port': 5001
                         }
                     }

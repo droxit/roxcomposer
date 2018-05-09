@@ -20,7 +20,7 @@ from email.mime.text import MIMEText
 import smtplib
 import sys
 import json
-from mosaic import base_service
+from roxcomposer import base_service
 
 
 class SentMail(base_service.BaseService):
@@ -49,7 +49,7 @@ class SentMail(base_service.BaseService):
                     "usetls": True
                 },
                 "mail": {
-                    "subject": "Mosaic-Demo: Test",
+                    "subject": "ROXcomposer-Demo: Test",
                     "recipient": "info@droxit.de"
                 }
             }

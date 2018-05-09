@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-from mosaic import exceptions
+from roxcomposer import exceptions
 
 level_map = {
     'DEBUG': logging.DEBUG,

@@ -17,10 +17,10 @@ const { sep } = require('path');
 test.createStream().pipe(tapSpec()).pipe(process.stdout);
 
 let logger = bunyan.createLogger({
-				name: 'mosaic-control-testing',
+				name: 'roxcomposer-control-testing',
 				streams: [{level: 'fatal', path: '/dev/null'}]
 			});
-let filewriter_module_path = path.join('..', 'mosaic', 'tests', 'classes', 'file_writer.py');
+let filewriter_module_path = path.join('..', 'roxcomposer', 'tests', 'classes', 'file_writer.py');
 let tmp = os.tmpdir();
 fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 	if (error) {
@@ -35,7 +35,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 	};
 		let test_msg = 'test _mesage from hell';
 		let mc = {};
-		require('../mosaic_control.js')(mc);
+		require('../roxcomposer_control.js')(mc);
 		mc.init({logger: logger});
 
 		assert.plan(20);

@@ -16,7 +16,7 @@
       "usetls": true
     },
     "mail": {
-      "subject": "Mosaic-Demo: Test",
+      "subject": "ROXcomposer-Demo: Test",
       "recipient": "info@droxit.de"
     }
   }

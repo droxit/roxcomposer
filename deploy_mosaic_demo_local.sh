@@ -1,19 +1,19 @@
 #!/bin/bash
 
 #
-# script to local mosaic deploy
+# script to local roxcomposer deploy
 # devs@droxit.de - droxIT GmbH
 #
 # Copyright (c) 2018 droxIT GmbH
 #
 
-MOSAIC_DEPLOY_DIR=$1
-DEPLOY_LOG_DIR=$MOSAIC_DEPLOY_DIR/logs
+ROXCOMPOSER_DEPLOY_DIR=$1
+DEPLOY_LOG_DIR=$ROXCOMPOSER_DEPLOY_DIR/logs
 
-BUILD_DIR="mosaic_demo"
+BUILD_DIR="roxcomposer_demo"
 
 function usage {
-    echo "usage: deploy_mosaic_demo_local <TO_INSTALL_DEMO_PATH>"
+    echo "usage: deploy_roxcomposer_demo_local <TO_INSTALL_DEMO_PATH>"
     exit 0
 }
 
@@ -21,22 +21,22 @@ function usage {
 if [[ ($# -lt 1) ]]
     then usage
 else
-    echo "deploy mosaic"
+    echo "deploy roxcomposer"
     # clean logs
     rm -rf $DEPLOY_LOG_DIR
     mkdir -p $DEPLOY_LOG_DIR
 
-    # copy mosaic for deploy
-    rm $MOSAIC_DEPLOY_DIR/mosaic-demo-*.tar.gz
-    cp mosaic-demo-*.tar.gz $MOSAIC_DEPLOY_DIR/.
+    # copy roxcomposer for deploy
+    rm $ROXCOMPOSER_DEPLOY_DIR/roxcomposer-demo-*.tar.gz
+    cp roxcomposer-demo-*.tar.gz $ROXCOMPOSER_DEPLOY_DIR/.
 
-    # deploy mosaic_demo
-    cd $MOSAIC_DEPLOY_DIR
+    # deploy roxcomposer_demo
+    cd $ROXCOMPOSER_DEPLOY_DIR
 
     rm -rf $BUILD_DIR
-    tar xf mosaic-demo*.tar.gz
+    tar xf roxcomposer-demo*.tar.gz
 
     cd $BUILD_DIR
-    pip3 uninstall -y mosaic > $DEPLOY_LOG_DIR/mosaic_uninstall.log
-    ./install.sh --user > $DEPLOY_LOG_DIR/mosaic_install.log
+    pip3 uninstall -y roxcomposer > $DEPLOY_LOG_DIR/roxcomposer_uninstall.log
+    ./install.sh --user > $DEPLOY_LOG_DIR/roxcomposer_install.log
 fi

@@ -1,6 +1,6 @@
 import json
-from mosaic import base_service
-from mosaic.monitor import basic_monitoring
+from roxcomposer import base_service
+from roxcomposer.monitor import basic_monitoring
 
 ### expects JSON messages in the form {"function": "get_msg_status", "args": {...}}
 class BasicReportingService(base_service.BaseService):

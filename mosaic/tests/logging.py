@@ -11,8 +11,8 @@ import unittest
 import os
 from os.path import join
 from tempfile import TemporaryDirectory
-from mosaic.tests.classes import test_logging
-import mosaic.exceptions as exceptions
+from roxcomposer.tests.classes import test_logging
+import roxcomposer.exceptions as exceptions
 
 
 class TestLogging(unittest.TestCase):
@@ -105,7 +105,7 @@ class TestLogging(unittest.TestCase):
                 'logging': {
                     'level': 'DEBUG',
                     'filename': log_path,
-                    'logger_class': 'mosaic.tests.classes.dummy_logger.DummyLog'
+                    'logger_class': 'roxcomposer.tests.classes.dummy_logger.DummyLog'
                 }
             }
 
@@ -125,7 +125,7 @@ class TestLogging(unittest.TestCase):
                 'logging': {
                     'level': 'DEBUG',
                     'filename': log_path,
-                    'logger_class': 'mosaic.tests.classes.dummy_logger.NotExistentDummyLog'
+                    'logger_class': 'roxcomposer.tests.classes.dummy_logger.NotExistentDummyLog'
                 }
             }
 
@@ -151,7 +151,7 @@ class TestLogging(unittest.TestCase):
                 'logging': {
                     'level': 'DEBUG',
                     'filename': log_path,
-                    'logger_class': 'mosaic.tests.classes.dummy_logger.not_a_class'
+                    'logger_class': 'roxcomposer.tests.classes.dummy_logger.not_a_class'
                 }
             }
 

@@ -1,6 +1,6 @@
 # Introduction
 
-*mosaic* is a software development framework for building microservice architectures. It consists of various interlocking parts:
+*roxcomposer* is a software development framework for building microservice architectures. It consists of various interlocking parts:
 
 * a service communication and routing protocol based on Google protocol buffers
 * a service base class written in Python which allows easy implementation of Python services including a logging interface

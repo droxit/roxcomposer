@@ -1,5 +1,5 @@
 //
-// Test Classe test_config_and_monitoring: standard test for login and monitoring functionalities from mosaic
+// Test Classe test_config_and_monitoring: standard test for login and monitoring functionalities from roxcomposer
 //
 // devs@droxit.de - droxIT GmbH
 //

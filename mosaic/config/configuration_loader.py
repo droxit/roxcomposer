@@ -1,16 +1,16 @@
 import os
 import json
-from mosaic import exceptions
+from roxcomposer import exceptions
 
 
-config_identifier = 'DROXIT_MOSAIC_CONFIG'
+config_identifier = 'DROXIT_ROXCOMPOSER_CONFIG'
 # FixMe : path variable. Where's the config file? default_config = $PATH + '/services.json'
 default_config = 'config.json'
 
 
 # This class builds the core system config. It loads a json file, where the config parameters are set. You can access
 # parameters with the get_item function
-class MosaicConfig:
+class ROXcomposerConfig:
     def __init__(self, config_file=None):
         self.config = {}
 
@@ -51,6 +51,6 @@ class MosaicConfig:
 
 
 if __name__ == "__main__":
-    cc = MosaicConfig()
+    cc = ROXcomposerConfig()
 
     print(cc.to_json())
