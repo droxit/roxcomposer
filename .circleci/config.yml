@@ -124,7 +124,7 @@ workflows:
   build_and_deploy:
     jobs:
       - build:
-          context: artifacts.droxit
+              #          context: artifacts.droxit
           filters:
             branches:
               ignore: cli-proto
