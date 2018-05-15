@@ -45,7 +45,10 @@ jobs:
       - run:
           name: get ROXconnector package
           command: |
-            curl -u "artifacts:$ARTIFACTS_PASS" https://artifacts.droxit.de/opt/artifacts/roxconnector/release/roxconnector-0.2.0.tgz > rc.tgz
+            # currently the line below doesn't work because I don't have the rights to add a context to circleci in order to store passwords securely
+            # curl -u "artifacts:$ARTIFACTS_PASS" https://artifacts.droxit.de/opt/artifacts/roxconnector/release/roxconnector-0.2.0.tgz > rc.tgz
+            # for this reason I created a tempuser that will automatically be removed in 3 weeks
+            curl -u "tempuser:EBbwOxMTHpHBxpj0fSoVJ+SWla" https://artifacts.droxit.de/opt/artifacts/roxconnector/release/roxconnector-0.2.0.tgz > rc.tgz
             tar xf rc.tgz
             cp package/src/*.js .circleci/roxcomposer-deploy/api-server/
             cp package/package.json .circleci/roxcomposer-deploy/api-server/
