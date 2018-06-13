@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  build:
+  test:
     docker:
       - image: droxops/mosaic-node-py:0.0.4
 
@@ -42,13 +42,6 @@ jobs:
           working_directory: roxconnector_plugin
           command: npm install
 
-      - run:
-          name: get ROXconnector package
-          command: |
-            curl -u "$ARTIFACT_AUTH" https://artifacts.droxit.de/opt/artifacts/roxconnector/release/roxconnector-0.2.0.tgz > rc.tgz
-            tar xf rc.tgz
-            cp package/src/*.js .circleci/roxcomposer-deploy/api-server/
-            cp package/package.json .circleci/roxcomposer-deploy/api-server/
       - save_cache:
           paths:
             - ./venv
@@ -59,50 +52,31 @@ jobs:
           paths:
             - ./node_modules
 
-      ### run automatic tests
-      # python
       - run:
-#          working_directory: ~/repo
-          name: Run python tests
-          #environment:
-          #  SKIP_TEMPDIR_TEST: True
-          command: |
-            . venv/bin/activate
-            python3 setup.py test
-
-      - run:
-#          working_directory: ~/repo
           name: Install roxcomposer locally
           command: |
             . venv/bin/activate
             pip3 install -e .
 
-      # run node tests
+      ### run automatic tests
       - run:
-          working_directory: roxconnector_plugin
-          name: Run node tests
-          command: |
-            . ../venv/bin/activate
-            npm test
-
-      - run:
-          name: Create python package
+          name: Run tests
           command: |
             . venv/bin/activate
-            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n').dev$CIRCLE_BUILD_NUM > VERSION; fi
-            python3 setup.py sdist
-            mkdir ./packages
-            cp ./dist/*.tar.gz ./packages/
+            make test
+  build_and_deploy:
+    docker:
+      - image: droxops/mosaic-node-py:0.0.4
+
+    working_directory: ~/repo
+    steps:
       # build demo package
       - run:
           name: Create demo package
-          command: |
-            cd .circleci/roxcomposer-deploy
-            ./build_roxcomposer.sh ../../dist/roxcomposer-*.tar.gz ../../roxconnector_plugin
-            cp roxcomposer-demo-*.tar.gz ../../packages/
+          command:
+            make demo-package
 
       ### artifacts
-      # store artifact
       - store_artifacts:
           path: packages
           destination: packages
@@ -120,10 +94,11 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - build:
+      - test
+      - build_and_deploy:
           context: artifacts
           filters:
             branches:
-              ignore: cli-proto
+              only: /^(master|dev)$/
 
 
