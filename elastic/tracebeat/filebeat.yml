@@ -1,0 +1,7 @@
+filebeat.prospectors:
+  - type: log
+    paths:
+      - /usr/share/filebeat/trace.log
+
+output.logstash:
+  hosts: ["logstash:5001"]
