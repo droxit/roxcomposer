@@ -88,7 +88,7 @@ jobs:
           command: |
             export roxcomposer_folder='/opt/artifacts/roxcomposer/dev'
             if [ $CIRCLE_BRANCH == 'master' ]; then export roxcomposer_folder='/opt/artifacts/roxcomposer/release'; fi
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/roxcomposer*.tar.gz devpi@176.9.144.37:$roxcomposer_folder
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./build/roxcomposer*.tar.gz devpi@176.9.144.37:$roxcomposer_folder
 
 workflows:
   version: 2
