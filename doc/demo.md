@@ -11,7 +11,7 @@ please navigate to `$ROXCOMPOSER_DEMO_HOME` and execute the start\_server shell 
 After the server has started, we need services. The roxcomposer-demo package contains a couple of services you can use 
 located at `$ROXCOMPOSER_DEMO_HOME/services`: 
 
-1. We start services with the roxcomposer-CLI in the terminal (at `$ROXCOMPOSER_HOME`)
+1. We start services with the roxcomposer-CLI in the terminal (at `$ROXCOMPOSER_HOME/cli`)
 
 	```bash
 		./roxcomposer-cli start_service html_generator
