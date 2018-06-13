@@ -1,3 +1,14 @@
+# v0.4.0
+
+## New
+
+* Service log observation API endpoints
+
+## Changed
+
+* CLI: complete rework (see handbook for details)
+* switched message trace output to JSON
+
 # v0.3.0
 
 * added `listen_thread` function that starts `listen()` in a separate thread.

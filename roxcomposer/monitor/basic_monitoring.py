@@ -10,6 +10,7 @@
 #
 
 import time
+import json
 from roxcomposer import exceptions
 
 
@@ -53,7 +54,7 @@ class BasicMonitoring:
         msg = { "event": event, "status": status, "time": time.time(), "args": args }
         try:
             fh = open(self.arguments['filename'], 'a')
-            fh.write(repr(msg) + '\n')
+            fh.write(json.dumps(msg) + '\n')
             fh.close()
         except Exception as e:
             re = RuntimeError('unable to commit monitoring message to file: {}'.format(e))
@@ -81,16 +82,15 @@ class BasicReporting:
     # ---- DO NOT USE IN PRODUCTION ---- can be memory intensive and is potentially unsafe because of eval
     def get_msg_history(self, **kwargs):
         check_args(kwargs, "message_id")
-        lines = []
+        content = []
         try:
             f = open(self.arguments['filename'])
-            lines = f.readlines()
+            content = [l for l in map(json.loads, f.readlines())]
             f.close()
         except Exception as e:
             re = RuntimeError('unable to open monitoring file {} - {}'.format(self.arguments['filename'], e))
             raise re from e
 
-        content = [x for x in map(eval, lines)]
         if len(content):
             def f(x):
                 if "message_id" in x['args']:
