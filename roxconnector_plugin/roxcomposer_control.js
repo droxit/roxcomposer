@@ -11,6 +11,7 @@ let bunyan = require('bunyan');
 let spawn = require('child_process').spawn;
 let net = require('net');
 let uuid = require('uuid/v4');
+let path = require('path');
 let roxcomposer_message = require('./roxcomposer_message.js');
 let config_loader = require('./config_loader.js');
 let LogSession = require('./log_session.js');
@@ -228,6 +229,26 @@ function start_service(args, cb) {
             args.params.monitoring = this.default.monitoring;
     }
 
+	if (args.params.hasOwnProperty('logging') && args.params.logging.hasOwnProperty('logpath')) {
+		try {
+			let stats = fs.statSync(args.params.logging.logpath);
+
+			if (stats && stats.isDirectory()) {
+				args.params.logging.logpath = path.join(args.params.logging.logpath, `${args.params.name}.log`);
+			}
+		} catch(e) {
+			let dir = path.parse(args.params.logging.logpath).dir;
+			if (dir.length) {
+				try {
+					fs.statSync(dir);
+				} catch (e) {
+					cb({'code': 400, 'message': `start_service: logpath parent directory ${args.params.logging.logpath} is unaccessible ${e}`});
+					return;
+				}
+			}
+		}
+	}
+
 	// now we actually start the child process
 	let name = args.params.name;
 	let params = args.params;
@@ -263,7 +284,7 @@ function start_service(args, cb) {
 			this.logger.error({error: e, args: args}, "unable to spawn service");
 		});
 
-    //activate all pipeline that include this service
+    //activate all pipelines that include this service
     for (let pl in this.pipelines) {
 	    for (let i=0; i < this.pipelines[pl]['services'].length; i++) {
 	        if ((this.pipelines[pl]['services'][i] === name) && !this.pipelines[pl]['active']){
