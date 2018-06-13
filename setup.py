@@ -13,9 +13,12 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
+#### moved to markdown so we're not using the README as a long description
+# it had too much info beyond the scope of the pure python package anyways
 # Get the long description from the README.rst file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+#with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+#    long_description = f.read()
+long_description = ""
 
 if 'ROXCOMPOSER_VERSION' in os.environ:
     version = os.environ['ROXCOMPOSER_VERSION']
