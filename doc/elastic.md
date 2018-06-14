@@ -10,3 +10,4 @@ of your microservices.
 We included three filebeats to ship logs via logstash into elasticsearch:
 
 * Trace beat: this beat's purpose is to ship message traces. It's configuration is located under `elastic/tracebeat/filebeat.yml`.
+* Logstash: this container received the log information from the filebeats in dedicated processing pipeliens and feeds them into elasticsearch. The configuration is under `elastic/logstash/*`.
