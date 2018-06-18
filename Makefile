@@ -25,7 +25,7 @@ composer_scripts = scripts/install.sh scripts/start_server.sh
 demo_package = $(build_dir).tar.gz
 
 cli_files != find cli |  grep '\.py\|\.json' | grep -v '__init__.py' | grep -v 'pycache'
-elk_files != find elastic | grep '\.yml'
+elk_files != find elastic -type f | grep -v '^\.'
 
 service_container = util/service_container.py
 
@@ -59,7 +59,7 @@ $(connector_package): ROXCONNECTOR | $(build_package_dir)
 
 demo-package: $(demo_package)
 
-$(demo_package): $(python_package) $(cli-files) $(elk-files) $(connector_package) $(composer_scripts) | $(build_dirs)
+$(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package) $(composer_scripts) | $(build_dirs)
 	cp $(python_package) $(build_package_dir)
 	cp --parents $(elk_files) $(build_dir)
 	pushd $(build_package_dir); tar x --one-top-level --strip-components=1 -f $(connector_archive); popd
