@@ -29,11 +29,19 @@ elk_files != find elastic -type f | grep -v '^\.'
 
 service_container = util/service_container.py
 
-.PHONY: test
+.PHONY: test install-deps
 
 test:
 	python3 setup.py test
 	cd roxconnector_plugin; npm test; cd ..
+
+install-python-deps:
+	pip3 install -r requirements.txt
+
+install-node-deps:
+	cd roxconnector_plugin; npm install; cd ..
+
+install-deps: install-python-deps install-node-deps
 
 python-package: $(python_package)
 
