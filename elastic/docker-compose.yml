@@ -1,6 +1,18 @@
 version: '2'
 
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.4
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    volumes:
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+    networks:
+      - elk
+
   tracebeat:
     image: droxops/roxcomposer-tracebeat:0.0.1
     volumes:
@@ -24,8 +36,8 @@ services:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elk
-        #    depends_on:
-        #      - elasticsearch
+    depends_on:
+      - elasticsearch
 
 networks:
   elk:

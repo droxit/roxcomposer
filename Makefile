@@ -79,5 +79,5 @@ $(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package
 	cp $(service_container) $(build_dir_connector_plugins)
 	cd demo-files; cp -r config assets ../$(build_dir_connector); cd ..
 	cp requirements.txt $(build_dir)
-	cd $(build_base); tar cz --exclude $(connector_package_base)* -f $(composer_base).tar.gz $(composer_base); cd ..
+	cd $(build_base); tar czp --exclude $(connector_package_base)* -f $(composer_base).tar.gz $(composer_base); cd ..
 

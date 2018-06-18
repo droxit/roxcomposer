@@ -15,7 +15,7 @@ You will need the roxcomposer installation package (a compressed tar archive) - 
 To get up and running you need to unpack the tar archive and change into the newly created roxcomposer folder:
 
 ```bash
-tar xf roxcomposer-demo.tar.gz
+tar xpf roxcomposer-demo.tar.gz
 cd roxcomposer
 ```
 
