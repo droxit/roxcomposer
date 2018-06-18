@@ -1,11 +1,10 @@
-version: 2
+version: '2'
 
 services:
   tracebeat:
-    image: docker.elastic.co/beats/filebeat:6.2.4
+    image: droxops/roxcomposer-tracebeat:0.0.1
     volumes:
-      - tracebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-      - ../logs/trace.log:/usr/share/filebeat/trace.log
+      - ../logs:/usr/share/filebeat/watch/
     networks:
       - elk
 
@@ -13,7 +12,8 @@ services:
     image: docker.elastic.co/logstash/logstash:6.2.4
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
-      - ./logstash/config:/usr/share/logstash/config
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash/config/pipeline.yml:/usr/share/logstash/config/pipeline.yml
     ports:
       - "5000:5000"
       - "5001:5001"
@@ -24,8 +24,8 @@ services:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elk
-    depends_on:
-      - elasticsearch
+        #    depends_on:
+        #      - elasticsearch
 
 networks:
   elk:
