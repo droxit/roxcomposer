@@ -15,9 +15,9 @@ build_dirs = $(build_dir) $(build_package_dir) $(build_logs_dir) $(build_dir_con
 
 connector_version != cat ROXCONNECTOR
 connector_package_base = roxconnector-$(connector_version)
-connector_package_files = $(build_package_dir)/$(connector_package_base)
+connector_package_files = $(build_base)/$(connector_package_base)
 connector_archive := $(connector_package_base).tgz
-connector_package = $(build_package_dir)/$(connector_archive)
+connector_package = $(build_base)/$(connector_archive)
 connector_link = https://artifacts.droxit.de/opt/artifacts/roxconnector/release/$(connector_archive)
 
 composer_scripts = scripts/install.sh scripts/start_server.sh
@@ -62,7 +62,8 @@ demo-package: $(demo_package)
 $(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package) $(composer_scripts) | $(build_dirs)
 	cp $(python_package) $(build_package_dir)
 	cp --parents $(elk_files) $(build_dir)
-	pushd $(build_package_dir); tar x --one-top-level --strip-components=1 -f $(connector_archive); popd
+	mkdir -p --mode=777 $(build_dir)/elastic/elasticsearch/data
+	pushd $(build_base); tar x --one-top-level --strip-components=1 -f $(connector_archive); popd
 	cp `find $(connector_package_files) -name '*.js'` $(connector_package_files)/package.json $(build_dir_connector)
 	cp roxconnector_plugin/{*.js,package.json} $(build_dir_connector_plugins) 
 	cp --parents $(cli_files) $(build_dir)
