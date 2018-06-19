@@ -21,3 +21,7 @@ The separate pipelines for the different input beats are located in `elastic/log
 Elasticsearch is used as a backend for all log data. The demo package contains a folder `elastic/elasticsearch/data` which will be used to persist all data.
 If you extracted the archive without the `-p` option you will get an error from elasticsearch for not being able to setup the node environment. In this case make sure
 the data directory is writable for the elasticsearch process e.g. by setting `chmod 777 data`.
+
+## Kibana
+
+Kibana is a visualization tool for Elasticsearch which can access the data stored allows the creation of dashboards.
