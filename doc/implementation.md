@@ -180,7 +180,7 @@ There are several situations where the basic monitoring is creating messages. Cu
 If everything works as expected a monitoring message like the following should be generated:
 
 ```bash
-{'event': 'message_dispatched', 'status': 'in_transit', 'time': 1513596460.0961697, 'args': {'service_name': 'service1', 'message_id': 'dfa156e3-a8f6-4968-a255-ebd44e41d846', 'destination': '127.0.0.1:10000'}}
+{"event": "message_dispatched", "status": "in_transit", "time": 1513596460.0961697, "args": {"service_name": "service1", "message_id": "dfa156e3-a8f6-4968-a255-ebd44e41d846", "destination": "127.0.0.1:10000"}}
 ```
 
 Furthermore, the basic monitoring can be used to monitor a custom metric.
