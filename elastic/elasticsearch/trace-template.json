@@ -1,0 +1,19 @@
+{
+	"index_patterns": ["trace-log"],
+	"settings": { "number_of_shards": 1 },
+	"mappings": {
+		"doc": {
+			"properties": {
+				"service_name": { "type": "keyword" },
+				"event": { "type": "keyword" },
+				"message_id": { "type": "keyword" },
+				"status": { "type": "keyword" },
+				"destination": { "type": "keyword" },
+				"time": {
+					"type": "date",
+					"format": "epoch_millis"
+				}
+			}
+		}
+	}
+}
