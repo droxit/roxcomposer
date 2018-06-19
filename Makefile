@@ -29,7 +29,7 @@ elk_files != find elastic -type f | grep -v '^\.'
 
 service_container = util/service_container.py
 
-.PHONY: test install-deps
+.PHONY: test install-deps deploy-demo
 
 test:
 	python3 setup.py test
@@ -81,3 +81,9 @@ $(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package
 	cp requirements.txt $(build_dir)
 	cd $(build_base); tar czp --exclude $(connector_package_base)* -f $(composer_base).tar.gz $(composer_base); cd ..
 
+deploy-demo: $(demo_package)
+	echo -n "deployment location: "; \
+	        read dloc; \
+		cp -r $(build_dir)  $$dloc; \
+		cd $$dloc/$(composer_base); \
+		./install.sh --user
