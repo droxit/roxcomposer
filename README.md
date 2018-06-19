@@ -18,7 +18,7 @@ Master:
 
 Please execute 
 
-``bash
+```bash
 pip3.6 install -r requirements.txt
 ```
 
