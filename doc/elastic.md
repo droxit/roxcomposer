@@ -9,7 +9,7 @@ of your microservices. The related files reside in the `elastic` folder.
 
 We included three filebeats to ship logs via logstash into elasticsearch. Because of file ownership issues the beats have custom docker images which include their respective `filebeat.yml`. Their Dockerfiles are located in the `docker-images` folder inside the repository.
 
-* Trace beat: this beat's purpose is to ship message traces. It's configuration is located under `elastic/tracebeat/filebeat.yml`.
+* Trace beat: this beat's purpose is to ship message traces. It's configuration is located under `elastic/tracebeat/filebeat.yml`. The corresponding Elasticsearch mapping is under `elastic/elasticsearch/trace-template.json`.
 
 ## Logstash
 
