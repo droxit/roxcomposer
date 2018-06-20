@@ -14,7 +14,7 @@
                 "params": {
                     "logging": { "filename": "pipeline.log" },
                     "name": "basic_reporting",
-                    "filename": "../logs/trace.log",
+                    "filename": "../logs/reporting-service-trace.log",
                     "ip": "127.0.0.1",
                     "port": 6690,
                     "monitoring": {
