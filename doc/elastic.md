@@ -37,6 +37,13 @@ the data directory is writable for the elasticsearch process e.g. by setting `ch
 
 ## Kibana
 
-Kibana is a visualization tool for Elasticsearch which can access the data stored allows the creation of dashboards. We already included one dashboard which displays the number of active services within the selected time frame.  
-The exported dashboard and visualization are also included inside the `elastic/kibana` folder.
+Kibana is a visualization tool for Elasticsearch which can access the data stored allows the creation of dashboards.
+
+Currently the following visualizations are included:
+
+* service count: the number of services that processed any messages within the selected time interval
+* message count: the number of processed messages within the selected time interval
+* message count: the number of processed messages within the selected time interval displayed in a date histogram
+
+The exported dashboard and visualizations are also included inside the `elastic/kibana` folder so they can be imported by hand if needed.
 
