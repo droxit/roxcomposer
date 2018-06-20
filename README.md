@@ -46,7 +46,7 @@ In order to run tests, please use
 make test
 ```
 
-# Build
+## Build
 
 The whole package:
 
@@ -63,6 +63,16 @@ make python-package
 ```
 
 The package will be in the `dist` folder.
+
+## Deploy
+
+Running
+
+```bash
+make deploy-demo
+```
+
+will ask you for a directory to deploy to. It will attempt to extract the package at the given location and install the dependencies.
 
 ## Further documentation
 
