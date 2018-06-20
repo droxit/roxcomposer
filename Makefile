@@ -4,6 +4,7 @@ python_package-files != find roxcomposer -name '*.py' | grep -v 'tests/' | grep 
 python_package = dist/roxcomposer-$(version).tar.gz
 
 composer_base = roxcomposer-demo-$(version)
+composer_archive_base = $(composer_base).tar.gz
 
 build_base = build
 build_dir = $(build_base)/$(composer_base)
@@ -26,6 +27,8 @@ demo_package = $(build_dir).tar.gz
 
 cli_files != find cli |  grep '\.py\|\.json' | grep -v '__init__.py' | grep -v 'pycache'
 elk_files != find elastic -type f | grep -v '^\.'
+
+es_node_data = elastic/elasticsearch/nodes.tar.gz
 
 service_container = util/service_container.py
 
@@ -81,9 +84,14 @@ $(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package
 	cp requirements.txt $(build_dir)
 	cd $(build_base); tar czp --exclude $(connector_package_base)* -f $(composer_base).tar.gz $(composer_base); cd ..
 
-deploy-demo: $(demo_package)
+deploy-demo: $(demo_package) $(es_node_data)
 	echo -n "deployment location: "; \
 	        read dloc; \
-		cp -r $(build_dir)  $$dloc; \
+		cp $(demo_package)  $$dloc; \
+		pushd $$dloc; tar xpf $(composer_archive_base); popd; \
+		cp $(es_node_data) $$dloc/$(composer_base)/elastic/elasticsearch/data; \
 		cd $$dloc/$(composer_base); \
-		./install.sh --user
+		./install.sh --user; \
+		cd elastic/elasticsearch/data;\
+		tar xpf nodes.tar.gz
+
