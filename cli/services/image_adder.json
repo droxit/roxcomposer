@@ -2,7 +2,7 @@
   "classpath": "roxcomposer.tests.classes.image_adder.ImageAdder",
   "params": {
     "ip": "127.0.0.1",
-    "port": 5001,
+    "port": 4002,
     "name": "image_adder",
     "logging": {
       "logpath": "../logs/",
