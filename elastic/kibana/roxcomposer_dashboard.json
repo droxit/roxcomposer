@@ -1,0 +1,18 @@
+[
+  {
+    "_id": "b9722a40-7451-11e8-b954-cf2df61f2076",
+    "_type": "dashboard",
+    "_source": {
+      "title": "roxcomposer_dashboard",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":2,\"h\":2,\"i\":\"1\"},\"id\":\"0b1700b0-7451-11e8-b954-cf2df61f2076\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"2\",\"gridData\":{\"x\":2,\"y\":0,\"w\":2,\"h\":2,\"i\":\"2\"},\"id\":\"efbf2660-748e-11e8-adc3-0bd8c9976a45\",\"type\":\"visualization\",\"version\":\"6.2.4\"},{\"panelIndex\":\"3\",\"gridData\":{\"x\":4,\"y\":0,\"w\":7,\"h\":4,\"i\":\"3\"},\"version\":\"6.2.4\",\"type\":\"visualization\",\"id\":\"a999e2a0-748f-11e8-adc3-0bd8c9976a45\"}]",
+      "optionsJSON": "{\"darkTheme\":false,\"hidePanelTitles\":false,\"useMargins\":true}",
+      "version": 1,
+      "timeRestore": false,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[],\"highlightAll\":true,\"version\":true}"
+      }
+    }
+  }
+]
