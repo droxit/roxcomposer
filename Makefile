@@ -32,11 +32,14 @@ es_node_data = elastic/elasticsearch/nodes.tar.gz
 
 service_container = util/service_container.py
 
-.PHONY: test install-deps deploy-demo
+.PHONY: test install-deps deploy-demo clean
 
 test:
 	python3 setup.py test
 	cd roxconnector_plugin; npm test; cd ..
+
+clean:
+	rm -r $(build_base)/*
 
 install-python-deps:
 	pip3 install -r requirements.txt
@@ -70,7 +73,7 @@ $(connector_package): ROXCONNECTOR | $(build_package_dir)
 
 demo-package: $(demo_package)
 
-$(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package) $(composer_scripts) | $(build_dirs)
+$(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package) $(composer_scripts) $(es_node_data) | $(build_dirs)
 	cp $(python_package) $(build_package_dir)
 	cp --parents $(elk_files) $(build_dir)
 	mkdir -p --mode=777 $(build_dir)/elastic/elasticsearch/data
@@ -82,16 +85,13 @@ $(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package
 	cp $(service_container) $(build_dir_connector_plugins)
 	cd demo-files; cp -r config assets ../$(build_dir_connector); cd ..
 	cp requirements.txt $(build_dir)
-	cd $(build_base); tar czp --exclude $(connector_package_base)* -f $(composer_base).tar.gz $(composer_base); cd ..
+	tar x -p -C $(build_dir)/elastic/elasticsearch/data -f $(es_node_data)
+	cd $(build_base); tar czp --exclude $(connector_package_base)* -f $(composer_base).tar.gz $(composer_base)
 
-deploy-demo: $(demo_package) $(es_node_data)
+deploy-demo: $(demo_package)
 	echo -n "deployment location: "; \
 	        read dloc; \
-		cp $(demo_package)  $$dloc; \
-		pushd $$dloc; tar xpf $(composer_archive_base); popd; \
-		cp $(es_node_data) $$dloc/$(composer_base)/elastic/elasticsearch/data; \
+		tar xp -C $$dloc -f $(demo_package); \
 		cd $$dloc/$(composer_base); \
-		./install.sh --user; \
-		cd elastic/elasticsearch/data;\
-		tar xpf nodes.tar.gz
+		./install.sh --user;
 
