@@ -22,14 +22,6 @@ pip3.6 install -r requirements.txt
 
 to install all python requirements.
 
-## Setup
-
-To setup the framework and to use it, you can use our local pip package on gru. Please execute the following command
-
->>> pip3.6 install -i http://localhost:4040/droxit/dev roxcomposer
-
-Remember that you need to open an ssh tunnel to gru, to use this command.
-
 ## Versioning scheme
 
 The version is generated via the `version.sh` script which is called from the Makefile. The resulting version depends on the current branch:  
@@ -53,6 +45,8 @@ The whole package:
 ```bash
 make demo-package
 ```
+
+You will be prompted for creadentials for the droxIT artifact repository. Alternatively those can be provided in the `ARTIFACT_AUTH` environment variable as a `username:password` pair.
 
 the built package will be under `build/roxcomposer-demo-<VERSION>`.
 
