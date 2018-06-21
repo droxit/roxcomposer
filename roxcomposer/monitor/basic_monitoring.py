@@ -90,10 +90,6 @@ class BasicReporting:
             re = RuntimeError('unable to open monitoring file {} - {}'.format(self.arguments['filename'], e))
             raise re from e
 
-<<<<<<< HEAD:roxcomposer/monitor/basic_monitoring.py
-=======
-        content = [x for x in map(json.loads, lines)]
->>>>>>> af3955ab15e473e36ac0515d295efdf3bba43100:mosaic/monitor/basic_monitoring.py
         if len(content):
             def f(x):
                 if "message_id" in x['args']:
