@@ -77,7 +77,7 @@ $(demo_package): $(python_package) $(cli_files) $(elk_files) $(connector_package
 	cp $(python_package) $(build_package_dir)
 	cp --parents $(elk_files) $(build_dir)
 	mkdir -p --mode=777 $(build_dir)/elastic/elasticsearch/data
-	pushd $(build_base); tar x --one-top-level --strip-components=1 -f $(connector_archive); popd
+	cd $(build_base); tar x --one-top-level --strip-components=1 -f $(connector_archive)
 	cp `find $(connector_package_files) -name '*.js'` $(connector_package_files)/package.json $(build_dir_connector)
 	cp roxconnector_plugin/{*.js,package.json} $(build_dir_connector_plugins) 
 	cp --parents $(cli_files) $(build_dir)
