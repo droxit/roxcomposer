@@ -1,3 +1,4 @@
+SHELL=/bin/bash
 version != ./version.sh
 
 python_package-files != find roxcomposer -name '*.py' | grep -v 'tests/' | grep -v '__init__.py' | grep -v 'pycache'
