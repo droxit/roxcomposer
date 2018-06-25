@@ -79,6 +79,21 @@ jobs:
             - python-dependencies-
 
       - run:
+          name: Relink python3 binaries
+          command: |
+            rm -f /usr/bin/python3
+            ln -s /usr/bin/python3.6 /usr/bin/python3
+            rm -f /usr/bin/pip3
+            ln -s /usr/bin/pip3.6 /usr/bin/pip3
+
+      - run:
+          name: Install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+
+      - run:
           name: Create demo package
           command: |
             python3 -m venv venv
