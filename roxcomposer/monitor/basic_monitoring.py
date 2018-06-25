@@ -13,7 +13,6 @@ import time
 import json
 from roxcomposer import exceptions
 
-
 class BasicMonitoring:
     def __init__(self, **kwargs):
         self.arguments = kwargs

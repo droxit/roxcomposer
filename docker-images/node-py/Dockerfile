@@ -8,6 +8,7 @@ RUN \
   apt-get update && \
   add-apt-repository ppa:jonathonf/python-3.6 && \
   apt-get update && \
+  apt-get install -y make && \
   apt-get install -y python3.6 python3.6-dev python3.6-venv && \
   rm -rf /var/lib/apt/lists/*
 

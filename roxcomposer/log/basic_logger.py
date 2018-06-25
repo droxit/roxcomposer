@@ -1,6 +1,8 @@
 import logging
 import os
 import time
+import json
+from datetime import datetime
 
 from roxcomposer import exceptions
 
@@ -11,6 +13,28 @@ level_map = {
     'ERROR': logging.ERROR,
     'CRITICAL': logging.CRITICAL
 }
+
+class JSONFormatter(logging.Formatter):
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_attr(record, field):
+        return record.__dict__.get(field)
+
+    def format(self, record):
+        r = record.__dict__
+        out = dict()
+        out['level'] = r['levelname']
+        out['msg'] = r['msg']
+        out['time'] = datetime.fromtimestamp(r['created']).isoformat()
+        out['service'] = r['servicename']
+        if 'message_id' in r and len(r['message_id']) > 0:
+            out['message_id'] = r['message_id']
+        #out['service'] = r['args']['servicename']
+
+        return json.dumps(out)
+
 
 # This class provided a standard logging feature. It takes arguments like the {'path': './service.log'} to specify
 # the logging configuration. If the specified logfile already exists logs will get appended to the file.
@@ -31,6 +55,8 @@ class BasicLogger:
                     'unable to set up file logging: {} - {}'.format(kwargs['logpath'], e)) from e
         else:
             handler = logging.StreamHandler()
+        formatter = JSONFormatter()
+        handler.setFormatter(formatter)
         time.tzset()
         # tz = datetime.now(timezone.utc).astimezone().tzinfo
         fmt = None
@@ -51,7 +77,7 @@ class BasicLogger:
             else:
                 raise exceptions.ConfigError("can't set log level: {} is invalid".format(kwargs['level']))
 
-        formatter = logging.Formatter(fmt, dtfmt)
+        #formatter = logging.Formatter(fmt, dtfmt)
 
         handler.setFormatter(formatter)
 

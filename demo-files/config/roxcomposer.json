@@ -14,11 +14,11 @@
                 "params": {
                     "logging": { "filename": "pipeline.log" },
                     "name": "basic_reporting",
-                    "filename": "monitoring.log",
+                    "filename": "../logs/reporting-service-trace.log",
                     "ip": "127.0.0.1",
                     "port": 6690,
                     "monitoring": {
-                        "filename": "monitoring.log"
+                        "filename": "../logs/trace.log"
                     }
                 }
             },
@@ -28,7 +28,7 @@
                     "level": "INFO"
                 },
                 "monitoring": {
-                    "filename": "monitoring.log",
+                    "filename": "../logs/trace.log",
                     "monitor_class": "roxcomposer.monitor.basic_monitoring.BasicMonitoring"
                 }
             }

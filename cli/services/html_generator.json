@@ -2,7 +2,7 @@
   "classpath": "roxcomposer.tests.classes.html_generator.HtmlGenerator",
   "params": {
 	"ip": "127.0.0.1",
-	"port": 6001,
+	"port": 4003,
 	"name": "html_generator",
 	"logging": {
 		"logpath": "../logs/",

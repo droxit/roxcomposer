@@ -14,6 +14,8 @@
 
 [Interfacing with the framework (REST API)](rest.md)
 
+[Elasticsatack integration](elastic.md)
+
 [Appendix](appendix.md)
 
 [Demo](demo.md)

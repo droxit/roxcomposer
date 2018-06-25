@@ -3,6 +3,7 @@
 ## New
 
 * Service log observation API endpoints
+* Elasticstack monitoring setup as docker-compose environment
 
 ## Changed
 
