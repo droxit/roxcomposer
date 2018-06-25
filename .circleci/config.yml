@@ -70,6 +70,7 @@ jobs:
 
     working_directory: ~/repo
     steps:
+      - checkout
       # build demo package
       - run:
           name: Create demo package
@@ -97,6 +98,8 @@ workflows:
       - test
       - build_and_deploy:
           context: artifacts
+          requires:
+            - test
           filters:
             branches:
               only: /^(master|dev)$/
