@@ -79,7 +79,7 @@ class TestMonitoring(unittest.TestCase):
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
-                    'filename': log_path
+                    'logpath': log_path
                 },
                 'monitoring': {
                     'filename': monitor_path,

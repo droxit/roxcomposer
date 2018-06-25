@@ -24,13 +24,21 @@ class TestBaseService(unittest.TestCase):
         self.test_params_default = {
             'ip': '127.0.0.1',
             'port': 5001,
-            'name': 'anonymous-service'
+            'name': 'anonymous-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
         }
 
         self.test_params_1 = {
             'ip': '127.0.0.1',
             'port': 6867,
-            'name': 'fancy-service'
+            'name': 'fancy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
         }
 
         self.test_params_2 = {
@@ -45,8 +53,8 @@ class TestBaseService(unittest.TestCase):
             "port": 7001,
             "name": "sent_mail",
             "logging": {
-                "filename": "pipeline.log",
-                "level": "INFO"
+                "level": "INFO",
+                "logpath": "/dev/null"
             },
             'smtp': {
                 'sender': 'roxcomposer@droxit.de',
@@ -68,11 +76,19 @@ class TestBaseService(unittest.TestCase):
         # test initiation with at least 1 param missing
         self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, {
             'ip': '127.0.0.1',
-            'name': 'fancy-service'
+            'name': 'fancy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
         })
 
         self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, {
-            'ip': '127.0.0.1'
+            'ip': '127.0.0.1',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
         })
 
         self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, self.test_params_2)
@@ -81,7 +97,11 @@ class TestBaseService(unittest.TestCase):
         bs_with_params = base_service.BaseService({
             'ip': '127.0.0.1',
             'port': 6867,
-            'name': 'fancy-service'
+            'name': 'fancy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
         })
         self.assertDictEqual(bs_with_params.params, self.test_params_1)
 
@@ -91,8 +111,8 @@ class TestBaseService(unittest.TestCase):
             "port": 7001,
             "name": "sent_mail",
             "logging": {
-                "filename": "pipeline.log",
-                "level": "INFO"
+                "level": "INFO",
+                "logpath": "/dev/null"
             },
             'smtp': {
                 'sender': 'roxcomposer@droxit.de',
@@ -112,7 +132,11 @@ class TestBaseService(unittest.TestCase):
         s = base_service.BaseService(params={
             'ip': '127.0.0.1',
             'port': 1234,
-            'name': 'dummy-service'
+            'name': 'dummy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
         })
         self.assertEqual(s.get_service_id(), self.dummy_service_id)
 
@@ -120,7 +144,11 @@ class TestBaseService(unittest.TestCase):
         s = base_service.BaseService(params={
             'ip': '127.0.0.1',
             'port': 1234,
-            'name': 'dummy-service'
+            'name': 'dummy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
         })
 
         serv = Service("127.0.0.1", 1330)
@@ -135,7 +163,11 @@ class TestBaseService(unittest.TestCase):
         s2 = base_service.BaseService(params={
             'ip': '127.0.0.1',
             'port': 1337,
-            'name': 'dummy-service2'
+            'name': 'dummy-service2',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
         })
 
         p = Process(target=s2.listen, args=())

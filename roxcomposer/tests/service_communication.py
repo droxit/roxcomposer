@@ -31,7 +31,8 @@ class TestPipeline(unittest.TestCase):
                     'ip': '127.0.0.1',
                     'port': 10001,
                     'logging': {
-                        'level': 'WARNING'
+                        'level': 'WARNING',
+                        'logpath': '/dev/null'
                     }
                 }
             },
@@ -42,7 +43,8 @@ class TestPipeline(unittest.TestCase):
                     'ip': '127.0.0.1',
                     'port': 10002,
                     'logging': {
-                        'level': 'WARNING'
+                        'level': 'WARNING',
+                        'logpath': '/dev/null'
                     }
                 }
             },
@@ -53,7 +55,8 @@ class TestPipeline(unittest.TestCase):
                     'ip': '127.0.0.1',
                     'port': 10003,
                     'logging': {
-                        'level': 'WARNING'
+                        'level': 'WARNING',
+                        'logpath': '/dev/null'
                     }
                 }
             },
