@@ -69,6 +69,9 @@ class TestBaseService(unittest.TestCase):
             }
         }
 
+    def tearDown(self):
+        os.remove('monitoring.log')
+
     def test_init(self):
         # test initiatiaton without parameters
         self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, None)
