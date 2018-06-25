@@ -72,9 +72,17 @@ jobs:
     steps:
       - checkout
       # build demo package
+      - restore_cache:
+          keys:
+            - python-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - python-dependencies-
+
       - run:
           name: Create demo package
-          command:
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
             make demo-package
 
       ### artifacts
