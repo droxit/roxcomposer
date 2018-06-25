@@ -51,7 +51,6 @@ class BaseService:
 
         # initialize logger
         logger_params = {
-            'logpath': 'logs/',
             'level': 'INFO'
         }
         if 'logging' in self.params:
