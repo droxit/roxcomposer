@@ -97,7 +97,7 @@ describe('pipeline activation/deactivation', function () {
 									expect(err).to.be(null);
 									mc.get_pipelines(null, (err, pipelines) => {
 										expect(err).to.be(null);
-										expect(pipelines.p.active).to.be(false);
+										expect(pipelines.p.active).to.be(true);
 									});
 								});
 							});
