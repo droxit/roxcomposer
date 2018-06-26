@@ -115,6 +115,11 @@ class BaseService:
     # send a roxcomposer protobuf message to the next service in the pipeline.
     def dispatch(self, msg):
         if self.roxcomposer_message.has_empty_pipeline():
+            self.logger.info("----dispatch final destination----")
+            self.monitoring.msg_reached_final_destination(
+                service_name=self.params['name'],
+                message_id=self.roxcomposer_message.id
+            )
             return
 
         self.roxcomposer_message.set_payload(msg)
@@ -199,12 +204,6 @@ class BaseService:
                     self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
                 finally:
                     me = roxcomposer_message.Service(ip, port)
-
-                if self.roxcomposer_message.has_empty_pipeline():
-                    self.monitoring.msg_reached_final_destination(
-                        service_name=self.params['name'],
-                        message_id=self.roxcomposer_message.id
-                    )
 
                 self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())
 
