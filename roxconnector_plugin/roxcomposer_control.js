@@ -286,10 +286,10 @@ function start_service(args, cb) {
 
     //activate all pipelines that include this service and have no inactive services
 	Object.entries(this.pipelines)
-		.filter((pname, x) => x.active === false)
-		.filter((pname, x) => x.indexOf(name) != -1)
-		.forEach((pname, srvs) => {
-			let should_be_active = srvs.map(x => (x in this.services) && this.services[x].active ).reduce( (x, y) => x && y, true )
+		.filter(([pname, x]) => x.active === false)
+		.filter(([pname, x]) => x.services.indexOf(name) != -1)
+		.forEach(([pname, x]) => {
+			let should_be_active = x.services.map(x => x in this.services).reduce( (x, y) => x && y, true );
 			if (should_be_active)
 				this.pipelines[pname].active = true;
 		});
