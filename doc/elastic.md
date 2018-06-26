@@ -26,6 +26,42 @@ Their Dockerfiles are located in the `docker-images` folder inside the repositor
 This container receives the log information from the filebeats in dedicated processing pipeliens and feeds them into elasticsearch. The configuration is under `elastic/logstash/*`.
 The separate pipelines for the different input beats are located in `elastic/logstash/pipelines/*.conf`.
 
+### Message trace
+
+This pipeline's configuration is located in `trace.conf`. It's purpose is to index message trace information. Every trace event for a message will be indexed as a document like this:
+
+```json
+{
+  "time": 1530022826295.286,
+  "event": "message_received",
+  "service_name": "delay_service",
+  "status": "processing",
+  "type": "raw",
+  "message_id": "3e354de7-5ae9-427c-9763-8c5191d932e2",
+  "source": "/usr/share/filebeat/watch/trace.log"
+}
+```
+
+The document will contain additional fields that are specific to the shipping filebeat.
+
+In addition another document is created with the message id as document id and updated upon each arriving event for this message. It is used to track the time the message has been running through its pipeline:
+
+```json
+{
+  "_id": "60cf7b32-0584-476f-8591-11762fdc1f99",
+  "time": 1530023207781.715,
+  "event": "message_final_destination",
+  "service_name": "delay_service",
+  "start_time": 1530023207781.715,
+  "last_update": 1530023207791.515,
+  "type": "aggregated",
+  "status": "finalized",
+  "message_id": "60cf7b32-0584-476f-8591-11762fdc1f99",
+  "processing_time": 10.2,
+  "source": "/usr/share/filebeat/watch/trace.log"
+}
+```
+
 ## Elasticsearch
 
 Elasticsearch is used as a backend for all log data. The demo package contains a folder `elastic/elasticsearch/data` which will be used to persist all data. The data folder by default already contains some data
