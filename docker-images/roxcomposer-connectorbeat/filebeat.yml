@@ -1,7 +1,0 @@
-filebeat.prospectors:
-  - type: log
-    paths:
-      - /usr/share/filebeat/watch/roxconnector.log
-
-output.logstash:
-  hosts: ["logstash:5002"]
