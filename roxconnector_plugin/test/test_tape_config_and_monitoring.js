@@ -38,6 +38,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 		let init_params = {
 			logger: logger,
 			service_container: path.join('..', 'util', 'service_container.py'),
+			default: { logging: { logpath: tmpdir } },
 			reporting_service: {
 				classpath: 'roxcomposer.monitor.basic_reporting_service.BasicReportingService',
 				params: {
