@@ -3,10 +3,6 @@
   "params": {
     "ip": "127.0.0.1",
     "port": 4002,
-    "name": "image_adder",
-    "logging": {
-      "logpath": "../logs/",
-      "level": "INFO"
-    }
+    "name": "image_adder"
   }
 }
