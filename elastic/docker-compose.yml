@@ -19,13 +19,23 @@ services:
       - ../logs:/usr/share/filebeat/watch/
     networks:
       - elk
+    depends_on:
+      - logstash
+
+  connectorbeat:
+    image: droxops/roxcomposer-connectorbeat:0.0.1
+    volumes:
+      - ../logs:/usr/share/filebeat/watch/
+    networks:
+      - elk
+    depends_on:
+      - logstash
 
   logstash:
     image: docker.elastic.co/logstash/logstash:6.2.4
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./logstash/config/pipeline.yml:/usr/share/logstash/config/pipeline.yml
+      - ./logstash/config:/usr/share/logstash/config
     ports:
       - "5000:5000"
       - "5001:5001"
