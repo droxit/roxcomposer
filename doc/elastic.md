@@ -20,6 +20,7 @@ Because of file ownership issues the beats have custom docker images which inclu
 Their Dockerfiles are located in the `docker-images` folder inside the repository.
 
 * Trace beat: this beat's purpose is to ship message traces. It's configuration is located under `elastic/tracebeat/filebeat.yml`. The corresponding Elasticsearch mapping is under `elastic/elasticsearch/trace-template.json`.
+* ROXconnector beat: this beat's purpose is to ship the API geteway's logs. It's configuration is located under `elastic/connectorbeat/filebeat.yml`.
 
 ## Logstash
 
