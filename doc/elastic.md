@@ -77,11 +77,17 @@ the data directory is writable for the elasticsearch process e.g. by setting `ch
 
 Kibana is a visualization tool for Elasticsearch which can access the data stored allows the creation of dashboards.
 
-Currently the following visualizations are included:
+![ROXcomposer dashboard](images/dashboard.png)
 
-* service count: the number of services that processed any messages within the selected time interval
-* message count: the number of processed messages within the selected time interval
-* message count: the number of processed messages within the selected time interval displayed in a date histogram
+Currently the following visualizations are included (top to bottom, left to right in the screenshot):
+
+* service count: the number of services that processed any messages within the selected time interval. A message is considered to be within the time interval if it generated any message trace events within.
+* message count: the number of processed messages within the selected time interval.
+* message count per service (non-unique): the number of processed messages per service (ranked) within the time interval. Non-unique means that every time the service processed a message the metric goes up even if the same service processed a message more than once.
+* average processing time per service: processing time means the time between the reception of a message and its dispatch/finalization. This chart ranks the services by their average processing time. All messages that have been dispatched or finalized in the selected time frame are included.
+* accumulated processing time per service: similar to above but processing times are added up instead of being averaged.
+* message count histogram: absolute number of messages processed in the selected time frame.
+* overall average processing time for messages: average over all messages that had their last trace event during the selected time frame.
 
 The exported dashboard and visualizations are also included inside the `elastic/kibana` folder so they can be imported by hand if needed.
 
