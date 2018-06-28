@@ -2,4 +2,6 @@
   path.config: /usr/share/logstash/pipeline/trace.conf
 - pipeline.id: connectorpipeline
   path.config: /usr/share/logstash/pipeline/connector.conf
+- pipeline.id: servicepipeline
+  path.config: /usr/share/logstash/pipeline/service.conf
 
