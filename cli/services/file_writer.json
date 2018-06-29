@@ -4,10 +4,6 @@
 	"ip": "127.0.0.1",
 	"port": 4001,
 	"name": "file_writer",
-	"filepath": "roxcomposer_demo.html",
-	"logging": {
-		"logpath": "../logs/",
-		"level": "INFO"
-	}
+	"filepath": "roxcomposer_demo.html"
   }
 }

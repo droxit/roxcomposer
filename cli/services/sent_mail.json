@@ -4,10 +4,6 @@
     "ip": "127.0.0.1",
     "port": 7001,
     "name": "sent_mail",
-    "logging": {
-      "logpath": "../logs/",
-      "level": "INFO"
-    },
     "smtp": {
       "sender": "villarroya@droxit.de",
       "smtpserver": "smtp.office365.com",

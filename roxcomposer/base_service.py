@@ -14,6 +14,7 @@
 
 import socket
 import threading
+import time
 
 from roxcomposer import exceptions
 from roxcomposer.communication import roxcomposer_message
@@ -48,6 +49,8 @@ class BaseService:
 
         self.MSG_RESPONSE_OK = 0
         self.MSG_RESPONSE_NOK = 1
+
+        self.msg_reception_time = 0
 
         # initialize logger
         logger_params = {
@@ -114,7 +117,13 @@ class BaseService:
 
     # send a roxcomposer protobuf message to the next service in the pipeline.
     def dispatch(self, msg):
+        processing_time = time.time() - self.msg_reception_time
         if self.roxcomposer_message.has_empty_pipeline():
+            self.monitoring.msg_reached_final_destination(
+                service_name=self.params['name'],
+                message_id=self.roxcomposer_message.id,
+                processing_time=processing_time
+            )
             return
 
         self.roxcomposer_message.set_payload(msg)
@@ -133,11 +142,19 @@ class BaseService:
             self.monitoring.msg_dispatched(
                 service_name=self.params['name'],
                 message_id=message_id,
-                destination=next_service.encodeId()
+                destination=next_service.encodeId(),
+                processing_time=processing_time
             )
             connection.close()
             return True
         except OSError as e:
+            self.monitoring.msg_error(
+                service_name=self.params['name'],
+                message_id=message_id,
+                destination=next_service.encodeId(),
+                processing_time=processing_time,
+                description='unable to dispatch message'
+            )
             self.logger.error(e.strerror + ' - ' + str(e.__traceback__))
             return False
 
@@ -200,14 +217,9 @@ class BaseService:
                 finally:
                     me = roxcomposer_message.Service(ip, port)
 
-                if self.roxcomposer_message.has_empty_pipeline():
-                    self.monitoring.msg_reached_final_destination(
-                        service_name=self.params['name'],
-                        message_id=self.roxcomposer_message.id
-                    )
-
                 self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())
 
+                self.msg_reception_time = time.time()
                 self.on_message(self.roxcomposer_message.payload, self.roxcomposer_message.id)
                 self.on_message_ext(self.roxcomposer_message)
 

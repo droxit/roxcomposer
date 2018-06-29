@@ -4,10 +4,6 @@
 	"ip": "127.0.0.1",
 	"port": 4001,
 	"name": "archiv_writer",
-	"filepath": "roxcomposer_demo.html",
-	"logging": {
-      "logpath": "pipeline.log",
-	  "level": "INFO"
-	}
+	"filepath": "roxcomposer_demo.html"
   }
 }

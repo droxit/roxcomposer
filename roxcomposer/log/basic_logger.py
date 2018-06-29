@@ -27,7 +27,7 @@ class JSONFormatter(logging.Formatter):
         out = dict()
         out['level'] = r['levelname']
         out['msg'] = r['msg']
-        out['time'] = datetime.fromtimestamp(r['created']).isoformat()
+        out['time'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S%z")
         out['service'] = r['servicename']
         if 'message_id' in r and len(r['message_id']) > 0:
             out['message_id'] = r['message_id']

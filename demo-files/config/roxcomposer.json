@@ -1,8 +1,8 @@
 {
   "SYSTEM": {
 	"port": 7475,
-    "loglevel": "debug",
-    "logfile": "api-server.log"
+    "loglevel": "info",
+    "logfile": "../logs/roxconnector.log"
   },
   "PLUGINS": {
       "roxcomposer": {
@@ -24,7 +24,7 @@
             },
             "default": {
                 "logging": {
-                    "filename": "pipeline.log",
+                    "logpath": "../logs/services",
                     "level": "INFO"
                 },
                 "monitoring": {

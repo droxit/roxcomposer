@@ -3,10 +3,6 @@
   "params": {
 	"ip": "127.0.0.1",
 	"port": 4003,
-	"name": "html_generator",
-	"logging": {
-		"logpath": "../logs/",
-		"level": "INFO"
-	}
+	"name": "html_generator"
   }
 }

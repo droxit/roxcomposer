@@ -14,13 +14,16 @@ Master:
 
 ## Dependencies
 
+The Python dependencies are listed in the `requirements.txt` and the Node.js dependencies are listed in `roxconnector_plugin/package.json`.
+
 Please execute 
 
 ```bash
-pip3.6 install -r requirements.txt
+make install-deps
 ```
 
-to install all python requirements.
+to install all requirements.
+
 
 ## Versioning scheme
 

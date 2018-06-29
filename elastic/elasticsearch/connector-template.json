@@ -1,0 +1,23 @@
+{
+	"index_patterns": ["connector-log"],
+	"settings": {
+		"number_of_shards": 1,
+		"number_of_replicas": 0
+	},
+	"mappings": {
+		"doc": {
+			"properties": {
+				"msg": { "type": "text" },
+				"name": { "type": "keyword" },
+				"host": { "type": "keyword" },
+				"service": { "type": "keyword" },
+				"pid":  { "type": "short" },
+				"v":  { "type": "byte" },
+				"exit_code":  { "type": "byte" },
+				"time": {
+					"type": "date"
+				}
+			}
+		}
+	}
+}
