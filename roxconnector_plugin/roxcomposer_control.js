@@ -284,15 +284,15 @@ function start_service(args, cb) {
 			this.logger.error({error: e, args: args}, "unable to spawn service");
 		});
 
-    //activate all pipelines that include this service
-    for (let pl in this.pipelines) {
-	    for (let i=0; i < this.pipelines[pl]['services'].length; i++) {
-	        if ((this.pipelines[pl]['services'][i] === name) && !this.pipelines[pl]['active']){
-	            this.pipelines[pl]['active'] = true;
-				break;
-			}
-		}
-	}
+    //activate all pipelines that include this service and have no inactive services
+	Object.entries(this.pipelines)
+		.filter(([pname, x]) => x.active === false)
+		.filter(([pname, x]) => x.services.indexOf(name) != -1)
+		.forEach(([pname, x]) => {
+			let should_be_active = x.services.map(x => x in this.services).reduce( (x, y) => x && y, true );
+			if (should_be_active)
+				this.pipelines[pname].active = true;
+		});
 
 	cb(null, {'message': `service [${name}] created`});
 }

@@ -1,0 +1,20 @@
+{
+	"index_patterns": ["service-log"],
+	"settings": {
+		"number_of_shards": 1,
+		"number_of_replicas": 0
+	},
+	"mappings": {
+		"doc": {
+			"properties": {
+				"msg": { "type": "text" },
+				"host": { "type": "keyword" },
+				"level": { "type": "keyword" },
+				"service": { "type": "keyword" },
+				"time": {
+					"type": "date"
+				}
+			}
+		}
+	}
+}

@@ -1,8 +1,8 @@
 {
   "SYSTEM": {
 	"port": 7475,
-    "loglevel": "debug",
-    "logfile": "api-server.log"
+    "loglevel": "info",
+    "logfile": "../logs/roxconnector.log"
   },
   "PLUGINS": {
       "roxcomposer": {
@@ -14,17 +14,17 @@
                 "params": {
                     "logging": { "filename": "pipeline.log" },
                     "name": "basic_reporting",
-                    "filename": "../logs/reporting-service-trace.log",
+                    "filename": "../logs/trace.log",
                     "ip": "127.0.0.1",
                     "port": 6690,
                     "monitoring": {
-                        "filename": "../logs/trace.log"
+                        "filename": "../logs/reporting-service-trace.log"
                     }
                 }
             },
             "default": {
                 "logging": {
-                    "filename": "pipeline.log",
+                    "logpath": "../logs/services",
                     "level": "INFO"
                 },
                 "monitoring": {

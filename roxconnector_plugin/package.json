@@ -18,7 +18,7 @@
     "tape": "^4.9.1"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha test/test_mocha_*.js && for f in test/test_tape*.js; do ./node_modules/tape/bin/tape $f; done && rm -f *.log"
+    "test": "./tests.sh; rm -f *.log"
   },
   "repository": {
     "type": "git",

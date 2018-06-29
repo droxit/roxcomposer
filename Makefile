@@ -10,7 +10,7 @@ composer_archive_base = $(composer_base).tar.gz
 build_base = build
 build_dir = $(build_base)/$(composer_base)
 build_package_dir = $(build_dir)/packages
-build_logs_dir = $(build_dir)/logs
+build_logs_dir = $(build_dir)/logs/services
 build_dir_connector = $(build_dir)/api-server
 build_dir_connector_plugins = $(build_dir_connector)/plugins
 build_dirs = $(build_dir) $(build_package_dir) $(build_logs_dir) $(build_dir_connector_plugins)
@@ -62,7 +62,7 @@ $(build_package_dir):
 	mkdir -p $(build_dir)/packages
 
 $(build_logs_dir):
-	mkdir -p $(build_dir)/logs
+	mkdir -p $(build_logs_dir)
 
 $(build_dir_connector_plugins):
 	mkdir -p $(build_dir_connector_plugins)

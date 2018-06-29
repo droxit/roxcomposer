@@ -3,10 +3,6 @@
   "params": {
     "ip": "127.0.0.1",
     "port": 4007,
-    "name": "delay_service",
-	"logging": {
-      "logpath": "pipeline.log",
-	  "level": "INFO"
-	}
+    "name": "delay_service"
   }
 }
