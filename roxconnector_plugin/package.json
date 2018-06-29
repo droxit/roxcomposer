@@ -18,7 +18,7 @@
     "tape": "^4.9.1"
   },
   "scripts": {
-    "test": "./tests.sh"
+    "test": "./tests.sh; rm -f *.log"
   },
   "repository": {
     "type": "git",
