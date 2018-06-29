@@ -27,6 +27,9 @@ class TestPipeline(unittest.TestCase):
                     'http_address': ("127.0.0.1", 11001),
                     'logging': {
                         'level': 'WARNING'
+                    },
+                    'monitoring': {
+                        'filename': '/dev/null'
                     }
                 }
             },
@@ -38,6 +41,9 @@ class TestPipeline(unittest.TestCase):
                     'http_address': ("127.0.0.1", 11002),
                     'logging': {
                         'level': 'WARNING'
+                    },
+                    'monitoring': {
+                        'filename': '/dev/null'
                     }
                 }
             }

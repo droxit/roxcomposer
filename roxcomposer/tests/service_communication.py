@@ -33,6 +33,9 @@ class TestPipeline(unittest.TestCase):
                     'logging': {
                         'level': 'WARNING',
                         'logpath': '/dev/null'
+                    },
+                    'monitoring': {
+                        'filename': '/dev/null'
                     }
                 }
             },
@@ -45,6 +48,9 @@ class TestPipeline(unittest.TestCase):
                     'logging': {
                         'level': 'WARNING',
                         'logpath': '/dev/null'
+                    },
+                    'monitoring': {
+                        'filename': '/dev/null'
                     }
                 }
             },
@@ -57,6 +63,9 @@ class TestPipeline(unittest.TestCase):
                     'logging': {
                         'level': 'WARNING',
                         'logpath': '/dev/null'
+                    },
+                    'monitoring': {
+                        'filename': '/dev/null'
                     }
                 }
             },

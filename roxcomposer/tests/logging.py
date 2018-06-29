@@ -25,6 +25,9 @@ class TestLogging(unittest.TestCase):
             'logging': {
                 'level': 'WARNING',
                 'logpath': '/does/not/exists.log'
+            },
+            'monitoring': {
+                'filename': '/dev/null'
             }
         }
 
@@ -48,6 +51,9 @@ class TestLogging(unittest.TestCase):
                 'logging': {
                     'level': 'DEBUG',
                     'logpath': log_path
+                },
+                'monitoring': {
+                    'filename': '/dev/null'
                 }
             }
 
@@ -106,6 +112,9 @@ class TestLogging(unittest.TestCase):
                     'level': 'DEBUG',
                     'filename': log_path,
                     'logger_class': 'roxcomposer.tests.classes.dummy_logger.DummyLog'
+                },
+                'monitoring': {
+                    'filename': '/dev/null'
                 }
             }
 
@@ -126,6 +135,9 @@ class TestLogging(unittest.TestCase):
                     'level': 'DEBUG',
                     'filename': log_path,
                     'logger_class': 'roxcomposer.tests.classes.dummy_logger.NotExistentDummyLog'
+                },
+                'monitoring': {
+                    'filename': '/dev/null'
                 }
             }
 
@@ -139,6 +151,9 @@ class TestLogging(unittest.TestCase):
                     'level': 'DEBUG',
                     'filename': log_path,
                     'logger_class': None
+                },
+                'monitoring': {
+                    'filename': '/dev/null'
                 }
             }
 
@@ -152,6 +167,9 @@ class TestLogging(unittest.TestCase):
                     'level': 'DEBUG',
                     'filename': log_path,
                     'logger_class': 'roxcomposer.tests.classes.dummy_logger.not_a_class'
+                },
+                'monitoring': {
+                    'filename': '/dev/null'
                 }
             }
 
