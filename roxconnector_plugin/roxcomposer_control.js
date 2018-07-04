@@ -352,6 +352,7 @@ function post_to_pipeline(args, cb) {
 	let start = this.services[pline.services[0]];
 	this.logger.debug({name: pline.services[0], ip: start.params.ip, port: start.params.port}, 'attempting connection to service');
 	socket.connect({port: start.params.port, host: start.params.ip}, () => {
+		this.logger.info({message_id: msg.id, pipeline: args.name}, 'message posted to pipeline');
 		let packet = msg.serialize();
 		socket.end(packet);
 		cb(null, {'message': 'pipeline initiated', 'message_id': msg.id});
