@@ -67,9 +67,9 @@ class TestLogging(unittest.TestCase):
             self.assertIn(msg, logline, "original message not contained in log line")
             self.assertIn('DEBUG', logline, "log level missing/or incorrect")
 
-            lt.logdebug(msg, 'test-id')
+            lt.logdebug(msg, message_id='test-id')
             logline = f.readline()
-            self.assertIn('message_id:test-id', logline, "message id not present in log line")
+            self.assertIn('test-id', logline, "message id not present in log line")
 
             lt.loginfo(msg)
             logline = f.readline()
@@ -110,7 +110,7 @@ class TestLogging(unittest.TestCase):
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
-                    'filename': log_path,
+                    'logpath': log_path,
                     'logger_class': 'roxcomposer.tests.classes.dummy_logger.DummyLog'
                 },
                 'monitoring': {

@@ -11,23 +11,23 @@
 class DummyLog:
     def __init__(self, name, **kwargs):
         self.name = name
-        self.file = kwargs['filename']
+        self.file = kwargs['logpath']
 
-    def debug(self, msg, msg_id = None):
+    def debug(self, msg, **kwargs):
         f = open(self.file, 'w')
         f.write(msg)
         f.close()
 
-    def info(self, msg):
+    def info(self, msg, **kwargs):
         pass
 
-    def warn(self, msg):
+    def warn(self, msg, **kwargs):
         pass
 
-    def error(self, msg):
+    def error(self, msg, **kwargs):
         pass
 
-    def critical(self, msg):
+    def critical(self, msg, **kwargs):
         pass
 
 
