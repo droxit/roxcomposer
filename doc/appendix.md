@@ -6,27 +6,28 @@ syntax = "proto3";
  
 package service_communication;
  
-message MosaicMessage {
+message ROXcomposerMessage {
     Pipeline pipeline = 1;
     Payload payload = 2;
     string id = 3;
+    int64 created = 4;
 }
  
 message Pipeline {
-    repeated Service services = 4;
+    repeated Service services = 5;
 }
  
 message Service {
     string id = 1;
-    repeated Parameter parameters = 5;
+    repeated Parameter parameters = 6;
 }
  
 message Parameter {
-    string serviceParams = 6;
+    string serviceParams = 7;
 }
  
 message Payload {
-    string body = 7;
+    string body = 8;
 }
 ```
 
@@ -36,23 +37,24 @@ The individual fields server the following purposes:
 
 | Name | Function |
 | ---- | -------- |
-| MosaicMessage	| This is a container for the message as a whole. It has the subfields `payload`, `pipeline` and `id`. |
+| ROXcomposerMessage	| This is a container for the message as a whole. It has the subfields `payload`, `pipeline` and `id`. |
 | Pipeline | A pipeline is an array of services. This defines the message flow through the micro services (see below for a more detailed description of the process). |
 | Service | A service consists of an id and an optional list of parameters. `id` is a string containing a network address as ip and port separated by a colon. A parameter is simply a string containing options to be passed along to the service with this message |
 | Payload | This is a string that is passed on through the pipeline possibly being transformed along the way. |
 | id | This is a python unique id formatted as a string. It ensures a unique identifier to track a message. |
+| created | The timestamp of the message's creation in milliseconds since epoch. |
 
 # Message routing
 
 A message contains a list of services the message should be routed through. Upon receivuing a message a service is supposed to pop the first element from the list (which should refer to itself) and process the payload.
 
-If the pipeline empy the pipeline ends here. Otherwise the processed the payload is passed on to the next service in the pipeline.
-
-Any logging class needs to adhere to the following interface to be compatible to the base service:
+If the pipeline is empty the pipeline ends here. Otherwise the processed payload is passed on to the next service in the pipeline.
 
 # Logging injection
 
-mosaic supports injection of logging classes which must adhere to an interface to be compatible to the base service class:
+Any logging class needs to adhere to the following interface to be compatible to the base service:
+
+roxcomposer supports injection of logging classes which must adhere to an interface to be compatible to the base service class:
 
 ## Initialization
 
@@ -65,7 +67,7 @@ def __init__(self, service_name, **kwargs):
 The `service_name` is the name of the service that owns this logger instance. The kwargs are passed on from the logging section service's invocation parameters. If omitted the default invocation would be
 
 ```python
-logger(servicename, filename="pipeline.log", level="INFO")
+logger(servicename, logpath="<log_path>", level="INFO"). If <log_path> is a directory path then should be created a file with the service name otherwise will be create a file, names <log_path>
 ```
 
 ## Log functions
@@ -80,7 +82,7 @@ Upon invocation a logger class can be specified in the logging section of the pa
 {
     "logging": {
         "level": "ERROR",
-        "logger_class": "mosaic.log.basic_logger.BasicLogger"
+        "logger_class": "roxcomposer.log.basic_logger.BasicLogger"
     }
 }
 ```

@@ -1,0 +1,153 @@
+{
+  "SYSTEM": {
+	"port": 7475,
+    "loglevel": "info",
+    "logfile": "../logs/roxconnector.log"
+  },
+  "PLUGINS": {
+      "roxcomposer": {
+          "path": "./plugins/roxcomposer_control.js",
+          "params": {
+            "service_container": "plugins/service_container.py",
+            "reporting_service": {
+                "classpath": "roxcomposer.monitor.basic_reporting_service.BasicReportingService",
+                "params": {
+                    "logging": { "filename": "pipeline.log" },
+                    "name": "basic_reporting",
+                    "filename": "../logs/trace.log",
+                    "ip": "127.0.0.1",
+                    "port": 6690,
+                    "monitoring": {
+                        "filename": "../logs/reporting-service-trace.log"
+                    }
+                }
+            },
+            "default": {
+                "logging": {
+                    "logpath": "../logs/services",
+                    "level": "INFO"
+                },
+                "monitoring": {
+                    "filename": "../logs/trace.log",
+                    "monitor_class": "roxcomposer.monitor.basic_monitoring.BasicMonitoring"
+                }
+            }
+        }
+      }
+  },
+  "REST": {
+      "GET": {
+          "services": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_services"
+              }
+          },
+          "pipelines": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_pipelines"
+              }
+          },
+          "dump_services_and_pipelines": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "dump_services_and_pipelines"
+              }
+          },
+          "log_observer": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_log_lines"
+              }
+          }
+      },
+      "PUT": {
+          "log_observer": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "create_log_observer"
+              }
+          }
+      },
+      "POST": {
+          "start_service": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "start_service"
+              }
+          },
+          "set_pipeline": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "set_pipeline"
+              }
+          },
+          "post_to_pipeline": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "post_to_pipeline"
+              }
+          },
+          "shutdown_service": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "shutdown_service"
+              }
+          },
+          "load_services_and_pipelines": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "load_services_and_pipelines"
+              }
+          },
+          "get_msg_history": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_msg_history"
+              }
+          },
+          "get_msg_status": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_msg_status"
+              }
+          },
+          "load_and_start_pipeline": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "load_and_start_pipeline"
+              }
+          },
+          "log_observer": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "post_services_to_logsession"
+              }
+          }
+      },
+      "DELETE": {
+          "log_observer": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "delete_log_observer"
+              }
+          }
+      }
+  }
+}

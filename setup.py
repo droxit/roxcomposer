@@ -13,12 +13,15 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
+#### moved to markdown so we're not using the README as a long description
+# it had too much info beyond the scope of the pure python package anyways
 # Get the long description from the README.rst file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+#with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+#    long_description = f.read()
+long_description = ""
 
-if 'MOSAIC_VERSION' in os.environ:
-    version = os.environ['MOSAIC_VERSION']
+if 'ROXCOMPOSER_VERSION' in os.environ:
+    version = os.environ['ROXCOMPOSER_VERSION']
 else:
     with open(path.join(here, 'VERSION'), encoding='utf-8') as f:
         version = f.read()
@@ -26,7 +29,7 @@ else:
 version.strip()
 
 setup(
-    name='mosaic',
+    name='roxcomposer',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -37,7 +40,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/droxit/mosaic',
+    url='https://github.com/droxit/roxcomposer',
 
     # Author details
     author='droxIT GmbH',
@@ -90,5 +93,5 @@ setup(
     ],
 
     python_requires='>=3.5',
-    test_suite="mosaic.tests"
+    test_suite="roxcomposer.tests"
 )

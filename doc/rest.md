@@ -2,10 +2,10 @@
 
 ## Starting the API server
 
-The production package includes a NodeJS server that provides an interface to your services. You can easily start it from within the mosaic folder:
+The production package includes a NodeJS server that provides an interface to your services. You can easily start it from within the roxcomposer folder:
 
 ```bash
-cd mosaic
+cd roxcomposer
 ./start_server.sh
 ```
 
@@ -25,18 +25,115 @@ The params section of the JSON string will be passed on to the invocation of mys
 
 In the default configuration the following endpoints are available:
 
-| Endpoint | HTTP verb  | Data | Description |
-| -------- | ---------- | ---- | ----------- |
-| start\_service | POST | <ul><li>path (string): the path to the python module to start.</li><li>classpath (string): the python package to load</li><li>params (json string): see the chapter on implementing a service for details</li></ul> | This starts a new service. Either `path` or `classpath` is required to find the right python module (see below for details). |
-| services | GET |  | Get information on the running services |
-| set\_pipeline | POST | <ul><li>name (string) - the pipelines name (pipelines under the same name will be overridden)</li><li>services (array of strings) - the names of the services the pipeline should consist of. Messages sent to this pipeline will pass through all services mentioned here in the same sequence</li></ul> | Define a pipeline |
-| pipelines | GET | | Show defined pipelines |
-| post\_to\_pipeline | POST | <ul><li>name (string) - the name of the pipeline that the data should put in</li><li>data (string) - the payload that should be transported</li><ul> | Send a message into a pipeline |
-| shutdown\_service | POST | name (string) - the services name in the pipeline | Shuts down a service with the SIGTERM os signal |
-| get\_msg\_history | POST | message\_id (string) - the message id of the message in question | Retrieves all monitoring information for this message |
-| get\_msg\_status | POST | message\_id (string) - the message id of the message in question | Retrieves the last known status for this message |
-| dump\_services\_and\_pipelines | GET | | Returns a JSON object that represents the currently active services and defined pipelines |
-| load\_services\_and\_pipelines | POST | service and pipeline dump  | This takes a generated dump and tries to restore the services and pipelines. If a service under the same name is already running it is skipped and inactive pipelines are skipped as well |
+#### /start\_service
+
+- Description: Start a service.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `path|classpath` - either a *path* to a python module or a qualified *class* (see below).
+    - `params.name` - the name of ther service.
+    - `params.ip` - the service's IP.
+    - `params.port` - the service's port number.
+  - Optional: the `params` field can contain arbitrary subfields. The whole structure will be passed on to the service.
+
+#### /services
+
+- Description: Get a list of the currently running services along with their invokation parameters.
+- Method: `GET`
+- Parameters: none
+
+#### /shutdown\_service
+
+- Description: Shutdown a running service.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `name`: the name of the service.
+
+#### /set\_pipeline
+
+- Description: Define a pipeline, overriding a previous pipeline with the same name if present.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `name`: the name of the pipeline.
+    - `services`: an array of service names that make up the pipeline in their intended order.
+
+#### /pipelines
+
+- Description: Get a list of the currently defined pipelines.
+- Method: `GET`
+- Parameters: none
+
+#### /post\_to\_pipeline
+
+- Description: Send data into a pipeline. The response will contain a `message-id` which can be used to track the status of the message.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `name`: the name of the pipeline.
+    - `data`: A string to send into the pipeline.
+
+#### /get\_message\_history
+
+- Description: Retrieve the message trace for a message.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `message_id`: the id of the message.
+
+#### /get\_message\_status
+
+- Description: Retrieve the staus of a message. The status is one of `in_transit`, `processing` or `finalized`.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `message_id`: the id of the message.
+
+#### /dump\_services\_and\_pipelines
+
+- Description: Dump the currently running service configs and the defined pipelines.
+- Method: `GET`
+- Parameters: none
+
+#### /load\_services\_and\_pipelines
+
+- Description: Restore a previsously dumped state. Services will be attempted to start and pipelines restored if possible.
+- Method: `POST`
+- Parameters: a previously saved dump.
+
+#### /log\_observer
+
+- Description: Start a new service log observation session. Returns a `sessionid` for reference.
+- Method: `PUT`
+- Parameters:
+  - Required:
+    - `lines`: the number of log lines that are buffered internally.
+    - `timeout`: the number of seconds of inactivity after which the session will be cleaned up.
+  - Optional:
+    - `services`: an array of service names that will be observed
+
+- Description: Add additional services to a log session
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `sessionid`: the id of the log session.
+    - `services`: an array of service names that will be observed
+
+- Description: Retrieve log lines from observed services.
+- Method: `GET`
+- Parameters:
+  - Required:
+    - `sessionid`: the id of the log session.
+
+- Description: Remove services from this log session or delete the whole session if no services are specified.
+- Method: `DELETE`
+- Parameters:
+  - Required:
+    - `sessionid`: the id of the log session.
+  - Optional:
+    - `services`: an array of service names that will removed from observation.
 
 ### Loading via classpath
 
@@ -44,24 +141,16 @@ If you choose to provide a module path, e.g. `somepackage.subpackge.module`, a s
 container that calls `listen_thread()` at this point since we would need to impose a standard way of constructing the main thread functionality in order to call it generically.
 
 
-### Using the mosaic-cli
+### Using the roxcomposer-cli
 
-Since writing curl requests can be quite cumbersome the mosaic package includes a cli that streamlines the process.
-
-If invoked without arguments it will print usage information:
+Since writing curl requests can be quite cumbersome the roxcomposer package includes a cli shell that streamlines the process.
 
 ```bash
-./mosaic-cli
-usage: mosaic-cli <COMMAND> [ARGUMENTS]
-commands:
-  start_service <SERVICE>
-  services
-  set_pipeline <NAME> <SERVICE> [...]
-  pipelines
-  post_to_pipeline <PIPELINE> <MESSAGE>
-  shutdown_service <SERVICE>
-  load_and_start_pipeline <PIPELINE_PATH>
+./roxcomposer-cli.py
 ```
+
+This will open an new terminal ui with two windows and a text input. The first window is for logging while the second is a command history.  
+`help` will provide you with a list of available commands. Most of them mimick the underlying REST API:
 
 #### start\_service
 
@@ -82,7 +171,7 @@ Assuming you want to start a service with the following parmeters:
 The package directory contains a services folder. If you write the above configuration into services/myservice.json you can easily start that service with the following call:
 
 ```bash
-./mosaic-cli start_service myservice
+start_service myservice
 ```
 
 The myservice argument refers to the file name - `myservice.json` - without the suffix. Please note that the service will be deployed under the name `AwesomeService` and not as `myservice`.
@@ -96,7 +185,7 @@ Lists the active services
 This allows you to set a pipeline by naming it and listing the name's of the services it should contain:
 
 ```bash
-./mosaic-cli set_pipeline pipe myservice myotherservice gotanotherone
+set_pipeline pipe myservice myotherservice gotanotherone
 ```
 
 #### pipelines
@@ -108,7 +197,7 @@ List the defined pipelines.
 Post a message to a pipeline of your choice:
 
 ```bash
-./mosaic-cli post_to_pipeline pipe "Hello world!"
+post_to_pipeline pipe "Hello world!"
 ```
 
 #### shutdown\_service
@@ -116,30 +205,78 @@ Post a message to a pipeline of your choice:
 Shutdown a service and set all pipelines to inactive if the service is part of their pipeline.
 
 ```bash
-./mosaic-cli shutdown_service my_service.service
+shutdown_service my_service.service
 ```
 
 #### dump
 
-Retrieve a dump of the running services and defined pipelines
+Retrieve a dump of the running services and defined pipelines and write it into a file. If the filename is omitted a `dump.json` will be used.
 
 ```bash
-./mosaic-cli dump
+dump dump.json
 ```
 
-#### restore
+#### get\_msg\_history
 
-Restore a previously taken service and pipeline dump
+Retrieve a message trace given a message id
 
 ```bash
-./mosaic-cli restore /path/to/dump.json
+get_msg_history 3af-3413fa-234faa-908a-394800
 ```
 
-#### load\_and\_start\_pipeline
+#### restore\_server
 
-Load the pipelines configuration from path and activate this.
+```command-line
+restore_server /path/to/dump.json
+```
+
+#### restore\_pipeline
+
+Load the pipelines configuration from (server) path and activate this.
 
 ```bash
-./mosaic-cli load_and_start_pipeline path_pipe
+restore_pipeline path_pipe
+```
+
+#### watch\_services
+
+Starts a new log observation session for the provided services or adds them to an existing session. The cli manages the session in the background and regularly polls the
+API for new log lines which will be written into the log window.
+
+```bash
+watch_services serv1 serv2 serv3
+```
+
+#### unwatch\_services
+
+Remove watched services from the session.
+
+```bash
+unwatch_services serv2 serv3
+```
+
+#### watch\_pipelines
+
+Starts a new log observation session for the provided pipelines or adds them to an existing session. The cli manages the session in the background and regularly polls the
+API for new log lines which will be written into the log window.
+
+```bash
+watch_pipelines pipe1 pipe2 pipe3
+```
+
+#### unwatch\_pipelines
+
+Remove watched pipelines from the session.
+
+```bash
+unwatch_pipelines pipe2 pipe3
+```
+
+#### reset\_watchers
+
+This cleans up the log session - services are no longer watched.
+
+```bash
+reset_watchers
 ```
 

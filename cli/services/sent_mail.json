@@ -4,10 +4,6 @@
     "ip": "127.0.0.1",
     "port": 7001,
     "name": "sent_mail",
-    "logging": {
-      "filename": "pipeline.log",
-      "level": "INFO"
-    },
     "smtp": {
       "sender": "villarroya@droxit.de",
       "smtpserver": "smtp.office365.com",
@@ -16,7 +12,7 @@
       "usetls": true
     },
     "mail": {
-      "subject": "Mosaic-Demo: Test",
+      "subject": "ROXcomposer-Demo: Test",
       "recipient": "info@droxit.de"
     }
   }

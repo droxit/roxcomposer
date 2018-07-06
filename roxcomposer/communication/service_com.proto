@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package service_communication;
+
+message ROXcomposerMessage {
+    Pipeline pipeline = 1;
+    Payload payload = 2;
+    string id = 3;
+    int64 created = 4;
+}
+
+message Pipeline {
+    repeated Service services = 5;
+}
+
+message Service {
+    string id = 6;
+    repeated Parameter parameters = 7;
+}
+
+message Parameter {
+    string serviceParams = 8;
+}
+
+message Payload {
+    string body = 9;
+}

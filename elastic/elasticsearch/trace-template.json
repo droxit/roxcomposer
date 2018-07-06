@@ -1,0 +1,37 @@
+{
+	"index_patterns": ["trace-log"],
+	"settings": {
+		"number_of_shards": 1,
+		"number_of_replicas": 0
+	},
+	"mappings": {
+		"doc": {
+			"properties": {
+				"service_name": { "type": "keyword" },
+				"event": { "type": "keyword" },
+				"message_id": { "type": "keyword" },
+				"status": { "type": "keyword" },
+				"destination": { "type": "keyword" },
+				"type": { "type": "keyword" },
+				"time": {
+					"type": "date",
+					"format": "epoch_millis"
+				},
+				"start_time": {
+					"type": "date",
+					"format": "epoch_millis"
+				},
+				"last_update": {
+					"type": "date",
+					"format": "epoch_millis"
+				},
+				"processing_time": {
+					"type": "integer"
+				},
+				"total_processing_time": {
+					"type": "integer"
+				}
+			}
+		}
+	}
+}

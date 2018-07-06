@@ -4,9 +4,9 @@
 #
 version: 2
 jobs:
-  build:
+  test:
     docker:
-      - image: droxops/mosaic-node-py:0.0.4
+      - image: droxops/roxcomposer-node-py:0.0.5
 
     working_directory: ~/repo
 
@@ -19,7 +19,7 @@ jobs:
             - python-dependencies-{{ checksum "requirements.txt" }}
             # fallback to using the latest cache if no exact match is found
             - python-dependencies-
-            - node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
+            - node-dependency-cache-{{ checksum "roxconnector_plugin/package.json" }}
             - node-dependency-cache-
 
       - run:
@@ -39,7 +39,7 @@ jobs:
 
       - run:
           name: Install node dependencies
-          working_directory: impress_plugin
+          working_directory: roxconnector_plugin
           command: npm install
 
       - save_cache:
@@ -48,54 +48,59 @@ jobs:
           key: python-dependencies-{{ checksum "requirements.txt" }}
 
       - save_cache:
-          key: node-dependency-cache-{{ checksum "impress_plugin/package.json" }}
+          key: node-dependency-cache-{{ checksum "roxconnector_plugin/package.json" }}
           paths:
             - ./node_modules
 
-      ### run automatic tests
-      # python
       - run:
-#          working_directory: ~/repo
-          name: Run python tests
-          #environment:
-          #  SKIP_TEMPDIR_TEST: True
-          command: |
-            . venv/bin/activate
-            python3 setup.py test
-
-      - run:
-#          working_directory: ~/repo
-          name: Install mosaic locally
+          name: Install roxcomposer locally
           command: |
             . venv/bin/activate
             pip3 install -e .
 
-      # run node tests
+      ### run automatic tests
       - run:
-          working_directory: impress_plugin
-          name: Run node tests
-          command: |
-            . ../venv/bin/activate
-            npm test
-
-      - run:
-          name: Create python package
+          name: Run tests
           command: |
             . venv/bin/activate
-            if [ $CIRCLE_BRANCH != 'master' ]; then echo $(cat VERSION | tr -d '\n').dev$CIRCLE_BUILD_NUM > VERSION; fi
-            python3 setup.py sdist
-            mkdir ./packages
-            cp ./dist/*.tar.gz ./packages/
+            make test
+  build_and_deploy:
+    docker:
+      - image: droxops/roxcomposer-node-py:0.0.5
+
+    working_directory: ~/repo
+    steps:
+      - checkout
       # build demo package
+      - restore_cache:
+          keys:
+            - python-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - python-dependencies-
+
+      - run:
+          name: Relink python3 binaries
+          command: |
+            rm -f /usr/bin/python3
+            ln -s /usr/bin/python3.6 /usr/bin/python3
+            rm -f /usr/bin/pip3
+            ln -s /usr/bin/pip3.6 /usr/bin/pip3
+
+      - run:
+          name: Install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip3 install -r requirements.txt
+
       - run:
           name: Create demo package
           command: |
-            cd .circleci/mosaic-deploy
-            ./build_mosaic.sh ../../dist/mosaic-*.tar.gz ../../impress_plugin
-            cp mosaic-demo-*.tar.gz ../../packages/
+            python3 -m venv venv
+            . venv/bin/activate
+            make demo-package
 
       ### artifacts
-      # store artifact
       - store_artifacts:
           path: packages
           destination: packages
@@ -105,14 +110,22 @@ jobs:
       - deploy:
           name: Deploy to gru
           command: |
-            export mosaic_folder='/opt/artifacts/mosaic/dev'
-            if [ $CIRCLE_BRANCH == 'master' ]; then export mosaic_folder='/opt/artifacts/mosaic/release'; fi
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./packages/mosaic*.tar.gz devpi@176.9.144.37:$mosaic_folder
+            export roxcomposer_folder='/opt/artifacts/roxcomposer/dev'
+            if [ $CIRCLE_BRANCH == 'master' ]; then export roxcomposer_folder='/opt/artifacts/roxcomposer/release'; fi
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./build/roxcomposer*.tar.gz devpi@176.9.144.37:$roxcomposer_folder
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - build
+      - test
+      - build_and_deploy:
+          context: artifacts
+          requires:
+            - test
+          filters:
+            branches:
+              only: disabled_for_now_since_gru_is_down
+              #only: /^(master|dev)$/
 
 

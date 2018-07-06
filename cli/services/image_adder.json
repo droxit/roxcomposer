@@ -1,12 +1,8 @@
 {
-  "path": "../services/image_adder.py",
+  "classpath": "roxcomposer.tests.classes.image_adder.ImageAdder",
   "params": {
     "ip": "127.0.0.1",
-    "port": 5001,
-    "name": "image_adder",
-    "logging": {
-      "filename": "pipeline.log",
-      "level": "INFO"
-    }
+    "port": 4002,
+    "name": "image_adder"
   }
 }
