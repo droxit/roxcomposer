@@ -103,7 +103,7 @@ class BaseService:
         MonitoringClass = load_class(monitor_class)
         self.monitoring = MonitoringClass(**monitoring_params)
 
-        self.logger.info({'msg': 'started', 'effective_params': self.params})
+        self.logger.info('started', **self.params)
         self.roxcomposer_message = roxcomposer_message.Message()
 
     # need to be overwritten by inhertied classes.

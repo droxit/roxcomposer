@@ -4,18 +4,18 @@ class LogTest(BaseService):
     def __init__(self, params):
         super().__init__(params)
 
-    def logdebug(self, msg, msg_id = None):
-        self.logger.debug(msg, msg_id)
+    def logdebug(self, msg, **kwargs):
+        self.logger.debug(msg, **kwargs)
 
-    def loginfo(self, msg, msg_id = None):
-        self.logger.info(msg, msg_id)
+    def loginfo(self, msg, **kwargs):
+        self.logger.info(msg, **kwargs)
 
-    def logwarn(self, msg, msg_id = None):
-        self.logger.warn(msg, msg_id)
+    def logwarn(self, msg, **kwargs):
+        self.logger.warn(msg, **kwargs)
 
-    def logerror(self, msg, msg_id = None):
-        self.logger.error(msg, msg_id)
+    def logerror(self, msg, **kwargs):
+        self.logger.error(msg, **kwargs)
 
-    def logcritical(self, msg, msg_id = None):
-        self.logger.critical(msg, msg_id)
+    def logcritical(self, msg, **kwargs):
+        self.logger.critical(msg, **kwargs)
 

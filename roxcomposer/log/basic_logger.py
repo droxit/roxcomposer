@@ -2,7 +2,8 @@ import logging
 import os
 import time
 import json
-from datetime import datetime
+from functools import partial
+from datetime import datetime, timezone
 
 from roxcomposer import exceptions
 
@@ -27,13 +28,12 @@ class JSONFormatter(logging.Formatter):
         out = dict()
         out['level'] = r['levelname']
         out['msg'] = r['msg']
-        out['time'] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S%z")
-        out['service'] = r['servicename']
-        if 'message_id' in r and len(r['message_id']) > 0:
-            out['message_id'] = r['message_id']
-        #out['service'] = r['args']['servicename']
+        out['time'] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        for k in r['extra']:
+            out[k] = r['extra'][k]
 
         return json.dumps(out)
+        #return json.dumps(r)
 
 
 # This class provided a standard logging feature. It takes arguments like the {'path': './service.log'} to specify
@@ -57,75 +57,34 @@ class BasicLogger:
             handler = logging.StreamHandler()
         formatter = JSONFormatter()
         handler.setFormatter(formatter)
-        time.tzset()
-        # tz = datetime.now(timezone.utc).astimezone().tzinfo
-        fmt = None
-        if 'format' in kwargs:
-            fmt = kwargs['format']
-        else:
-            fmt = '[%(asctime)-15s.%(msecs)d' + time.strftime('%z') + '][%(created)s][%(levelname)s] service:%(servicename)s %(message_id)s - %(message)s'
-        # kwargs['datefmt'] = '%Y-%m-%dT%H:%M:%S.%f%z'
-        # %(msecs)
-        dtfmt = None
-        if 'datefmt' in kwargs:
-            dtfmt = kwargs['datefmt']
-        else:
-            dtfmt = '%Y-%m-%dT%H:%M:%S'
+        
+        handler.setFormatter(formatter)
+
+        self.logger.addHandler(handler)
+
         if 'level' in kwargs:
             if kwargs['level'] in level_map:
                 self.logger.setLevel(level_map[kwargs['level']])
             else:
                 raise exceptions.ConfigError("can't set log level: {} is invalid".format(kwargs['level']))
 
-        #formatter = logging.Formatter(fmt, dtfmt)
+        levels = ['debug', 'info', 'warn', 'error', 'critical']
 
-        handler.setFormatter(formatter)
+        for l in levels:
+            setattr(self, l, partial(self.do_logging, l))
 
-        self.logger.addHandler(handler)
 
-    # log a message for information
-    def info(self, msg, msg_id = None):
-        extra = { 'servicename': self.servicename }
-        if msg_id is not None:
-            extra['message_id'] = 'message_id:{}'.format(msg_id)
-        else:
-            extra['message_id'] = ''
+    def do_logging(self, level, msg, **extra):
+        extra['service'] = self.servicename
+        getattr(self.logger, level)(msg, extra={'extra': extra})
 
-        self.logger.info(msg, extra=extra)
-
-    # log a message for debug purposes
-    def debug(self, msg, msg_id = None):
-        extra = { 'servicename': self.servicename }
-        if msg_id is not None:
-            extra['message_id'] = 'message_id:{}'.format(msg_id)
-        else:
-            extra['message_id'] = ''
-        self.logger.debug(msg, extra=extra)
-
-    # log a message for warning purposes
-    def warn(self, msg, msg_id = None):
-        extra = { 'servicename': self.servicename }
-        if msg_id is not None:
-            extra['message_id'] = 'message_id:{}'.format(msg_id)
-        else:
-            extra['message_id'] = ''
-        self.logger.warning(msg, extra=extra)
-
-    # log a message for error issues
-    def error(self, msg, msg_id = None):
-        extra = { 'servicename': self.servicename }
-        if msg_id is not None:
-            extra['message_id'] = 'message_id:{}'.format(msg_id)
-        else:
-            extra['message_id'] = ''
-        self.logger.error(msg, extra=extra)
-
-    # log a message for fatal issues
-    def critical(self, msg, msg_id = None):
-        extra = { 'servicename': self.servicename }
-        if msg_id is not None:
-            extra['message_id'] = 'message_id:{}'.format(msg_id)
-        else:
-            extra['message_id'] = ''
-        self.logger.critical(msg, extra=extra)
-
+#
+#    # log a message for information
+#    def info(self, msg, msg_id = None):
+#        extra = { 'servicename': self.servicename }
+#        if msg_id is not None:
+#            extra['message_id'] = msg_id
+#        else:
+#            extra['message_id'] = ''
+#
+#        self.logger.info(msg, extra=extra)
