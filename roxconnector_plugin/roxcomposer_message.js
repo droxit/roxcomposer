@@ -63,6 +63,7 @@ function decodeId(idstring) {
 function Message() {
 	this.pipeline = [];
 	this.id = null;
+	this.created = null;
 	this.payload = null;
 
 	this.create_id = create_id;
@@ -78,6 +79,7 @@ function Message() {
 	this.serialize = serialize;
 
 	this.create_id();
+	this.created = Date.now();
 }
 
 function create_id() {
@@ -136,6 +138,7 @@ function serialize_to_protobuf() {
 	let pipeline = new proto.Pipeline();
 	pipeline.setServicesList(services);
 	pmsg.setPipeline(pipeline);
+	pmsg.setCreated(this.created);
 
 	return pmsg.serializeBinary();
 }
@@ -163,9 +166,10 @@ function deserialize_from_protobuf(binmsg) {
 
 function serialize_to_json() {
         let msg = {
-                id: this.id,
-		pipeline: this.pipeline.map( (x) => { return { id: x.encodeId(), parameters: x.parameters }; } ),
-                payload: this.payload
+			id: this.id,
+			created: this.created,
+			pipeline: this.pipeline.map( (x) => { return { id: x.encodeId(), parameters: x.parameters }; } ),
+			payload: this.payload
             };
 
         return JSON.stringify(msg);
@@ -177,6 +181,7 @@ function deserialize_from_json(jsonstring) {
 	let d = JSON.parse(jsonstring);
 	msg.set_payload(d.payload);
 	msg.id = d.id;
+	msg.created = d.created;
 	for (let i in d.pipeline) {
 		let addr = decodeId(d.pipeline[i].id);
 		msg.add_service(new Service(addr.ip, addr.port, d.pipeline[i].parameters));
@@ -187,11 +192,10 @@ function deserialize_from_json(jsonstring) {
 
 function serialize() {
 	return frame_message(this.serialize_to_protobuf());
-	//return this.serialize_to_protobuf();
 }
 
 // STATIC
 function deserialize(msg) {
-        return this.deserialize_from_protobuf(unframe_message(msg));
+    return this.deserialize_from_protobuf(unframe_message(msg));
 }
         

@@ -11,10 +11,10 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-goog.exportSymbol('proto.service_communication.ROXcomposerMessage', null, global);
 goog.exportSymbol('proto.service_communication.Parameter', null, global);
 goog.exportSymbol('proto.service_communication.Payload', null, global);
 goog.exportSymbol('proto.service_communication.Pipeline', null, global);
+goog.exportSymbol('proto.service_communication.ROXcomposerMessage', null, global);
 goog.exportSymbol('proto.service_communication.Service', null, global);
 
 /**
@@ -65,7 +65,8 @@ proto.service_communication.ROXcomposerMessage.toObject = function(includeInstan
   var f, obj = {
     pipeline: (f = msg.getPipeline()) && proto.service_communication.Pipeline.toObject(includeInstance, f),
     payload: (f = msg.getPayload()) && proto.service_communication.Payload.toObject(includeInstance, f),
-    id: jspb.Message.getFieldWithDefault(msg, 3, "")
+    id: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    created: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -116,6 +117,10 @@ proto.service_communication.ROXcomposerMessage.deserializeBinaryFromReader = fun
       var value = /** @type {string} */ (reader.readString());
       msg.setId(value);
       break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCreated(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -165,6 +170,13 @@ proto.service_communication.ROXcomposerMessage.serializeBinaryToWriter = functio
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getCreated();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
       f
     );
   }
@@ -242,7 +254,22 @@ proto.service_communication.ROXcomposerMessage.prototype.getId = function() {
 
 /** @param {string} value */
 proto.service_communication.ROXcomposerMessage.prototype.setId = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional int64 created = 4;
+ * @return {number}
+ */
+proto.service_communication.ROXcomposerMessage.prototype.getCreated = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/** @param {number} value */
+proto.service_communication.ROXcomposerMessage.prototype.setCreated = function(value) {
+  jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -269,7 +296,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.service_communication.Pipeline.repeatedFields_ = [4];
+proto.service_communication.Pipeline.repeatedFields_ = [5];
 
 
 
@@ -338,7 +365,7 @@ proto.service_communication.Pipeline.deserializeBinaryFromReader = function(msg,
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 4:
+    case 5:
       var value = new proto.service_communication.Service;
       reader.readMessage(value,proto.service_communication.Service.deserializeBinaryFromReader);
       msg.addServices(value);
@@ -375,7 +402,7 @@ proto.service_communication.Pipeline.serializeBinaryToWriter = function(message,
   f = message.getServicesList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      4,
+      5,
       f,
       proto.service_communication.Service.serializeBinaryToWriter
     );
@@ -384,18 +411,18 @@ proto.service_communication.Pipeline.serializeBinaryToWriter = function(message,
 
 
 /**
- * repeated Service services = 4;
+ * repeated Service services = 5;
  * @return {!Array.<!proto.service_communication.Service>}
  */
 proto.service_communication.Pipeline.prototype.getServicesList = function() {
   return /** @type{!Array.<!proto.service_communication.Service>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.service_communication.Service, 4));
+    jspb.Message.getRepeatedWrapperField(this, proto.service_communication.Service, 5));
 };
 
 
 /** @param {!Array.<!proto.service_communication.Service>} value */
 proto.service_communication.Pipeline.prototype.setServicesList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 4, value);
+  jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
 
 
@@ -405,7 +432,7 @@ proto.service_communication.Pipeline.prototype.setServicesList = function(value)
  * @return {!proto.service_communication.Service}
  */
 proto.service_communication.Pipeline.prototype.addServices = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.service_communication.Service, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.service_communication.Service, opt_index);
 };
 
 
@@ -437,7 +464,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.service_communication.Service.repeatedFields_ = [5];
+proto.service_communication.Service.repeatedFields_ = [7];
 
 
 
@@ -468,7 +495,7 @@ proto.service_communication.Service.prototype.toObject = function(opt_includeIns
  */
 proto.service_communication.Service.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    id: jspb.Message.getFieldWithDefault(msg, 6, ""),
     parametersList: jspb.Message.toObjectList(msg.getParametersList(),
     proto.service_communication.Parameter.toObject, includeInstance)
   };
@@ -507,11 +534,11 @@ proto.service_communication.Service.deserializeBinaryFromReader = function(msg, 
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
+    case 6:
       var value = /** @type {string} */ (reader.readString());
       msg.setId(value);
       break;
-    case 5:
+    case 7:
       var value = new proto.service_communication.Parameter;
       reader.readMessage(value,proto.service_communication.Parameter.deserializeBinaryFromReader);
       msg.addParameters(value);
@@ -548,14 +575,14 @@ proto.service_communication.Service.serializeBinaryToWriter = function(message, 
   f = message.getId();
   if (f.length > 0) {
     writer.writeString(
-      1,
+      6,
       f
     );
   }
   f = message.getParametersList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      5,
+      7,
       f,
       proto.service_communication.Parameter.serializeBinaryToWriter
     );
@@ -564,33 +591,33 @@ proto.service_communication.Service.serializeBinaryToWriter = function(message, 
 
 
 /**
- * optional string id = 1;
+ * optional string id = 6;
  * @return {string}
  */
 proto.service_communication.Service.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /** @param {string} value */
 proto.service_communication.Service.prototype.setId = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
 /**
- * repeated Parameter parameters = 5;
+ * repeated Parameter parameters = 7;
  * @return {!Array.<!proto.service_communication.Parameter>}
  */
 proto.service_communication.Service.prototype.getParametersList = function() {
   return /** @type{!Array.<!proto.service_communication.Parameter>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.service_communication.Parameter, 5));
+    jspb.Message.getRepeatedWrapperField(this, proto.service_communication.Parameter, 7));
 };
 
 
 /** @param {!Array.<!proto.service_communication.Parameter>} value */
 proto.service_communication.Service.prototype.setParametersList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 5, value);
+  jspb.Message.setRepeatedWrapperField(this, 7, value);
 };
 
 
@@ -600,7 +627,7 @@ proto.service_communication.Service.prototype.setParametersList = function(value
  * @return {!proto.service_communication.Parameter}
  */
 proto.service_communication.Service.prototype.addParameters = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.service_communication.Parameter, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 7, opt_value, proto.service_communication.Parameter, opt_index);
 };
 
 
@@ -656,7 +683,7 @@ proto.service_communication.Parameter.prototype.toObject = function(opt_includeI
  */
 proto.service_communication.Parameter.toObject = function(includeInstance, msg) {
   var f, obj = {
-    serviceparams: jspb.Message.getFieldWithDefault(msg, 6, "")
+    serviceparams: jspb.Message.getFieldWithDefault(msg, 8, "")
   };
 
   if (includeInstance) {
@@ -693,7 +720,7 @@ proto.service_communication.Parameter.deserializeBinaryFromReader = function(msg
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 6:
+    case 8:
       var value = /** @type {string} */ (reader.readString());
       msg.setServiceparams(value);
       break;
@@ -729,7 +756,7 @@ proto.service_communication.Parameter.serializeBinaryToWriter = function(message
   f = message.getServiceparams();
   if (f.length > 0) {
     writer.writeString(
-      6,
+      8,
       f
     );
   }
@@ -737,17 +764,17 @@ proto.service_communication.Parameter.serializeBinaryToWriter = function(message
 
 
 /**
- * optional string serviceParams = 6;
+ * optional string serviceParams = 8;
  * @return {string}
  */
 proto.service_communication.Parameter.prototype.getServiceparams = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
 
 /** @param {string} value */
 proto.service_communication.Parameter.prototype.setServiceparams = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3StringField(this, 8, value);
 };
 
 
@@ -798,7 +825,7 @@ proto.service_communication.Payload.prototype.toObject = function(opt_includeIns
  */
 proto.service_communication.Payload.toObject = function(includeInstance, msg) {
   var f, obj = {
-    body: jspb.Message.getFieldWithDefault(msg, 7, "")
+    body: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -835,7 +862,7 @@ proto.service_communication.Payload.deserializeBinaryFromReader = function(msg, 
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 7:
+    case 9:
       var value = /** @type {string} */ (reader.readString());
       msg.setBody(value);
       break;
@@ -871,7 +898,7 @@ proto.service_communication.Payload.serializeBinaryToWriter = function(message, 
   f = message.getBody();
   if (f.length > 0) {
     writer.writeString(
-      7,
+      9,
       f
     );
   }
@@ -879,17 +906,17 @@ proto.service_communication.Payload.serializeBinaryToWriter = function(message, 
 
 
 /**
- * optional string body = 7;
+ * optional string body = 9;
  * @return {string}
  */
 proto.service_communication.Payload.prototype.getBody = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
 
 /** @param {string} value */
 proto.service_communication.Payload.prototype.setBody = function(value) {
-  jspb.Message.setField(this, 7, value);
+  jspb.Message.setProto3StringField(this, 9, value);
 };
 
 

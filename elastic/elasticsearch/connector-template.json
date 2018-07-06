@@ -11,6 +11,7 @@
 				"name": { "type": "keyword" },
 				"host": { "type": "keyword" },
 				"service": { "type": "keyword" },
+				"message_id": { "type": "keyword" },
 				"pid":  { "type": "short" },
 				"v":  { "type": "byte" },
 				"exit_code":  { "type": "byte" },

@@ -2,6 +2,7 @@ from roxcomposer.communication import service_com_pb2 as proto
 import uuid
 import json
 import struct
+import time
 from roxcomposer import exceptions
 
 
@@ -61,6 +62,7 @@ class Message:
         self.id = None
         self.payload = None
         self.create_id()
+        self.created = int(time.time() * 1000)
 
     def create_id(self):
         self.id = str(uuid.uuid4())
@@ -102,6 +104,7 @@ class Message:
                 param.serviceParams = para
 
         pmsg.id = self.id
+        pmsg.created = self.created
         pmsg.payload.body = self.payload
         binmsg = pmsg.SerializeToString()
         return binmsg
@@ -113,6 +116,7 @@ class Message:
         pmsg.ParseFromString(binmsg)
         msg.set_payload(pmsg.payload.body)
         msg.id = pmsg.id
+        msg.created = pmsg.created
         for s in pmsg.pipeline.services:
             ip, port = Service.decodeId(s.id)
             msg.add_service(Service(ip, port, [x.serviceParams for x in s.parameters]))
@@ -122,11 +126,12 @@ class Message:
     def serialize_to_json(self):
         msg = {
             'id': self.id,
+            'created': self.created,
             'pipeline': [x for x in map(lambda s: {'id': s.encodeId(), 'parameters': s.parameters}, self.pipeline)],
             'payload': self.payload
         }
 
-        return json.dumps(msg)
+        return json.dumps(msg).encode()
 
     @staticmethod
     def deserialize_from_json(jsonstring):

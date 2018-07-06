@@ -45,7 +45,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 				params: {
 					name: "file_writer",
 					ip: "127.0.0.1",
-					port: 5001,
+					port: 4001,
 					filepath: "roxcomposer_demo.html",
 					logging: {
 						logpath: path.join(tmpdir, "service.log"),
@@ -58,7 +58,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 				params: {
 					name: "image_adder",
 					ip: "127.0.0.1",
-					port: 5003,
+					port: 4003,
 					image: "./assets/minions-yeah.jpg",
 					logging: {
 						logpath: path.join(tmpdir, "service.log"),
@@ -71,7 +71,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 				params: {
 					name: "html_generator",
 					ip: "127.0.0.1",
-					port: 5002,
+					port: 4002,
 					logging: {
 						logpath: path.join(tmpdir, "service.log"),
 						level: "INFO"
