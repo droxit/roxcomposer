@@ -147,6 +147,13 @@
                   "name": "roxcomposer",
                   "function": "delete_log_observer"
               }
+          },
+          "delete_pipeline": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "delete_pipeline"
+              }
           }
       }
   }
