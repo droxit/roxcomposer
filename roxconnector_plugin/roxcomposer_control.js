@@ -26,6 +26,7 @@ function __roxcomposer_control_private() {
 	this.logsessions = {};
 	this.init = init.bind(this);
 	this.check_args = check_args.bind(this);
+	this.get_root = get_root.bind(this);
 	this.start_service = start_service.bind(this);
 	this.create_roxcomposer_message = create_roxcomposer_message.bind(this);
 	this.read_roxcomposer_message = read_roxcomposer_message.bind(this);
@@ -55,6 +56,7 @@ function __roxcomposer_control_private() {
 module.exports = function (container) {
 	let mcp = new __roxcomposer_control_private();
 	container['init'] = mcp.init;
+	container['get_root'] = mcp.get_root;
 	container['start_service'] = mcp.start_service;
 	container['shutdown_service'] = mcp.shutdown_service;
 	container['get_services'] = mcp.get_services;
@@ -128,6 +130,18 @@ function check_args(args, fields) {
 	else
 		return false;
 }
+
+/**
+ * get an initial greeting message
+ * no args needed
+ **/
+function get_root(args, cb){
+    var VERSION = ' '
+    let returnjson = {'message':'ROXcomposer control'+ VERSION + 'running'}
+
+    cb(null, returnjson)
+}
+
 
 /**
  * spawn a new service
