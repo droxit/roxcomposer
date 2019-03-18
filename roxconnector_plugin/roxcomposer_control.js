@@ -408,15 +408,31 @@ function set_pipeline(args, cb) {
 		cb({'code': 400, 'message': msg});
 		return;
 	}
-	for (let s in args.services) {
-		if (!(args.services[s] in this.services)) {
-			let msg = `set_pipeline: no service with name [${args.services[s]}]`;
-			this.logger.error(msg);
-			cb({'code': 400, 'message': msg});
-			return;
+	let malformed = [];
+	let missing = [];
+	args.services.forEach((s) => {
+		if (s instanceof String) {
+			if (!(s in this.services)) {
+				missing.push(s);
+			}
+		} else if ("service" in s) {
+			if (!(s["service"] in this.services)) {
+				missing.push(s);
+			}
+		} else {
+			malformed.push(s);
 		}
+	});
+	if (missing.length > 0 || malformed.length > 0) {
+		let msg = {
+			'description': 'set_pipeline: one or more services are either missing or malformed',
+			'missing': missing,
+			'malformed': malformed
+		}
+		this.logger.error(msg);
+		cb({'code': 400, 'message': msg});
+		return;
 	}
-
 	let pipeline_services = args.services;
 	this.pipelines[args.name] = {
 		'services': pipeline_services,
@@ -457,7 +473,7 @@ function post_to_report_service(funcname, args, cb) {
 		server.close();
 		let chunks = [];
 		c.on('data', (chunk) => {
-			chunks.push(chunk); 
+			chunks.push(chunk);
 		});
 		c.on('end', () => {
 			let doc = Buffer.concat(chunks);
@@ -821,4 +837,3 @@ function get_log_lines(args, cb) {
 	let lines = this.logsessions[args.sessionid].session.get_lines();
 	cb(null, { loglines: lines });
 }
-
