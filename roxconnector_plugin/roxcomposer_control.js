@@ -26,6 +26,7 @@ function __roxcomposer_control_private() {
 	this.logsessions = {};
 	this.init = init.bind(this);
 	this.check_args = check_args.bind(this);
+	this.delete_pipeline = delete_pipeline.bind(this);
 	this.start_service = start_service.bind(this);
 	this.create_roxcomposer_message = create_roxcomposer_message.bind(this);
 	this.read_roxcomposer_message = read_roxcomposer_message.bind(this);
@@ -55,6 +56,7 @@ function __roxcomposer_control_private() {
 module.exports = function (container) {
 	let mcp = new __roxcomposer_control_private();
 	container['init'] = mcp.init;
+    container['delete_pipeline'] = mcp.delete_pipeline;
 	container['start_service'] = mcp.start_service;
 	container['shutdown_service'] = mcp.shutdown_service;
 	container['get_services'] = mcp.get_services;
@@ -128,6 +130,30 @@ function check_args(args, fields) {
 	else
 		return false;
 }
+
+/**
+ * delete a pipeline
+ * needs 'name' parameter
+ **/
+function delete_pipeline(args, cb){
+	if (!args.hasOwnProperty('name')) {
+		let msg = 'delete_pipeline: pipeline name not provided';
+		this.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+	}
+	let name = args.name
+
+    if(!(name in this.pipelines)){
+        let msg = `delete_pipeline: no pipeline with name [${name}]`;
+		this.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+    }
+	delete this.pipelines[args.name];
+	cb(null, {'message': `pipeline [${args.name}] deleted`});
+}
+
 
 /**
  * spawn a new service
