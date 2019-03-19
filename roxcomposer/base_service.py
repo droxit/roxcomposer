@@ -215,13 +215,11 @@ class BaseService:
                     me = self.roxcomposer_message.pop_service()
                 except IndexError:
                     self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
-                finally:
                     me = roxcomposer_message.Service(ip, port)
 
                 self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())
 
                 self.msg_reception_time = time.time() * 1000
-                self.logger.warn(me)
                 self.on_message(self.roxcomposer_message.payload, self.roxcomposer_message.id, me.parameters)
                 self.on_message_ext(self.roxcomposer_message)
 
