@@ -18,7 +18,6 @@ class AppendService(base_service.BaseService):
         super().__init__(args)
 
     def on_message(self, msg, msg_id, parameters=None):
-        print(parameters)
         self.dispatch(msg + self.msg + parameters[0])
 
 
@@ -33,7 +32,7 @@ class TestPipeline(unittest.TestCase):
                     'port': 10001,
                     'logging': {
                         'level': 'WARNING',
-                        #'logpath': '/dev/null'
+                        'logpath': '/dev/null'
                     },
                     'monitoring': {
                         'filename': '/dev/null'
@@ -49,7 +48,7 @@ class TestPipeline(unittest.TestCase):
                     'port': 10002,
                     'logging': {
                         'level': 'WARNING',
-                        #'logpath': '/dev/null'
+                        'logpath': '/dev/null'
                     },
                     'monitoring': {
                         'filename': '/dev/null'
@@ -65,7 +64,7 @@ class TestPipeline(unittest.TestCase):
                     'port': 10003,
                     'logging': {
                         'level': 'WARNING',
-                        #'logpath': '/dev/null'
+                        'logpath': '/dev/null'
                     },
                     'monitoring': {
                         'filename': '/dev/null'
@@ -97,8 +96,7 @@ class TestPipeline(unittest.TestCase):
         for serv in self.services:
             expected_payload += serv['msg']
         for serv in self.services:
-            mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port'],
-                                                       serv['args']['params']))
+            mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port'], serv['args']['params']))
         mm.add_service(roxcomposer_message.Service(ip, port))
         mm.set_payload(payload)
         bin_msg = mm.serialize()
