@@ -94,7 +94,7 @@ class TestPipeline(unittest.TestCase):
         payload = "original message" * 1000
         expected_payload = payload
         for serv in self.services:
-            expected_payload += serv['msg']
+            expected_payload += serv['msg'] + serv['args']['params'][0]
         for serv in self.services:
             mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port'], serv['args']['params']))
         mm.add_service(roxcomposer_message.Service(ip, port))
