@@ -1,3 +1,8 @@
+# v0.4.1
+ * added `delete_pipeline` API endpoint
+ * added GET API endpoint on `/` that shows a message saying the ROXcomposer was initialized
+ * fixed bug when querying `check_services_and_logs()` with an empty array
+
 # v0.4.0
 
 ## New
