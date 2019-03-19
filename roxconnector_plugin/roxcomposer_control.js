@@ -136,7 +136,7 @@ function check_args(args, fields) {
  * needs 'name' parameter
  **/
 function delete_pipeline(args, cb){
-	if (!('name' in args)) {
+	if (!args.hasOwnProperty('name')) {
 		let msg = 'delete_pipeline: pipeline name not provided';
 		this.logger.error({args: args}, msg);
 		cb({'code': 400, 'message': msg});
