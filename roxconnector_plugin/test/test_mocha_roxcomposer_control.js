@@ -129,6 +129,14 @@ describe('roxcomposer_control', function () {
 		});
 	});
 
+	describe('check_services_and_logs() errors', function () {
+		it('should return empty parameters when called with an empty array', function (done) {
+		    expected_answer = {'ok': [], 'missing': [], 'without_log': []}
+			expect(mc.check_services_and_logs([])).to.eql(expected_answer);
+			done();
+		});
+	});
+
 	describe('set_pipeline() errors', function () {
 		it('should should return an error code >= 400 when invoked without services parameter', function (done) {
 			mc.set_pipeline({name: 'blorp'}, function (err) {
