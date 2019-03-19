@@ -31,7 +31,10 @@ class Service:
     def __init__(self, ip, port, parameters=None):
         self.ip = ip
         self.port = port
-        self.parameters = parameters
+        if parameters == None:
+            self.parameters = []
+        else:
+            self.parameters = parameters
 
     def encodeId(self):
         return "{}:{}".format(self.ip, self.port)
