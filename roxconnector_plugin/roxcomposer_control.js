@@ -143,12 +143,35 @@ function get_root(args, cb){
     cb(null, returnjson)
 }
 
+/**
+ * default cleanup function for services when they shut down
+ * used in start_service() - custom shutdown handlers should call
+ * this function to ensure proper cleanup
+ **/
+function cleanup_service(name, code, signal) {
+    // service exit callback
+    this.logger.info({service: name, exit_code: code, signal: signal}, "service exited");
+
+    for (let pl in this.pipelines) {
+        for (let i=0; i < this.pipelines[pl]['services'].length; i++) {
+            if (this.pipelines[pl]['services'][i] === name) {
+                this.pipelines[pl]['active'] = false;
+                break;
+            }
+        }
+    }
+
+    delete this.processes[name];
+    delete this.services[name];
+}
 
 /**
  * spawn a new service
  * args need to contain the name of the service and the path to the service module
+ * exit_cb is an optional handler to be called when the service exits - if it is omitted
+ * cleanup_service() is used by default
  **/
-function start_service(args, cb) {
+function start_service(args, cb, exit_cb) {
 	this.logger.debug({args: args}, 'start_service called');
 	let opt;
 
@@ -273,27 +296,7 @@ function start_service(args, cb) {
 	this.logger.debug({opts: opt}, 'spawning process');
 
 	this.processes[name] = spawn('python3', opt, {stdio: 'inherit'})
-		.on('exit', (code, signal) => {
-			// service exit callback
-			this.logger.info({service: name, exit_code: code}, "service exited");
-
-			// if a service receives the signal to shudtdown - set all pipelines to inactive if it conains the service
-			// that shuts down
-			if (signal === 'SIGTERM') {
-				this.logger.info({service: name, exit_code: code}, "service terminated by user");
-				for (let pl in this.pipelines) {
-					for (let i=0; i < this.pipelines[pl]['services'].length; i++) {
-						if (this.pipelines[pl]['services'][i] === name) {
-							this.pipelines[pl]['active'] = false;
-							break;
-						}
-					}
-				}
-			}
-
-			delete this.processes[name];
-			delete this.services[name];
-		})
+		.on('exit', exit_cb ? exit_cb.bind(this, name) : cleanup_service.bind(this, name))
 		.on('error', (e) => {
 			delete this.services[name];
 			this.logger.error({error: e, args: args}, "unable to spawn service");
