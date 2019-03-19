@@ -100,7 +100,7 @@ describe('roxcomposer_control', function () {
 					done(err);
 			});
 		});
-		it('should should return an error code >= 400 when invoked with a classpath without initializing a class loader path', function (done) {
+		it('should return an error code >= 400 when invoked with a classpath without initializing a class loader path', function (done) {
 			mc.start_service({classpath: 'not_important'}, function (err) {
 				if (err.code >= 400)
 					done();
@@ -108,7 +108,7 @@ describe('roxcomposer_control', function () {
 					done(err);
 			});
 		});
-		it('should should return an error code >= 400 when invoked without a non-existing path in args', function (done) {
+		it('should return an error code >= 400 when invoked without a non-existing path in args', function (done) {
 			mc.start_service({path: '/bogus/path/from/hell', params: {}}, function (err) {
 				if (err.code >= 400)
 					done();
@@ -119,7 +119,7 @@ describe('roxcomposer_control', function () {
 	});
 
 	describe('post_to_pipeline() errors', function () {
-		it('should should return an error code >= 400 when invoked with an invalid pipeline name', function (done) {
+		it('should return an error code >= 400 when invoked with an invalid pipeline name', function (done) {
 			mc.post_to_pipeline({pipeline: 'blorp'}, function (err) {
 				if (err.code >= 400)
 					done();
@@ -129,8 +129,47 @@ describe('roxcomposer_control', function () {
 		});
 	});
 
+	describe('delete_pipeline() errors', function () {
+		it('should return an error code >= 400 when invoked without a pipeline name', function (done) {
+			mc.delete_pipeline({}, function (err) {
+				if (err.code >= 400)
+					done();
+				else
+					done(err);
+			});
+		});
+		it('should return an error code >= 400 when invoked with an pipeline name that does not exist', function (done) {
+			mc.delete_pipeline({'name': 'blorp'}, function (err) {
+				if (err.code >= 400)
+					done();
+				else
+					done(err);
+			});
+		});
+
+		it('should return an object with a message that pipe was deleted', function (done) {
+			mc.start_service({
+				'path': 'exists',
+				'params': {
+					'name': 'html_generator',
+					'ip': '127.0.0.1',
+					'port': 1234
+				}
+			}, () => {});
+			mc.set_pipeline({name: 'test', services: ['html_generator']}, () => {});
+
+			mc.delete_pipeline({'name': 'test'}, function (err, res) {
+				if (expect(res.message).to.eql("pipeline [test] deleted") && err === null)
+					done();
+				else
+					done(res);
+			});
+		});
+
+	});
+
 	describe('set_pipeline() errors', function () {
-		it('should should return an error code >= 400 when invoked without services parameter', function (done) {
+		it('should return an error code >= 400 when invoked without services parameter', function (done) {
 			mc.set_pipeline({name: 'blorp'}, function (err) {
 				if (err.code >= 400)
 					done();
@@ -138,7 +177,7 @@ describe('roxcomposer_control', function () {
 					done(err);
 			});
 		});
-		it('should should return an error code >= 400 when invoked with an empty service array', function (done) {
+		it('should return an error code >= 400 when invoked with an empty service array', function (done) {
 			mc.set_pipeline({name: 'blorp', services: []}, function (err) {
 				if (err.code >= 400)
 					done();
@@ -146,7 +185,7 @@ describe('roxcomposer_control', function () {
 					done(err);
 			});
 		});
-		it('should should return an error code >= 400 when invoked with a a non-existant service in service array', function (done) {
+		it('should return an error code >= 400 when invoked with a a non-existant service in service array', function (done) {
 			mc.set_pipeline({name: 'blorp', services: ['no-there']}, function (err) {
 				if (err.code >= 400)
 					done();
@@ -219,7 +258,7 @@ describe('roxcomposer_control', function () {
 	});
 
 	describe('load_and_start_pipeline()', function () {
-		it('should should return an error code >= 400 when invoked without pipeline_path parameter', function (done) {
+		it('should return an error code >= 400 when invoked without pipeline_path parameter', function (done) {
 			mc.load_and_start_pipeline({}, function (err) {
 				if (err.code >= 400)
 					done();
@@ -227,7 +266,7 @@ describe('roxcomposer_control', function () {
 					done(err);
 			});
 		});
-		it('should should return an error code >= 400 when invoked with an empty pipeline_path', function (done) {
+		it('should return an error code >= 400 when invoked with an empty pipeline_path', function (done) {
 			mc.load_and_start_pipeline({pipe_path: ' ', services: []}, function (err) {
 				if (err.code >= 400)
 					done();
@@ -235,7 +274,7 @@ describe('roxcomposer_control', function () {
 					done(err);
 			});
 		});
-		it('should should return an error code >= 400 when invoked with a a non-existant pipeline_path', function (done) {
+		it('should return an error code >= 400 when invoked with a a non-existant pipeline_path', function (done) {
 			mc.load_and_start_pipeline({pipe_path: 'dsdasd'}, function (err) {
 				if (err.code >= 400)
 					done();
