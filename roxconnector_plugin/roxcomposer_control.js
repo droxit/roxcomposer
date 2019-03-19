@@ -26,6 +26,7 @@ function __roxcomposer_control_private() {
 	this.logsessions = {};
 	this.init = init.bind(this);
 	this.check_args = check_args.bind(this);
+	this.get_root = get_root.bind(this);
 	this.delete_pipeline = delete_pipeline.bind(this);
 	this.start_service = start_service.bind(this);
 	this.create_roxcomposer_message = create_roxcomposer_message.bind(this);
@@ -56,9 +57,11 @@ function __roxcomposer_control_private() {
 module.exports = function (container) {
 	let mcp = new __roxcomposer_control_private();
 	container['init'] = mcp.init;
+	container['get_root'] = mcp.get_root;
     container['delete_pipeline'] = mcp.delete_pipeline;
 	container['start_service'] = mcp.start_service;
 	container['shutdown_service'] = mcp.shutdown_service;
+	container['check_services_and_logs'] = mcp.check_services_and_logs;
 	container['get_services'] = mcp.get_services;
 	container['get_pipelines'] = mcp.get_pipelines;
 	container['set_pipeline'] = mcp.set_pipeline;
@@ -130,6 +133,18 @@ function check_args(args, fields) {
 	else
 		return false;
 }
+
+/**
+ * get an initial greeting message
+ * no args needed
+ **/
+function get_root(args, cb){
+    var VERSION = ' '
+    let returnjson = {'message':'ROXcomposer control'+ VERSION + 'running'}
+
+    cb(null, returnjson)
+}
+
 
 /**
  * delete a pipeline
@@ -694,13 +709,15 @@ function create_log_observer(args, cb) {
  **/
 function check_services_and_logs(services) {
 	let set = new Set(services);
-	let missing_services = services.filter(s => !(s in this.services));
-	missing_services.forEach(s => set.delete(s));
+	if(set.size == 0){
+        return {'ok': [], 'missing': [], 'without_log': []}
+	}
+    let missing_services = services.filter(s => !(s in this.services));
+    missing_services.forEach(s => set.delete(s));
 
-	let without_log = Array.from(set).filter(s => !(('logging' in this.services[s].params) && ('logpath' in this.services[s].params.logging)));
-	without_log.forEach(s => set.delete(s));
-
-	return { 'ok': Array.from(set), 'missing': missing_services, 'without_log': without_log };
+    let without_log = Array.from(set).filter(s => !(('logging' in this.services[s].params) && ('logpath' in this.services[s].params.logging)));
+    without_log.forEach(s => set.delete(s));
+    return { 'ok': Array.from(set), 'missing': missing_services, 'without_log': without_log };
 }
 
 /*
