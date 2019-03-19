@@ -28,7 +28,7 @@ def unframe_message(msg):
 
 
 class Service:
-    def __init__(self, ip, port, parameters=[]):
+    def __init__(self, ip, port, parameters=None):
         self.ip = ip
         self.port = port
         self.parameters = parameters

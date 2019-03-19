@@ -43,9 +43,27 @@ Spawn = function() {
 	}).bind(this);
 }
 
+let Socket = function(){
+    this.connect = function(x, cb) {
+        cb();
+	};
+	this.end =  function(...args) {
+
+	};
+	this.on = function(...args) {
+
+	};
+}
+
 let spawnMock = {
 	spawn: function(...args) {
 		return new Spawn();
+	}
+}
+
+let netMock = {
+	Socket: function() {
+	    return new Socket();
 	}
 }
 
@@ -71,358 +89,98 @@ let fsMock = {
 
 mockery.registerMock('child_process', spawnMock);
 mockery.registerMock('fs', fsMock);
+mockery.registerMock('net', netMock);
 
-// let pipeline_config = {"name": "pipe_test", "services": ["html_generator_test", "file_writer_test"]};
-let mc = require('../roxcomposer_control.js')(mc);
-mc.init();
+let pipeline_config = {"name": "pipe_test", "services": ["html_generator_test", "file_writer_test"]};
+let mc;
+
 
 let running_services = [{
-	"classpath": "roxcomposer.tests.classes.html_generator.HtmlGenerator",
-	"params": {
-		"ip": "127.0.0.1",
-		"port": 4001,
-		"name": "html_generator_1"
+	'path': 'exists',
+        'params': {
+            'name': 'html_generator',
+            'ip': '127.0.0.1',
+            'port': 1234
 	}
 }, {
-	"classpath": "roxcomposer.tests.classes.html_generator.HtmlGenerator",
-	"params": {
-		"ip": "127.0.0.1",
-		"port": 4002,
-		"name": "html_generator_2"
+	'path': 'exists',
+        'params': {
+            'name': 'file_writer',
+            'ip': '127.0.0.1',
+            'port': 1235
 	}
-}]
+}];
 
-describe("service_parameter", function() {
-	before(() => {
-		mockery.enable({
-			warnOnUnregistered: false
-		});
-		running_services.forEach((rs) => {
+describe("service_parameter tests", function() {
+
+	before(() => { mockery.enable({warnOnUnregistered: false}); });
+	after(() => { mockery.disable(); });
+	beforeEach(() => {
+	    mc = {};
+	    require('../roxcomposer_control.js')(mc);
+	    mc.init({logger: logger});
+
+	    running_services.forEach((rs) => {
 			mc.start_service(rs, () => {});
 		});
 	});
-	after(() => {
-		running_services.forEach((rs) => {
-			mc.stop_service(rs, () => {});
-		});
-		mockery.disable();
-	});
-	it("set_pipeline should ")
-
-
-})
-
-describe('roxcomposer_control', function() {
-
-	before(() => {
-		mockery.enable({
-			warnOnUnregistered: false
-		});
-	});
-	after(() => {
-		mockery.disable();
-	});
-	beforeEach(() => {
-		mc = {};
-		require('../roxcomposer_control.js')(mc);
-		mc.init({
-			logger: logger
+	afterEach(() => {
+	    running_services.forEach((rs) => {
+			mc.shutdown_service(rs, () => {});
 		});
 	});
 
-	describe('new roxcomposer_control()', function() {
-		it('should work without passing any arguments', function() {
-			mc = {};
-			require('../roxcomposer_control.js')(mc);
-			mc.init();
-		});
-	});
+    describe("set_pipeline() errors when setting with service params", function() {
+        it('Setting up a pipeline with invalid service jsons should return malformed error with code >= 400', function (done) {
+            mc.set_pipeline({name: 'test', services: [['service', 'html_generator', 'params', 'someparam']]}, function (err) {
+                if (err.code >= 400) {
+                    done()
+                } else {
+                    done(err);
+                }
+            })
+        });
 
-	describe('start_service() errors', function() {
-		it('should raise an exception if invoked without proper arguments', function() {
-			expect(mc.start_service).to.throwError();
-		});
-		it('should raise an exception if invoked without a callback function', function() {
-			expect(mc.start_service).withArgs({}).to.throwError();
-		});
-		it('should raise an exception if cb is not a function', function() {
-			expect(mc.start_service).withArgs({}, {}).to.throwError();
-		});
-		it('should return an error code >= 400 when invoked without a path or classpath in args', function(done) {
-			mc.start_service({}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-		it('should should return an error code >= 400 when invoked with a classpath without initializing a class loader path', function(done) {
-			mc.start_service({
-				classpath: 'not_important'
-			}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-		it('should should return an error code >= 400 when invoked without a non-existing path in args', function(done) {
-			mc.start_service({
-				path: '/bogus/path/from/hell',
-				params: {}
-			}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-	});
+        it('Check if setting up a pipeline with service objects works (without params)', function (done) {
 
-	describe('post_to_pipeline() errors', function() {
-		it('should should return an error code >= 400 when invoked with an invalid pipeline name', function(done) {
-			mc.post_to_pipeline({
-				pipeline: 'blorp'
-			}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-	});
+            mc.set_pipeline({name: 'blorbblub', services: [{'service': 'html_generator'}, {'service': 'file_writer'}]}, function (err) {
+                if (err === null) {
+                    mc.get_pipelines({}, (args, pipelines) => {
+                        if (pipelines['blorbblub']['active']) {
+                            done();
+                        }
+                    });
+                } else {
+                    done(err);
+                }
+            })
+        });
 
-	describe('set_pipeline() errors', function() {
-		it('should should return an error code >= 400 when invoked without services parameter', function(done) {
-			mc.set_pipeline({
-				name: 'blorp'
-			}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-		it('should should return an error code >= 400 when invoked with an empty service array', function(done) {
-			mc.set_pipeline({
-				name: 'blorp',
-				services: []
-			}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-		it('should should return an error code >= 400 when invoked with a a non-existant service in service array', function(done) {
-			mc.set_pipeline({
-				name: 'blorp',
-				services: ['no-there']
-			}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-	});
-	describe('set_pipeline()', function() {
-		it('should contain an active state when a pipeline is created', function(done) {
-			mc.start_service({
-				'path': 'exists',
-				'params': {
-					'name': 'html_generator',
-					'ip': '127.0.0.1',
-					'port': 1234
-				}
-			}, function(err) {
-				if (err) {
-					done(err);
-					return;
-				}
-			});
-			mc.start_service({
-				'path': 'exists',
-				'params': {
-					'name': 'file_writer',
-					'ip': '127.0.0.1',
-					'port': 2345
-				}
-			}, function(err) {
-				if (err) {
-					done(err);
-					return;
-				}
-			});
-			mc.set_pipeline({
-				name: 'blorbblub',
-				services: ['html_generator', 'file_writer']
-			}, function(err) {
-				if (err === null) {
-					mc.get_pipelines({}, (args, pipelines) => {
-						if (pipelines['blorbblub']['active']) {
-							done();
-						}
-					});
-				} else {
-					done(err);
-				}
-			})
-		});
-	});
+        it('Check if setting up a pipeline with service objects works (with params)', function (done) {
+            mc.set_pipeline({name: 'blorbblub2', services: [{'service': 'html_generator', 'params': 'someparam'}]}, function (err) {
+                if (err === null) {
+                    mc.get_pipelines({}, (args, pipelines) => {
+                        if (pipelines['blorbblub2']['active']) {
+                            done();
+                        }
+                    });
+                } else {
+                    done(err);
+                }
+            })
+        });
+    });
 
-	describe('shutdown() errors', function() {
-		it('should raise an exception if invoked without proper arguments', function() {
-			expect(mc.shutdown_service).to.throwError();
-		});
-		it('should raise an exception if invoked without a callback function', function() {
-			expect(mc.shutdown_service).withArgs({}).to.throwError();
-		});
-		it('should raise an exception if cb is not a function', function() {
-			expect(mc.shutdown_service).withArgs({}, {}).to.throwError();
-		});
-		it('should return an error code >= 400 when invoked with a non-existent service', function(done) {
-			mc.shutdown_service({
-				'name': 'blurblurb'
-			}, function(err) {
-				if (err && err.code >= 400) {
-					done();
-				} else {
-					done(err)
-				}
-			});
-		});
-	});
-
-	describe('load_and_start_pipeline()', function() {
-		it('should should return an error code >= 400 when invoked without pipeline_path parameter', function(done) {
-			mc.load_and_start_pipeline({}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-		it('should should return an error code >= 400 when invoked with an empty pipeline_path', function(done) {
-			mc.load_and_start_pipeline({
-				pipe_path: ' ',
-				services: []
-			}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-		it('should should return an error code >= 400 when invoked with a a non-existant pipeline_path', function(done) {
-			mc.load_and_start_pipeline({
-				pipe_path: 'dsdasd'
-			}, function(err) {
-				if (err.code >= 400)
-					done();
-				else
-					done(err);
-			});
-		});
-
-		it('should work with default values', function(done) {
-			let default_values = {
-				"logging": {
-					"logpath": "pipeline.log",
-					"level": "INFO"
-				},
-				"monitoring": {
-					"filename": "monitoring.log",
-					"monitor_class": "roxcomposer.monitor.basic_monitoring.BasicMonitoring"
-				}
-			}
-			let mc_def = {};
-			require('../roxcomposer_control.js')(mc_def);
-			mc_def.init({
-				logger: logger,
-				default: default_values
-			});
-
-			mc_def.start_service({
-				'path': 'exists',
-				'params': {
-					'name': 'html_generator_default',
-					'ip': '127.0.0.1',
-					'port': 1772
-				}
-			}, function(err) {
-				if (err && err.code === 400) {
-					done(err);
-					return;
-				}
-
-				mc_def.get_services({}, (err, services) => {
-					if (err) {
-						done(err);
-					} else {
-						if ((!services['html_generator_default']['params'].hasOwnProperty("logging")) ||
-							(!services['html_generator_default']['params'].hasOwnProperty("monitoring"))) {
-							done("Default values are not passed.");
-						} else
-							done()
-					}
-				});
-			});
-
-		});
-
-		it('should contain an active state when a pipeline is created', function(done) {
-			let service_startup_error = false;
-			mc.start_service({
-				'path': 'exists',
-				'params': {
-					'name': 'html_generator_test',
-					'ip': '127.0.0.1',
-					'port': 1235
-				}
-			}, function(err) {
-				if (err && err.code === 400) {
-					done(err);
-					return;
-				}
-			});
-			mc.start_service({
-				'path': 'exists',
-				'params': {
-					'name': 'file_writer_test',
-					'ip': '127.0.0.1',
-					'port': 3456
-				}
-			}, function(err) {
-				if (err && err.code === 400) {
-					done(err);
-					service_startup_error = true;
-				}
-			});
-
-			if (service_startup_error == false) {
-				mc.load_and_start_pipeline({
-					pipe_path: 'pipe_file.json'
-				}, function(err) {
-					if (err === null) {
-						mc.get_pipelines({}, (args, pipelines) => {
-							if (pipelines['pipe_test']['active']) {
-								done();
-							}
-						});
-					} else {
-						done(err);
-					}
-				});
-			}
-			sleep(100);
-			if (service_startup_error == false)
-				mc.shutdown_service({
-					'name': 'html_generator_test'
-				}, function(err) {});
-			mc.shutdown_service({
-				'name': 'file_writer_test'
-			}, function(err) {});
+    describe('post_to_pipeline() errors when having set the pipeline with service params', function () {
+		it('posting to pipe should return message: pipeline initiated', function () {
+			mc.set_pipeline({name: 'blorp', services: [{'service': 'html_generator'}, {'service': 'file_writer'}]}, (err2)=>{
+			    expect(err2).to.be(null);
+                mc.post_to_pipeline({name: 'blorp'}, function (err, res) {
+                    expect(err).to.be(null);
+                    expect(res).to.have.property('message','pipeline initiated');
+                    expect(res).to.have.property('message_id');
+                });
+            });
 		});
 	});
 });

@@ -17,8 +17,9 @@ class AppendService(base_service.BaseService):
         self.msg = msg
         super().__init__(args)
 
-    def on_message(self, msg, msg_id):
-        self.dispatch(msg + self.msg)
+    def on_message(self, msg, msg_id, parameters=None):
+        print(parameters)
+        self.dispatch(msg + self.msg + parameters[0])
 
 
 class TestPipeline(unittest.TestCase):
@@ -32,11 +33,12 @@ class TestPipeline(unittest.TestCase):
                     'port': 10001,
                     'logging': {
                         'level': 'WARNING',
-                        'logpath': '/dev/null'
+                        #'logpath': '/dev/null'
                     },
                     'monitoring': {
                         'filename': '/dev/null'
-                    }
+                    },
+                    'params': ["some/file/path"]
                 }
             },
             {
@@ -47,11 +49,12 @@ class TestPipeline(unittest.TestCase):
                     'port': 10002,
                     'logging': {
                         'level': 'WARNING',
-                        'logpath': '/dev/null'
+                        #'logpath': '/dev/null'
                     },
                     'monitoring': {
                         'filename': '/dev/null'
-                    }
+                    },
+                    'params': ["http://localhost:5000"]
                 }
             },
             {
@@ -62,11 +65,12 @@ class TestPipeline(unittest.TestCase):
                     'port': 10003,
                     'logging': {
                         'level': 'WARNING',
-                        'logpath': '/dev/null'
+                        #'logpath': '/dev/null'
                     },
                     'monitoring': {
                         'filename': '/dev/null'
-                    }
+                    },
+                    'params': ["param"]
                 }
             },
         ]
@@ -93,7 +97,8 @@ class TestPipeline(unittest.TestCase):
         for serv in self.services:
             expected_payload += serv['msg']
         for serv in self.services:
-            mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port']))
+            mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port'],
+                                                       serv['args']['params']))
         mm.add_service(roxcomposer_message.Service(ip, port))
         mm.set_payload(payload)
         bin_msg = mm.serialize()

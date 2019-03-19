@@ -107,7 +107,7 @@ class BaseService:
         self.roxcomposer_message = roxcomposer_message.Message()
 
     # need to be overwritten by inhertied classes.
-    def on_message(self, msg, msg_id):
+    def on_message(self, msg, msg_id, parameters=None):
         pass
 
     # need to be overwritten by inherited classes. This funciton gets the whole message object as a ROXcomposerMessage.
@@ -221,7 +221,8 @@ class BaseService:
                 self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())
 
                 self.msg_reception_time = time.time() * 1000
-                self.on_message(self.roxcomposer_message.payload, self.roxcomposer_message.id)
+                self.logger.warn(me)
+                self.on_message(self.roxcomposer_message.payload, self.roxcomposer_message.id, me.parameters)
                 self.on_message_ext(self.roxcomposer_message)
 
                 if not data:

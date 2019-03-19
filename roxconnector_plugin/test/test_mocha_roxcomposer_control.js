@@ -119,8 +119,8 @@ describe('roxcomposer_control', function () {
 	});
 
 	describe('post_to_pipeline() errors', function () {
-		it('should should return an error code >= 400 when invoked with an invalid pipeline name', function (done) {
-			mc.post_to_pipeline({pipeline: 'blorp'}, function (err) {
+		it('should return an error code >= 400 when invoked with an invalid pipeline name', function (done) {
+			mc.post_to_pipeline({name: 'blorp'}, function (err) {
 				if (err.code >= 400)
 					done();
 				else
