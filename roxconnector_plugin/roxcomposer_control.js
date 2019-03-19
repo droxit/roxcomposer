@@ -104,7 +104,11 @@ function init(args) {
 				throw new Error(msg);
 			}
 			this.reporting_service = args.reporting_service.params.name;
+		}, (name, code, signal) => {
+		    this.reporting_service = null;
+		    cleanup_service(name, code, signal);
 		});
+
 	}
 
 	this.service_config = false;
@@ -526,7 +530,7 @@ function get_msg_history(args, cb) {
 		}
 
 	else
-		cb({'code': 400, 'message': 'no reporting service has been configured'});
+		cb({'code': 400, 'message': 'no reporting service is currently running'});
 }
 
 /**
@@ -541,7 +545,7 @@ function get_msg_status(args, cb) {
 			cb({code: 500, message: e});
 		}
 	else
-		cb({'code': 400, 'message': 'no reporting service has been configured'});
+		cb({'code': 400, 'message': 'no reporting service is currently running'});
 }
 
 /**
