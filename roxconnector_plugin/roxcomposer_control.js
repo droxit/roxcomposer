@@ -104,9 +104,9 @@ function init(args) {
 				throw new Error(msg);
 			}
 			this.reporting_service = args.reporting_service.params.name;
-		}, (name, code, signal) => {
-		    this.reporting_service = null;
-		    cleanup_service(name, code, signal);
+		}, (name, code, signal) => { // define custom cleanup callback for reporting service (to set it to null)
+		    this.reporting_service = null; // prevent server crashes in get_msg_status and get_msg_history
+		    cleanup_service.call(this, name, code, signal); // use .call so that the cleanup has knowledge of 'this'
 		});
 
 	}
