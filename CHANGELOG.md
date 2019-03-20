@@ -3,6 +3,9 @@
  * added GET API endpoint on `/` that shows a message saying the ROXcomposer was initialized
  * fixed bug when querying `check_services_and_logs()` with an empty array
  * fixed server crash bug when basic_reporting is shutdown and `get_msg_history()` or `get_msg_status()` is called 
+ * better logging when server crashes in case the server is started twice
+ * added utc timestamp to timezone aware human readable time string conversion in CLI (message tracing)
+ * fixed server crash when posting to pipe that contains basic reporting service
 
 # v0.4.0
 
