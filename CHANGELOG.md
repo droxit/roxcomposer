@@ -2,6 +2,7 @@
  * added `delete_pipeline` API endpoint
  * added GET API endpoint on `/` that shows a message saying the ROXcomposer was initialized
  * fixed bug when querying `check_services_and_logs()` with an empty array
+ * fixed server crash bug when basic_reporting is shutdown and `get_msg_history()` or `get_msg_status()` is called 
 
 # v0.4.0
 
