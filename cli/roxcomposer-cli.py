@@ -18,6 +18,8 @@ from datetime import datetime
 from dateutil import tz
 import json
 
+# config for cli
+CONVERT_TIMESTAMP = True
 
 # Window class - for boxed windows with listed elements
 class Window(LineBox):
@@ -196,7 +198,7 @@ class MessageTraceWidget(Pile):
             try:
                 msg_hist = json.loads(run_cmd('get_msg_history', key))
                 for msg in msg_hist:
-                    if "time" in msg:
+                    if "time" in msg and CONVERT_TIMESTAMP:
                         msg["time"] = convert_utctimestamp_to_timezoneaware_string(msg["time"])
             except Exception as e:
                 self.parent.log.addline(str(e))
