@@ -119,7 +119,7 @@ let running_services = [{
 }
 ];
 
-describe("service_parameter tests", function() {
+describe("basic reporting tests", function() {
 
 	before(() => { mockery.enable({warnOnUnregistered: false}); });
 	after(() => { mockery.disable(); });
@@ -138,15 +138,43 @@ describe("service_parameter tests", function() {
 		});
 	});
 
-    describe("basic_reporting", function() {
-        it('Setting up a pipeline with invalid service jsons should return malformed error with code >= 400', function (done) {
-            mc.set_pipeline({name: 'blorp', services: [{'service': 'html_generator'}, {'service': 'file_writer'}]}, ()=>{});
+    describe("shutdown basic_reporting", function() {
+        it('calling get msg status after shutting down basic reporting should return an error >= 400', function (done) {
             mc.shutdown_service({name: 'basic_reporting'}, function(err, msg) {
                 expect(err).to.be(null);
             });
             mc.get_msg_status({}, (err, msg) => {
                 if(err.code >= 400){
                     done()
+                } else {
+                    done(err);
+                }
+            });
+        });
+
+        it('calling get msg history after shutting down basic reporting should return an error >= 400', function (done) {
+            mc.shutdown_service({name: 'basic_reporting'}, function(err, msg) {
+                expect(err).to.be(null);
+            });
+            mc.get_msg_history({}, (err, msg) => {
+                if(err.code >= 400){
+                    done()
+                } else {
+                    done(err);
+                }
+            });
+        });
+
+        it('posting to pipeline should not result in crash when basic reporting is shut down', function (done) {
+            mc.set_pipeline({name: 'blorp', services: ['html_generator', 'file_writer']}, (err, msg)=>{
+                expect(err).to.be(null);
+            });
+            mc.shutdown_service({name: 'basic_reporting'}, function(err, msg) {
+                expect(err).to.be(null);
+            });
+            mc.post_to_pipeline({name:'blorp'}, (err, msg) => {
+                if(err == null){
+                    done();
                 } else {
                     done(err);
                 }
