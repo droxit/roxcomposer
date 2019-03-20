@@ -197,19 +197,7 @@ class MessageTraceWidget(Pile):
                 msg_hist = json.loads(run_cmd('get_msg_history', key))
                 for msg in msg_hist:
                     if "time" in msg:
-                        # Get current Timezone
-                        from_zone = tz.tzutc()
-                        to_zone = tz.tzlocal()
-
-                        utc_timestamp = msg["time"]  # time is a utc timestamp, convert it to timezone aware date
-                        utc_datetime = datetime.utcfromtimestamp(utc_timestamp)
-
-                        utc_datetime = utc_datetime.replace(tzinfo=from_zone)
-
-                        # Convert time zone
-                        timezone_aware_datetime = utc_datetime.astimezone(to_zone)
-
-                        msg["time"] = timezone_aware_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+                        msg["time"] = convert_utctimestamp_to_timezoneaware_string(msg["time"])
             except Exception as e:
                 self.parent.log.addline(str(e))
             msg_hist = "\n".join([json.dumps(msg) for msg in msg_hist])
@@ -247,6 +235,26 @@ class CommandLine(LineBox):
     # clear the edit box
     def clear(self):
         self.edit.edit_text = u""
+
+
+def convert_utctimestamp_to_timezoneaware_string(utc_timestamp):
+    """
+    Convert a utc timestamp to a human readable time string with timezone awareness
+    :param utc_timestamp: utc timestamp (string)
+    :return: string
+    """
+    # Get current Timezone
+    from_zone = tz.tzutc()
+    to_zone = tz.tzlocal()
+
+    utc_datetime = datetime.utcfromtimestamp(utc_timestamp)
+
+    utc_datetime = utc_datetime.replace(tzinfo=from_zone)
+
+    # Convert time zone
+    timezone_aware_datetime = utc_datetime.astimezone(to_zone)
+
+    return timezone_aware_datetime.strftime("%m/%d/%Y, %H:%M:%S")
 
 
 # Main function
