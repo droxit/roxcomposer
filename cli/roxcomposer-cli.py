@@ -14,6 +14,8 @@ from functools import partial
 from urwid import *
 from commands import cmd_map, run_cmd
 from cmdparser import tokenize
+from datetime import datetime
+from dateutil import tz
 import json
 
 
@@ -193,6 +195,21 @@ class MessageTraceWidget(Pile):
             msg_hist = []
             try:
                 msg_hist = json.loads(run_cmd('get_msg_history', key))
+                for msg in msg_hist:
+                    if "time" in msg:
+                        # Get current Timezone
+                        from_zone = tz.tzutc()
+                        to_zone = tz.tzlocal()
+
+                        utc_timestamp = msg["time"] # time is a utc timestamp, convert it to timezone aware date
+                        utc_datetime = datetime.utcfromtimestamp(utc_timestamp)
+
+                        utc_datetime = utc_datetime.replace(tzinfo=from_zone)
+
+                        # Convert time zone
+                        timezone_aware_datetime = utc_datetime.astimezone(to_zone)
+
+                        msg["time"] = timezone_aware_datetime.strftime("%m/%d/%Y, %H:%M:%S")
             except Exception as e:
                 self.parent.log.addline(str(e))
             msg_hist = "\n".join([json.dumps(msg) for msg in msg_hist])
