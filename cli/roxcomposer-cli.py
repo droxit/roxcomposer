@@ -201,7 +201,7 @@ class MessageTraceWidget(Pile):
                         from_zone = tz.tzutc()
                         to_zone = tz.tzlocal()
 
-                        utc_timestamp = msg["time"] # time is a utc timestamp, convert it to timezone aware date
+                        utc_timestamp = msg["time"]  # time is a utc timestamp, convert it to timezone aware date
                         utc_datetime = datetime.utcfromtimestamp(utc_timestamp)
 
                         utc_datetime = utc_datetime.replace(tzinfo=from_zone)
