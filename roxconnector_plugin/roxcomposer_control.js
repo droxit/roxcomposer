@@ -349,7 +349,7 @@ function post_to_pipeline(args, cb) {
 	try {
 		servs = services_in_pipe.map( (x) => {
 			let s = this.services[x];
-			return new roxcomposer_message.Service(s.params.ip, s.params.port);
+			return new roxcomposer_message.Service(s.params.ip, s.params.port, s.params.params);
 		});
 	} catch (e) {
 		this.logger.error({error: e}, 'invalid service in pipeline');
@@ -359,7 +359,7 @@ function post_to_pipeline(args, cb) {
 
 	let socket = new net.Socket();
 	let start = this.services[services_in_pipe[0]];
-	this.logger.debug({name: services_in_pipe[0], ip: start.params.ip, port: start.params.port}, 'attempting connection to service');
+	this.logger.debug({name: services_in_pipe[0], ip: start.params.ip, port: start.params.port, params: start.params.params}, 'attempting connection to service');
 	socket.connect({port: start.params.port, host: start.params.ip}, () => {
 		this.logger.info({message_id: msg.id, pipeline: args.name}, 'message posted to pipeline');
 		let packet = msg.serialize();
@@ -773,7 +773,10 @@ function service_log_filter(services) {
 	// WARNING: this depends on the service log format - changing the layout may break this
 	// when every service get its own log file we won't need this crutch anymore
         let service_set = new Set(services);
-	return line => { let o = JSON.parse(line); return ('service' in o) && service_set.has(o.service); }
+	return line => {
+	    let o = JSON.parse(line);
+	    return ('service' in o) && service_set.has(o.service);
+	}
 }
 
 /**
