@@ -43,7 +43,6 @@ class BaseService:
             # the config will be loaded by the passed params directly
             self.params = params
 
-
         # buffer size to read a msg in specified byte chunks
         self.BUFFER_SIZE = 4096
 
@@ -183,7 +182,7 @@ class BaseService:
                     chunk = connection.recv(self.BUFFER_SIZE)
                     if chunk != b'':
                         data += chunk
-                    else: # socket on the other end broke down
+                    else:  # socket on the other end broke down
                         self.logger.warn('the sending socket from {} seems to have broken down'.format(sender_address))
                         connection.close()
                         break
@@ -214,7 +213,8 @@ class BaseService:
                 try:
                     me = self.roxcomposer_message.pop_service()
                 except IndexError:
-                    self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
+                    self.logger.warn(
+                        'Received message with empty pipeline - any additional parameters meant for this service are lost')
                 finally:
                     me = roxcomposer_message.Service(ip, port)
 

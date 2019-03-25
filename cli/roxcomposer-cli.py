@@ -10,16 +10,17 @@
 # Copyright (c) 2018 droxIT GmbH
 #
 
-from functools import partial
-from urwid import *
-from commands import cmd_map, run_cmd
-from cmdparser import tokenize
-from datetime import datetime
-from dateutil import tz
 import json
+from datetime import datetime
+
+from cmdparser import tokenize
+from commands import cmd_map, run_cmd
+from dateutil import tz
+from urwid import *
 
 # config for cli
 CONVERT_TIMESTAMP = True
+
 
 # Window class - for boxed windows with listed elements
 class Window(LineBox):
@@ -30,7 +31,7 @@ class Window(LineBox):
     # add a singe text line to the window
     def addline(self, line):
         self.body.append(Text(line))
-        self.body.set_focus(len(self.body)-1)
+        self.body.set_focus(len(self.body) - 1)
 
     # overwrite the window content
     def fill(self, content):
@@ -172,10 +173,10 @@ class MessageTraceWidget(Pile):
         if msg_id in self.message_map.keys():
             self.parent.log.addline("Message tracing failed: ID duplicate.")
             return
-        self.message_map[msg_id] = ProgressWindow(u"Message "+str(msg_id), pipe_len)
+        self.message_map[msg_id] = ProgressWindow(u"Message " + str(msg_id), pipe_len)
         self.pipe_lens[msg_id] = pipe_len
         self.parent.showmtw(True)
-        self.parent.log.addline("Message tracing started: "+msg_id)
+        self.parent.log.addline("Message tracing started: " + msg_id)
 
     # removes the message from the widget.
     # completed messages are automatically removed during refresh.
@@ -186,7 +187,7 @@ class MessageTraceWidget(Pile):
         del self.message_map[msg_id]
         if not self.message_map:
             self.parent.showmtw(False)
-        self.parent.log.addline("Message tracing finished: "+msg_id)
+        self.parent.log.addline("Message tracing finished: " + msg_id)
 
     # refreshes the message histories and progress.
     # the progress is computed by the 'message dispatched' event counts and the pipeline length.
@@ -197,9 +198,10 @@ class MessageTraceWidget(Pile):
             msg_hist = []
             try:
                 msg_hist = json.loads(run_cmd('get_msg_history', key))
-                for msg in msg_hist:
-                    if "time" in msg and CONVERT_TIMESTAMP:
-                        msg["time"] = convert_utctimestamp_to_timezoneaware_string(msg["time"])
+                if CONVERT_TIMESTAMP:
+                    for msg in msg_hist:
+                        if "time" in msg:
+                            msg["time"] = convert_utctimestamp_to_timezoneaware_string(msg["time"])
             except Exception as e:
                 self.parent.log.addline(str(e))
             msg_hist = "\n".join([json.dumps(msg) for msg in msg_hist])
@@ -267,7 +269,7 @@ if __name__ == "__main__":
     # palette introduces colors with labels 'normal' and 'complete'
     # the colors are used for the progress bars
     palette = [
-        ('normal',   'white', 'black', 'standout'),
+        ('normal', 'white', 'black', 'standout'),
         ('complete', 'white', 'dark magenta'),
     ]
     loop = MainLoop(frame, palette)
@@ -276,4 +278,3 @@ if __name__ == "__main__":
     # start refreshing loop for the message trace widget
     loop.set_alarm_in(0.1, frame.mtw.refresh)
     loop.run()
-
