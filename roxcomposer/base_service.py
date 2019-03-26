@@ -156,7 +156,7 @@ class BaseService:
                 processing_time=processing_time,
                 description='unable to dispatch message'
             )
-            self.logger.error(err.strerror + "\n" + traceback.format_exc())
+            self.logger.error(str(err.strerror) + "\n" + traceback.format_exc())
             return False
 
     # receive roxcomposer protobuf messages sent to a
@@ -171,7 +171,7 @@ class BaseService:
             s.bind((ip, port))
             s.listen()
         except OSError as err:
-            self.logger.critical(err.strerror + "\n" + traceback.format_exc())
+            self.logger.critical(str(err.strerror) + "\n" + traceback.format_exc())
             raise err
 
         try:
@@ -230,7 +230,7 @@ class BaseService:
                 if not data:
                     break
         except OSError as err:
-            self.logger.critical(err.strerror + "\n" + traceback.format_exc())
+            self.logger.critical(str(err.strerror) + "\n" + traceback.format_exc())
             raise err
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
