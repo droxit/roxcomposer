@@ -46,14 +46,7 @@ let spawnMock = {
 
 mockery.registerMock('child_process', spawnMock);
 
-//fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
-//    if (err) {
-//        throw err;
-//    }
 
-    //let logfile = path.join(tmpdir, 'log.log');
-    let logfile = '/tmp/log.log';
-    fs.writeFileSync(logfile, '{"invalid": "f..fdf\n');
 
 
     describe('roxcomposer log-observation', function () {
@@ -62,30 +55,37 @@ mockery.registerMock('child_process', spawnMock);
         beforeEach(() => { mc = {}; require('../roxcomposer_control.js')(mc); mc.init({logger: logger, service_container: './roxcomposer_control.js'}); });
 
         it('should not crash when we have garbled input', function (done) {
-            mc.start_service(
-                {
-                    'classpath': 'dlfkdfjl', 
-                    'params': {
-                        'name': 'test_service',
-                        'logging': {
-                            'logpath': logfile
+            fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
+                if (err) {
+                    throw err;
+                }
+                let logfile = path.join(tmpdir, 'testlog.log');
+                fs.writeFileSync(logfile, '{"invalid": "f..fdf\n');
+
+                mc.start_service(
+                    {
+                        'classpath': 'dlfkdfjl', 
+                        'params': {
+                            'name': 'test_service',
+                            'logging': {
+                                'logpath': logfile
+                            }
                         }
-                    }
-                },
-                (err) => {
-                    expect(err).to.be(null);
-                    mc.create_log_observer({lines: 10, timeout: 120}, (err, ret) => {
-                        mc.post_services_to_logsession({'sessionid': ret.sessionid, 'services': ['test_service']}, (err, ml) => {
-                            expect(err).to.be(null);
-                            fs.writeFileSync(logfile, '{"invalid": "f..fdf\n', {'flag': 'a'});
-                            setTimeout(() => {
-                                mc.delete_log_observer({'sessionid': ret.sessionid}, (err) => {
-                                    done(err);
-                                });
-                            }, 100);
+                    },
+                    (err) => {
+                        expect(err).to.be(null);
+                        mc.create_log_observer({lines: 10, timeout: 120}, (err, ret) => {
+                            mc.post_services_to_logsession({'sessionid': ret.sessionid, 'services': ['test_service']}, (err, ml) => {
+                                expect(err).to.be(null);
+                                fs.writeFileSync(logfile, '{"invalid": "f..fdf\n', {'flag': 'a'});
+                                setTimeout(() => {
+                                    mc.delete_log_observer({'sessionid': ret.sessionid}, (err) => {
+                                        done(err);
+                                    });
+                                }, 100);
+                            });
                         });
                     });
-                });
+            });
         });
-    });
-//});
+});
