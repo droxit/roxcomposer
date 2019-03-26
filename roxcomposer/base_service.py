@@ -229,7 +229,7 @@ class BaseService:
 
                 if not data:
                     break
-        except OSError as err:
+        except Exception as err:
             self.logger.critical(str(err.strerror) + "\n" + traceback.format_exc())
             raise err
 
