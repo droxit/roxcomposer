@@ -88,8 +88,7 @@ class MainFrame(Frame):
                 try:
                     ret_json = json.loads(ret)
                     if "time" in ret_json:
-                        print(ret)
-                        ret_json["time"] = convert_utctimestring_to_timezoneaware_string(ret_json["time"])
+                        ret_json["time"] = self.convert_utctimestring_to_timezoneaware_string(ret_json["time"])
                         ret = json.dumps(ret_json)
                 except Exception as e:
                     self.log.addline("could not parse log line as json when converting timestring to local time")
@@ -165,6 +164,33 @@ class MainFrame(Frame):
             self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 1)), (self.cmdh, (WEIGHT, 1))]
         else:
             self.body.contents = [(self.log, (WEIGHT, 2)), (self.mtw, (WEIGHT, 0)), (self.cmdh, (WEIGHT, 1))]
+
+    def convert_utctimestring_to_timezoneaware_string(self, utc_timestring):
+        """
+        Convert a utc (already readable formatted) timestring to a human readable time string with timezone awareness
+        :param utc_timestring: utc string in format: %Y-%m-%d %H:%M:%S
+        :return: string
+        """
+        # Get current Timezone
+        from_zone = tz.tzutc()
+        to_zone = tz.tzlocal()
+        utc_datetime = None
+
+        try:
+            utc_datetime = datetime.strptime(utc_timestring, '%Y-%m-%dT%H:%M:%S.%f')
+        except Exception as e:
+            try:
+                utc_datetime = datetime.strptime(utc_timestring, '%Y-%m-%dT%H:%M:%S%z')
+            except Exception as e:
+                self.logger.addline("could not parse datetime")
+                return utc_timestring
+
+        utc_datetime = utc_datetime.replace(tzinfo=from_zone)
+
+        # Convert time zone
+        timezone_aware_datetime = utc_datetime.astimezone(to_zone)
+
+        return timezone_aware_datetime.strftime("%m/%d/%Y, %H:%M:%S")
 
 
 # MessageTraceWidget class - message trace windows container
@@ -268,33 +294,6 @@ def convert_utctimestamp_to_timezoneaware_string(utc_timestamp):
 
     return timezone_aware_datetime.strftime("%m/%d/%Y, %H:%M:%S")
 
-
-def convert_utctimestring_to_timezoneaware_string(utc_timestring):
-    """
-    Convert a utc (already readable formatted) timestring to a human readable time string with timezone awareness
-    :param utc_timestring: utc string in format: %Y-%m-%d %H:%M:%S
-    :return: string
-    """
-    # Get current Timezone
-    from_zone = tz.tzutc()
-    to_zone = tz.tzlocal()
-    utc_datetime = None
-
-    try:
-        utc_datetime = datetime.strptime(utc_timestring, '%Y-%m-%dT%H:%M:%S.%f')
-    except Exception as e:
-        try:
-            utc_datetime = datetime.strptime(utc_timestring, '%Y-%m-%dT%H:%M:%S%z')
-        except Exception as e:
-            print("could not parse datetime")
-            return utc_timestring
-
-    utc_datetime = utc_datetime.replace(tzinfo=from_zone)
-
-    # Convert time zone
-    timezone_aware_datetime = utc_datetime.astimezone(to_zone)
-
-    return timezone_aware_datetime.strftime("%m/%d/%Y, %H:%M:%S")
 
 
 # Main function
