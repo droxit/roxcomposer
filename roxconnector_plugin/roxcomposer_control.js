@@ -51,6 +51,7 @@ function __roxcomposer_control_private() {
 	this.delete_log_observer = delete_log_observer.bind(this);
 	this.get_log_lines = get_log_lines.bind(this);
 	this.post_services_to_logsession = post_services_to_logsession.bind(this);
+    this.service_log_filter = service_log_filter.bind(this);
 	this.default;
 }
 
@@ -498,7 +499,7 @@ function post_to_report_service(funcname, args, cb) {
 		server.close();
 		let chunks = [];
 		c.on('data', (chunk) => {
-			chunks.push(chunk); 
+			chunks.push(chunk);
 		});
 		c.on('end', () => {
 			let doc = Buffer.concat(chunks);
@@ -766,7 +767,7 @@ function add_services_to_logsession(sessionid, services) {
 	ml.ok.forEach(s => l.services.add(s));
 	this.logger.info(ml, 'adding services to watcher');
 
-	l.session.filters[0] = service_log_filter(Array.from(l.services.values()));
+	l.session.filters[0] = this.service_log_filter(Array.from(l.services.values()));
 	return new Promise((resolve, reject) => {
 		l.session.watch_files(ml.ok.map(s => this.services[s].params.logging.logpath)).then(() => resolve(ml), reject);
 	});
@@ -779,9 +780,18 @@ function add_services_to_logsession(sessionid, services) {
 function service_log_filter(services) {
 	// WARNING: this depends on the service log format - changing the layout may break this
 	// when every service get its own log file we won't need this crutch anymore
-        let service_set = new Set(services);
-	return line => { let o = JSON.parse(line); return ('service' in o) && service_set.has(o.service); }
+    let service_set = new Set(services);
+	return line => {
+	    try {
+	        let o = JSON.parse(line);
+	        return ('service' in o) && service_set.has(o.service);
+	    } catch(err) {
+	        this.logger.error({error: err}, 'unable to read JSON line');
+	        return false;
+	    }
+	}
 }
+
 
 /**
  * set or refresh a timeout for session cleanup
@@ -829,7 +839,7 @@ function delete_log_observer(args, cb) {
 		};
 		for (s in args.services)
 			l.services.delete(args.services[s]);
-		l.session.filters[0] = service_log_filter(Array.from(l.services.values()));
+		l.session.filters[0] = this.service_log_filter(Array.from(l.services.values()));
 		let keep = new Set(Array.from(l.services.values()).map(s => this.services[s].params.logging.logpath));
 		let remove = args.services.map(s => this.services[s].params.logging.logpath);
 		remove = remove.filter(f => !keep.has(f));
@@ -864,4 +874,3 @@ function get_log_lines(args, cb) {
 	let lines = this.logsessions[args.sessionid].session.get_lines();
 	cb(null, { loglines: lines });
 }
-
