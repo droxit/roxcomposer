@@ -466,6 +466,25 @@ function set_pipeline(args, cb) {
 	let malformed = [];
 	let missing = [];
 	let pipe_services = [];
+
+
+    for (var i = 0; i < args.services.length; i++){
+        var serv = args.services[i];
+        try{
+            serv = JSON.parse(serv);
+        }catch(e){ // could not be parsed as JSON, try to parse as string
+            if (typeof serv === "string" || serv instanceof String) {
+                if (!(serv in this.services)) { // check if service strings exist in the mcp object
+                    missing.push(serv);
+                } else {
+                    pipe_services.push({'service': serv})
+                }
+            }else{
+                malformed.push(serv);
+            }
+        }
+    }
+
 	// check if the services are strings or objects. if they are objects check if they are malformed
 	args.services.forEach((s) => {
 		if (typeof s === "string" || s instanceof String) {
