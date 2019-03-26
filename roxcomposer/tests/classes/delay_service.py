@@ -21,7 +21,7 @@ class DelayService(base_service.BaseService):
         self.msg = ''
         self.listen()
 
-    def on_message(self, msg, msg_id):
+    def on_message(self, msg, msg_id, parameters=None):
         self.msg = msg
         time.sleep(1)
         return self.dispatch(msg)

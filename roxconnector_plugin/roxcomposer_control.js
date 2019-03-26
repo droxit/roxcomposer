@@ -326,6 +326,7 @@ function start_service(args, cb, exit_cb) {
 
 	this.logger.debug({opts: opt}, 'spawning process');
 
+    // define what happens when the service process is terminated - set pipeline to INACTIVE
 	this.processes[name] = spawn('python3', opt, {stdio: 'inherit'})
 		.on('exit', exit_cb ? exit_cb.bind(this, name) : cleanup_service.bind(this, name))
 		.on('error', (e) => {
@@ -336,9 +337,16 @@ function start_service(args, cb, exit_cb) {
     //activate all pipelines that include this service and have no inactive services
 	Object.entries(this.pipelines)
 		.filter(([pname, x]) => x.active === false)
-		.filter(([pname, x]) => x.services.indexOf(name) != -1)
 		.forEach(([pname, x]) => {
-			let should_be_active = x.services.map(x => x in this.services).reduce( (x, y) => x && y, true );
+		    let services_in_pipe = new Set(x.services.map(serviceObj => serviceObj.service));
+            if(services_in_pipe.has(name)){
+                var should_be_active = true;
+                services_in_pipe.forEach(x => {
+                    if(!(x in this.services)){
+                        should_be_active = false;
+                    }
+    			})
+            }
 			if (should_be_active)
 				this.pipelines[pname].active = true;
 		});
@@ -385,21 +393,32 @@ function post_to_pipeline(args, cb) {
 		return;
 	}
 
+	var services_in_pipe = pline.services.map(serviceObj => serviceObj.service);
 	let servs;
 	try {
-		servs = pline.services.map( (x) => {
+		servs = services_in_pipe.map( (x) => {
 			let s = this.services[x];
-			return new roxcomposer_message.Service(s.params.ip, s.params.port);
+			let current_params = null;
+			let current_serv = null;
+			// this is a really cumbersome way to retrieve the (optional) service parameters
+			pline.services.forEach((serv) => {
+			    if(serv["service"] === x){
+			        current_serv = serv;
+			        current_params = current_serv.parameters;
+			    }
+			});
+			return new roxcomposer_message.Service(s.params.ip, s.params.port, current_params);
 		});
 	} catch (e) {
 		this.logger.error({error: e}, 'invalid service in pipeline');
 		cb({'code': 500, 'message': `pipeline is broken: ${e}`});
+		return;
 	}
 	let msg = create_roxcomposer_message(servs, args.data);
 
 	let socket = new net.Socket();
-	let start = this.services[pline.services[0]];
-	this.logger.debug({name: pline.services[0], ip: start.params.ip, port: start.params.port}, 'attempting connection to service');
+	let start = this.services[services_in_pipe[0]];
+	this.logger.debug({name: services_in_pipe[0], ip: start.params.ip, port: start.params.port}, 'attempting connection to service');
 	socket.connect({port: start.params.port, host: start.params.ip}, () => {
 		this.logger.info({message_id: msg.id, pipeline: args.name}, 'message posted to pipeline');
 		let packet = msg.serialize();
@@ -407,7 +426,7 @@ function post_to_pipeline(args, cb) {
 		cb(null, {'message': 'pipeline initiated', 'message_id': msg.id});
 	});
 	socket.on('error', (e) => {
-		this.logger.error({error: e, service: { name: pline.services[0], ip: start.params.ip, port: start.params.port }}, 'unable to connect to service');
+		this.logger.error({error: e, service: { name: services_in_pipe[0], ip: start.params.ip, port: start.params.port }}, 'unable to connect to service');
 		cb({'code': 500, 'message': 'internal server error'});
 	});
 }
@@ -430,7 +449,12 @@ function get_pipelines(args, cb) {
 
 /**
  * define a pipeline of services
- * args = { 'name': "...", 'pipeline': [ ... service names ... ] }
+ * args = { 'name': "...", 'pipeline': [ ... services ... ] }
+ * where services can be either strings (service identifiers/names) or Objects
+ * if it is an object it must have the following structure:
+ * service = {'service':'html_generator', 'params' = { ... }}
+ * params is optional and can be used to invoke the service with these parameters when a message is sent to
+ * the pipeline
  **/
 function set_pipeline(args, cb) {
 	if (!('services' in args)) {
@@ -457,18 +481,40 @@ function set_pipeline(args, cb) {
 		cb({'code': 400, 'message': msg});
 		return;
 	}
-	for (let s in args.services) {
-		if (!(args.services[s] in this.services)) {
-			let msg = `set_pipeline: no service with name [${args.services[s]}]`;
-			this.logger.error(msg);
-			cb({'code': 400, 'message': msg});
-			return;
+	let malformed = [];
+	let missing = [];
+	let pipe_services = [];
+	// check if the services are strings or objects. if they are objects check if they are malformed
+	args.services.forEach((s) => {
+		if (typeof s === "string" || s instanceof String) {
+			if (!(s in this.services)) { // check if service strings exist in the mcp object
+				missing.push(s);
+			} else {
+			    pipe_services.push({'service': s})
+			}
+		} else if ("service" in s) { // check if the service object has name param
+			if (!(s["service"] in this.services)) { // check if this name exists in mcp object
+				missing.push(s);
+			} else{
+			    pipe_services.push(s)
+			}
+		} else {
+			malformed.push(s);
 		}
+	});
+	if (missing.length > 0 || malformed.length > 0) { // if there are any missing/malformed services return with error
+		let msg = {
+			'description': 'set_pipeline: one or more services are either missing or malformed',
+			'missing': missing,
+			'malformed': malformed
+		}
+		this.logger.error(msg);
+		cb({'code': 400, 'message': msg});
+		return;
 	}
 
-	let pipeline_services = args.services;
 	this.pipelines[args.name] = {
-		'services': pipeline_services,
+		'services': pipe_services,
 		'active': true
 	};
 	cb(null, {'message': `pipeline [${args.name}] created`});

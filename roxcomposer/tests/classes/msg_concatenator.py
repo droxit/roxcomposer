@@ -31,7 +31,7 @@ class MsgConcatenator(base_service.BaseService):
         self.msgs = ''
         self.http = MyHTTPServer(params['http_address'], SimpleRHandler)
 
-    def on_message(self, msg, msg_id):
+    def on_message(self, msg, msg_id, parameters=None):
         self.msgs += msg
         self.http.set_msg(self.msgs)
         self.dispatch(msg)

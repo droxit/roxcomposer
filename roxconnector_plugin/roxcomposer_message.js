@@ -127,7 +127,12 @@ function serialize_to_protobuf() {
 		p = this.pipeline[i];
 		let s = new proto.Service();
 		s.setId(p.encodeId());
-		s.setParametersList(p.parameters);
+
+		s.setParametersList(p.parameters.map((x)=> {
+		    let pr = new proto.Parameter();
+		    pr.setServiceparams(x);
+		    return pr;
+		}));
 		services.push(s);
 	}
 
