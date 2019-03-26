@@ -17,8 +17,7 @@ let fs = require('fs');
 let _files = {};
 
 // constructor
-module.exports = function (cb) {
-	this.register = register.bind(this);
+module.exports = function (cb) {this.register = register.bind(this);
 	this.unregister = unregister.bind(this);
 	this.files = new Set();
 	this.cb = cb;
@@ -26,7 +25,7 @@ module.exports = function (cb) {
 
 // add files to be watched
 function register(...files) {
-	let proms = []; 
+	let proms = [];
 	files.forEach((f) => {
 		if (this.files.has(f))
 			return;
@@ -69,7 +68,7 @@ function FileListener(bufsize=2048) {
 	this.watcher = null;
 	this.fd = null;
 	this.watch = watch_file.bind(this);
-	this.bufsize = bufsize; 
+	this.bufsize = bufsize;
 	this.buffer = Buffer.alloc(bufsize);
 }
 
@@ -113,7 +112,7 @@ function watch_file(file) {
 	return p;
 }
 
-// cleanup 
+// cleanup
 function cleanup_listener() {
 	this.watcher.close();
 	fs.close(this.fd, () => {});
@@ -134,4 +133,3 @@ function read_lines(lines) {
 
 	return ret;
 }
-

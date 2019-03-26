@@ -15,15 +15,16 @@ class BasicReportingService(base_service.BaseService):
         except Exception as e:
             errormsg = "unable to parse message, expecting JSON. msg: {}".format(msg)
             self.logger.error(errormsg)
-            self.dispatch('{"error": "{}"}'.format(errormsg))
+            disp_msg = {'error': errormsg}
+            self.dispatch(json.dumps(disp_msg))
             return
 
         try:
             basic_monitoring.check_args(m, "function", "args")
         except Exception as e:
             errmsg = "missing argument: {}".format(e)
-            self.logger.error(errmsg)
-            self.dispatch('{"error": "{}"}'.format(errmsg))
+            disp_msg = {'error': errmsg}
+            self.dispatch(json.dumps(disp_msg))
             return
 
         try:
