@@ -269,7 +269,6 @@ def convert_utctimestamp_to_timezoneaware_string(utc_timestamp):
     return timezone_aware_datetime.strftime("%m/%d/%Y, %H:%M:%S")
 
 
-
 def convert_utctimestring_to_timezoneaware_string(utc_timestring):
     """
     Convert a utc (already readable formatted) timestring to a human readable time string with timezone awareness
