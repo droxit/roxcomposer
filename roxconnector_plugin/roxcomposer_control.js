@@ -390,17 +390,27 @@ function post_to_pipeline(args, cb) {
 	try {
 		servs = services_in_pipe.map( (x) => {
 			let s = this.services[x];
-			return new roxcomposer_message.Service(s.params.ip, s.params.port, s.params.params);
+			let current_params = null;
+			let current_serv = null;
+			// this is a really cumbersome way to retrieve the (optional) service parameters
+			pline.services.forEach((serv) => {
+			    if(serv["service"] === x){
+			        current_serv = serv;
+			        current_params = current_serv.parameters;
+			    }
+			});
+			return new roxcomposer_message.Service(s.params.ip, s.params.port, current_params);
 		});
 	} catch (e) {
 		this.logger.error({error: e}, 'invalid service in pipeline');
 		cb({'code': 500, 'message': `pipeline is broken: ${e}`});
+		return;
 	}
 	let msg = create_roxcomposer_message(servs, args.data);
 
 	let socket = new net.Socket();
 	let start = this.services[services_in_pipe[0]];
-	this.logger.debug({name: services_in_pipe[0], ip: start.params.ip, port: start.params.port, params: start.params.params}, 'attempting connection to service');
+	this.logger.debug({name: services_in_pipe[0], ip: start.params.ip, port: start.params.port}, 'attempting connection to service');
 	socket.connect({port: start.params.port, host: start.params.ip}, () => {
 		this.logger.info({message_id: msg.id, pipeline: args.name}, 'message posted to pipeline');
 		let packet = msg.serialize();

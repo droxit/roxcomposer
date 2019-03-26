@@ -220,6 +220,7 @@ class BaseService:
                 self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())
 
                 self.msg_reception_time = time.time() * 1000
+                self.logger.debug('Received parameters: ' + str(me.parameters))
                 self.on_message(self.roxcomposer_message.payload, self.roxcomposer_message.id, me.parameters)
                 self.on_message_ext(self.roxcomposer_message)
 
