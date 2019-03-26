@@ -87,7 +87,7 @@ class MainFrame(Frame):
             if len(ret):
                 try:
                     ret_json = json.loads(ret)
-                    if "time" in ret_json:
+                    if "time" in ret_json and CONVERT_TIMESTAMP:
                         ret_json["time"] = self.convert_utctimestring_to_timezoneaware_string(ret_json["time"])
                         ret = json.dumps(ret_json)
                 except Exception as e:
