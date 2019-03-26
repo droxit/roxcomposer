@@ -49,14 +49,14 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 					assert.notOk(err, 'creating a pipeline with the new service should not produce an error');
 					mc.get_pipelines(null, function (err, msg) {
 						assert.notOk(err, 'get_pipelines should not produce an error');
-						assert.deepEqual(msg, {pipe: {services: ['fwriter'], active: true}}, 'our created pipeline should be present');
+						assert.deepEqual(msg, {pipe: {services: [{'service': 'fwriter'}], active: true}}, 'our created pipeline should be present');
 						mc.post_to_pipeline({name: 'pipe', data: test_msg}, function (err, msg) {
 							assert.notOk(err, 'post_to_pipeline should not produce an error');
 							sleep(500);
 							assert.equal(fs.readFileSync(filepath, 'utf8'), test_msg, 'the file_writer service should have written our test message into the file');
 							mc.dump_services_and_pipelines(null, (err, dump) => {
 								dump = JSON.parse(JSON.stringify(dump));
-								assert.deepEqual(dump.pipelines, { pipe: { services: ['fwriter'], active: true }}, 'pipe should be in the services and pipelines dump');
+								assert.deepEqual(dump.pipelines, { pipe: { services: [{'service': 'fwriter'}], active: true }}, 'pipe should be in the services and pipelines dump');
 								assert.ok('fwriter' in dump.services, '...so should be fwriter');
 								mc.shutdown_service({name: 'fwriter'}, function(err, msg) {
 									assert.notOk(err, 'shutdown_service should not return an error');
@@ -78,7 +78,7 @@ fs.mkdtemp(`${tmp}${sep}`, (error, tmpdir) => {
 													assert.deepEqual(msg, {fwriter: {path: filewriter_module_path, params: filewriter_params}}, "the started service should be listed with it's parameters");
 													mc.get_pipelines(null, function (err, msg) {
 														assert.notOk(err, 'get_pipelines should not produce an error');
-														assert.deepEqual(msg, {pipe: {services: ['fwriter'], active: true}}, 'our previously created pipeline should be present');
+														assert.deepEqual(msg, {pipe: {services: [{'service': 'fwriter'}], active: true}}, 'our previously created pipeline should be present');
 														mc.shutdown_service({name: 'fwriter'}, function(err, msg) {
 															assert.notOk(err, 'shutdown_service should not return an error');
 														});
