@@ -139,6 +139,8 @@ function cleanup_all(){
       if (this.processes.hasOwnProperty(child_process))
         this.processes[child_process].kill('SIGINT');
     }
+    console.log("Killing childprocesses");
+    process.exit(1);
 }
 
 
