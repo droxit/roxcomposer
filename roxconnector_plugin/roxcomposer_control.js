@@ -334,6 +334,7 @@ function start_service(args, cb, exit_cb) {
 			this.logger.error({error: e, args: args}, "unable to spawn service");
 		});
 
+
     //activate all pipelines that include this service and have no inactive services
 	Object.entries(this.pipelines)
 		.filter(([pname, x]) => x.active === false)
@@ -351,7 +352,15 @@ function start_service(args, cb, exit_cb) {
 				this.pipelines[pname].active = true;
 		});
 
-	cb(null, {'message': `service [${name}] created`});
+    // check if the service could be created (if the process exists)
+    setTimeout(function(){
+        if(this.processes.hasOwnProperty(name)){
+
+            cb(null, {'message': `service [${name}] created`});
+        } else{
+            cb({'code': 400, 'message': 'could not create service'});
+        }
+    }.bind(this), 1000);
 }
 
 /**
