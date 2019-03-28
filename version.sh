@@ -15,6 +15,6 @@ case $BRANCH in
 		headmaster=`git rev-list HEAD...origin/master | wc -l`
 		headdev=`git rev-list HEAD...origin/dev | wc -l`
 		revdiff=$((headdev - headmaster))
-		echo -n "${VERSION}.dev${revdiff}+${BRANCH}${headdev}"
+		echo -n "${VERSION}.dev${revdiff#-}+${BRANCH}${headdev}"
 		;;
 esac
