@@ -1,11 +1,19 @@
 # v0.4.1
+ * added feature: service parameters can now be given at pipeline creation
+ * added better logging: ROXconnector now forwards service error logs
+ * added a response when service could not be started
  * added `delete_pipeline` API endpoint
  * added GET API endpoint on `/` that shows a message saying the ROXcomposer was initialized
  * fixed bug when querying `check_services_and_logs()` with an empty array
  * fixed server crash bug when basic_reporting is shutdown and `get_msg_history()` or `get_msg_status()` is called 
  * better logging when server crashes in case the server is started twice
- * added utc timestamp to timezone aware human readable time string conversion in CLI (message tracing)
+ * added utc timestamp to timezone aware human readable time string conversion in CLI logs
  * fixed server crash when posting to pipe that contains basic reporting service
+ * fixed server crash when logging a JSON formatted message 
+ * fixed server crash when logging an exception that does not implement `strerror` (for example when trying to connect to a server with the wrong url)
+ * fixed bug: address already in use after server crash
+ * fixed server crash when starting a service with the wrong classpath
+ * fixed server crash when starting a service with wrong JSON params
 
 # v0.4.0
 
