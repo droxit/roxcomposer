@@ -344,12 +344,40 @@ function start_service(args, cb, exit_cb) {
 	this.logger.debug({opts: opt}, 'spawning process');
 
     // define what happens when the service process is terminated - set pipeline to INACTIVE
-	this.processes[name] = spawn('python3', opt, {stdio: 'inherit'})
+	this.processes[name] = spawn('python3', opt, { stdio: 'pipe' })
 		.on('exit', exit_cb ? exit_cb.bind(this, name) : cleanup_service.bind(this, name))
 		.on('error', (e) => {
 			delete this.services[name];
 			this.logger.error({error: e, args: args}, "unable to spawn service");
 		});
+
+
+	var errorMsg = "";
+
+    // this is responsible for communicating the output of the service processes
+    // each logging output is attempted to parse as JSON and then logged in the server
+    // the idea is to make internal service logs accessible to the user (in case the roxcomposer is not running locally)
+    // FixMe: There should probably be a buffer wrapper to ensure that data is not just a chunk
+    this.processes[name].stderr.on('data', (data)=>{
+        errorMsg = data.toString();
+        try{
+            let json_msg = JSON.parse(errorMsg);
+            if(json_msg.hasOwnProperty("level")){
+                if(json_msg["level"] == "ERROR"){
+                    this.logger.error({error: json_msg, service: name }, "service error");
+                } else if(json_msg["level"] == "CRITICAL"){
+                    this.logger.fatal({error: json_msg, service: name }, "fatal service error");
+                } else{
+                    this.logger.info({message: json_msg, service: name }, "service log");
+                }
+            } else{
+                this.logger.info({message: json_msg, service: name }, "service log");
+            }
+        }
+        catch(e){
+            this.logger.error({error: errorMsg, service: name }, "service error");
+        }
+    });
 
 
     //activate all pipelines that include this service and have no inactive services
@@ -368,8 +396,15 @@ function start_service(args, cb, exit_cb) {
 			if (should_be_active)
 				this.pipelines[pname].active = true;
 		});
+    // check if the service could be created (if the process exists)
+    setTimeout(function(){
+        if(this.processes.hasOwnProperty(name)){
 
-	cb(null, {'message': `service [${name}] created`});
+            cb(null, {'message': `service [${name}] created`});
+        } else{
+            cb({'code': 400, 'message': 'could not create service \n' + errorMsg});
+        }
+    }.bind(this), 1000);
 }
 
 /**
