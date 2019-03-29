@@ -1,8 +1,7 @@
 {
   "SYSTEM": {
 	"port": 7475,
-    "loglevel": "info",
-    "logfile": "../logs/roxconnector.log"
+    "loglevel": "info"
   },
   "PLUGINS": {
       "roxcomposer": {
