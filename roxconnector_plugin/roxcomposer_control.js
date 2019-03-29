@@ -365,6 +365,8 @@ function start_service(args, cb, exit_cb) {
             if(json_msg.hasOwnProperty("level")){
                 if(json_msg["level"] == "ERROR"){
                     this.logger.error({error: json_msg, service: name }, "service error");
+                } else if(json_msg["level"] == "CRITICAL"){
+                    this.logger.fatal({error: json_msg, service: name }, "fatal service error");
                 } else{
                     this.logger.info({message: json_msg, service: name }, "service log");
                 }
