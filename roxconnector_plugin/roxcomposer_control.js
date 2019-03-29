@@ -83,6 +83,9 @@ module.exports = function (container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
+    process.on('uncaughtException', cleanup_all.bind(this))
+    process.on('exit', cleanup_all.bind(this))
+
 	if (args && ('logger' in args))
 		this.logger = args.logger;
 	else
@@ -126,6 +129,20 @@ function init(args) {
 		process.exit(1);
 	}
 }
+
+/**
+ * cleanup all child processes when the parent terminates
+ *
+ **/
+function cleanup_all(){
+    for (var child_process in this.processes) {
+      if (this.processes.hasOwnProperty(child_process))
+        this.processes[child_process].kill('SIGINT');
+    }
+    console.log("Killing childprocesses");
+    process.exit(1);
+}
+
 
 /**
  * check arguments for the presence of fields
@@ -333,6 +350,7 @@ function start_service(args, cb, exit_cb) {
 			delete this.services[name];
 			this.logger.error({error: e, args: args}, "unable to spawn service");
 		});
+
 
 	var errorMsg = "";
 
