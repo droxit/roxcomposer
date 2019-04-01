@@ -9,21 +9,22 @@ class BasicReportingService(base_service.BaseService):
         basic_monitoring.check_args(self.params, "filename")
         self.reporter = basic_monitoring.BasicReporting(filename=self.params['filename'])
 
-    def on_message(self, msg, msg_id):
+    def on_message(self, msg, msg_id, parameters=None):
         try:
             m = json.loads(msg)
         except Exception as e:
             errormsg = "unable to parse message, expecting JSON. msg: {}".format(msg)
             self.logger.error(errormsg)
-            self.dispatch('{"error": "{}"}'.format(errormsg))
+            disp_msg = {'error': errormsg}
+            self.dispatch(json.dumps(disp_msg))
             return
 
         try:
             basic_monitoring.check_args(m, "function", "args")
         except Exception as e:
             errmsg = "missing argument: {}".format(e)
-            self.logger.error(errmsg)
-            self.dispatch('{"error": "{}"}'.format(errmsg))
+            disp_msg = {'error': errmsg}
+            self.dispatch(json.dumps(disp_msg))
             return
 
         try:

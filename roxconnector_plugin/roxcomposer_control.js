@@ -26,6 +26,8 @@ function __roxcomposer_control_private() {
 	this.logsessions = {};
 	this.init = init.bind(this);
 	this.check_args = check_args.bind(this);
+	this.get_root = get_root.bind(this);
+	this.delete_pipeline = delete_pipeline.bind(this);
 	this.start_service = start_service.bind(this);
 	this.create_roxcomposer_message = create_roxcomposer_message.bind(this);
 	this.read_roxcomposer_message = read_roxcomposer_message.bind(this);
@@ -49,14 +51,18 @@ function __roxcomposer_control_private() {
 	this.delete_log_observer = delete_log_observer.bind(this);
 	this.get_log_lines = get_log_lines.bind(this);
 	this.post_services_to_logsession = post_services_to_logsession.bind(this);
+    this.service_log_filter = service_log_filter.bind(this);
 	this.default;
 }
 
 module.exports = function (container) {
 	let mcp = new __roxcomposer_control_private();
 	container['init'] = mcp.init;
+	container['get_root'] = mcp.get_root;
+    container['delete_pipeline'] = mcp.delete_pipeline;
 	container['start_service'] = mcp.start_service;
 	container['shutdown_service'] = mcp.shutdown_service;
+	container['check_services_and_logs'] = mcp.check_services_and_logs;
 	container['get_services'] = mcp.get_services;
 	container['get_pipelines'] = mcp.get_pipelines;
 	container['set_pipeline'] = mcp.set_pipeline;
@@ -77,6 +83,9 @@ module.exports = function (container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
+    process.on('uncaughtException', cleanup_all.bind(this))
+    process.on('exit', cleanup_all.bind(this))
+
 	if (args && ('logger' in args))
 		this.logger = args.logger;
 	else
@@ -101,7 +110,11 @@ function init(args) {
 				throw new Error(msg);
 			}
 			this.reporting_service = args.reporting_service.params.name;
+		}, (name, code, signal) => { // define custom cleanup callback for reporting service (to set it to null)
+		    this.reporting_service = null; // prevent server crashes in get_msg_status and get_msg_history
+		    cleanup_service.call(this, name, code, signal); // use .call so that the cleanup has knowledge of 'this'
 		});
+
 	}
 
 	this.service_config = false;
@@ -118,6 +131,20 @@ function init(args) {
 }
 
 /**
+ * cleanup all child processes when the parent terminates
+ *
+ **/
+function cleanup_all(){
+    for (var child_process in this.processes) {
+      if (this.processes.hasOwnProperty(child_process))
+        this.processes[child_process].kill('SIGINT');
+    }
+    console.log("Killing childprocesses");
+    process.exit(1);
+}
+
+
+/**
  * check arguments for the presence of fields
  * returns a list of missing fields
  **/
@@ -130,10 +157,69 @@ function check_args(args, fields) {
 }
 
 /**
+ * get an initial greeting message
+ * no args needed
+ **/
+function get_root(args, cb){
+    var VERSION = ' '
+    let returnjson = {'message':'ROXcomposer control'+ VERSION + 'running'}
+
+    cb(null, returnjson)
+}
+
+/**
+ * default cleanup function for services when they shut down
+ * used in start_service() - custom shutdown handlers should call
+ * this function to ensure proper cleanup
+ **/
+function cleanup_service(name, code, signal) {
+    // service exit callback
+    this.logger.info({service: name, exit_code: code, signal: signal}, "service exited");
+
+    for (let pl in this.pipelines) {
+        for (let i=0; i < this.pipelines[pl]['services'].length; i++) {
+            if (this.pipelines[pl]['services'][i] === name) {
+                this.pipelines[pl]['active'] = false;
+                break;
+            }
+        }
+    }
+
+    delete this.processes[name];
+    delete this.services[name];
+}
+
+/**
+ * delete a pipeline
+ * needs 'name' parameter
+ **/
+function delete_pipeline(args, cb){
+	if (!args.hasOwnProperty('name')) {
+		let msg = 'delete_pipeline: pipeline name not provided';
+		this.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+	}
+	let name = args.name
+
+    if(!(name in this.pipelines)){
+        let msg = `delete_pipeline: no pipeline with name [${name}]`;
+		this.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+    }
+	delete this.pipelines[args.name];
+	cb(null, {'message': `pipeline [${args.name}] deleted`});
+}
+
+
+/**
  * spawn a new service
  * args need to contain the name of the service and the path to the service module
+ * exit_cb is an optional handler to be called when the service exits - if it is omitted
+ * cleanup_service() is used by default
  **/
-function start_service(args, cb) {
+function start_service(args, cb, exit_cb) {
 	this.logger.debug({args: args}, 'start_service called');
 	let opt;
 
@@ -257,44 +343,68 @@ function start_service(args, cb) {
 
 	this.logger.debug({opts: opt}, 'spawning process');
 
-	this.processes[name] = spawn('python3', opt, {stdio: 'inherit'})
-		.on('exit', (code, signal) => {
-			// service exit callback
-			this.logger.info({service: name, exit_code: code}, "service exited");
-
-			// if a service receives the signal to shudtdown - set all pipelines to inactive if it conains the service
-			// that shuts down
-			if (signal === 'SIGTERM') {
-				this.logger.info({service: name, exit_code: code}, "service terminated by user");
-				for (let pl in this.pipelines) {
-					for (let i=0; i < this.pipelines[pl]['services'].length; i++) {
-						if (this.pipelines[pl]['services'][i] === name) {
-							this.pipelines[pl]['active'] = false;
-							break;
-						}
-					}
-				}
-			}
-
-			delete this.processes[name];
-			delete this.services[name];
-		})
+    // define what happens when the service process is terminated - set pipeline to INACTIVE
+	this.processes[name] = spawn('python3', opt, { stdio: 'pipe' })
+		.on('exit', exit_cb ? exit_cb.bind(this, name) : cleanup_service.bind(this, name))
 		.on('error', (e) => {
 			delete this.services[name];
 			this.logger.error({error: e, args: args}, "unable to spawn service");
 		});
 
+
+	var errorMsg = "";
+
+    // this is responsible for communicating the output of the service processes
+    // each logging output is attempted to parse as JSON and then logged in the server
+    // the idea is to make internal service logs accessible to the user (in case the roxcomposer is not running locally)
+    // FixMe: There should probably be a buffer wrapper to ensure that data is not just a chunk
+    this.processes[name].stderr.on('data', (data)=>{
+        errorMsg = data.toString();
+        try{
+            let json_msg = JSON.parse(errorMsg);
+            if(json_msg.hasOwnProperty("level")){
+                if(json_msg["level"] == "ERROR"){
+                    this.logger.error({error: json_msg, service: name }, "service error");
+                } else if(json_msg["level"] == "CRITICAL"){
+                    this.logger.fatal({error: json_msg, service: name }, "fatal service error");
+                } else{
+                    this.logger.info({message: json_msg, service: name }, "service log");
+                }
+            } else{
+                this.logger.info({message: json_msg, service: name }, "service log");
+            }
+        }
+        catch(e){
+            this.logger.error({error: errorMsg, service: name }, "service error");
+        }
+    });
+
+
     //activate all pipelines that include this service and have no inactive services
 	Object.entries(this.pipelines)
 		.filter(([pname, x]) => x.active === false)
-		.filter(([pname, x]) => x.services.indexOf(name) != -1)
 		.forEach(([pname, x]) => {
-			let should_be_active = x.services.map(x => x in this.services).reduce( (x, y) => x && y, true );
+		    let services_in_pipe = new Set(x.services.map(serviceObj => serviceObj.service));
+            if(services_in_pipe.has(name)){
+                var should_be_active = true;
+                services_in_pipe.forEach(x => {
+                    if(!(x in this.services)){
+                        should_be_active = false;
+                    }
+    			})
+            }
 			if (should_be_active)
 				this.pipelines[pname].active = true;
 		});
+    // check if the service could be created (if the process exists)
+    setTimeout(function(){
+        if(this.processes.hasOwnProperty(name)){
 
-	cb(null, {'message': `service [${name}] created`});
+            cb(null, {'message': `service [${name}] created`});
+        } else{
+            cb({'code': 400, 'message': 'could not create service \n' + errorMsg});
+        }
+    }.bind(this), 1000);
 }
 
 /**
@@ -336,21 +446,32 @@ function post_to_pipeline(args, cb) {
 		return;
 	}
 
+	var services_in_pipe = pline.services.map(serviceObj => serviceObj.service);
 	let servs;
 	try {
-		servs = pline.services.map( (x) => {
+		servs = services_in_pipe.map( (x) => {
 			let s = this.services[x];
-			return new roxcomposer_message.Service(s.params.ip, s.params.port);
+			let current_params = null;
+			let current_serv = null;
+			// this is a really cumbersome way to retrieve the (optional) service parameters
+			pline.services.forEach((serv) => {
+			    if(serv["service"] === x){
+			        current_serv = serv;
+			        current_params = current_serv.parameters;
+			    }
+			});
+			return new roxcomposer_message.Service(s.params.ip, s.params.port, current_params);
 		});
 	} catch (e) {
 		this.logger.error({error: e}, 'invalid service in pipeline');
 		cb({'code': 500, 'message': `pipeline is broken: ${e}`});
+		return;
 	}
 	let msg = create_roxcomposer_message(servs, args.data);
 
 	let socket = new net.Socket();
-	let start = this.services[pline.services[0]];
-	this.logger.debug({name: pline.services[0], ip: start.params.ip, port: start.params.port}, 'attempting connection to service');
+	let start = this.services[services_in_pipe[0]];
+	this.logger.debug({name: services_in_pipe[0], ip: start.params.ip, port: start.params.port}, 'attempting connection to service');
 	socket.connect({port: start.params.port, host: start.params.ip}, () => {
 		this.logger.info({message_id: msg.id, pipeline: args.name}, 'message posted to pipeline');
 		let packet = msg.serialize();
@@ -358,7 +479,7 @@ function post_to_pipeline(args, cb) {
 		cb(null, {'message': 'pipeline initiated', 'message_id': msg.id});
 	});
 	socket.on('error', (e) => {
-		this.logger.error({error: e, service: { name: pline.services[0], ip: start.params.ip, port: start.params.port }}, 'unable to connect to service');
+		this.logger.error({error: e, service: { name: services_in_pipe[0], ip: start.params.ip, port: start.params.port }}, 'unable to connect to service');
 		cb({'code': 500, 'message': 'internal server error'});
 	});
 }
@@ -381,7 +502,12 @@ function get_pipelines(args, cb) {
 
 /**
  * define a pipeline of services
- * args = { 'name': "...", 'pipeline': [ ... service names ... ] }
+ * args = { 'name': "...", 'pipeline': [ ... services ... ] }
+ * where services can be either strings (service identifiers/names) or Objects
+ * if it is an object it must have the following structure:
+ * service = {'service':'html_generator', 'params' = { ... }}
+ * params is optional and can be used to invoke the service with these parameters when a message is sent to
+ * the pipeline
  **/
 function set_pipeline(args, cb) {
 	if (!('services' in args)) {
@@ -408,18 +534,40 @@ function set_pipeline(args, cb) {
 		cb({'code': 400, 'message': msg});
 		return;
 	}
-	for (let s in args.services) {
-		if (!(args.services[s] in this.services)) {
-			let msg = `set_pipeline: no service with name [${args.services[s]}]`;
-			this.logger.error(msg);
-			cb({'code': 400, 'message': msg});
-			return;
+	let malformed = [];
+	let missing = [];
+	let pipe_services = [];
+	// check if the services are strings or objects. if they are objects check if they are malformed
+	args.services.forEach((s) => {
+		if (typeof s === "string" || s instanceof String) {
+			if (!(s in this.services)) { // check if service strings exist in the mcp object
+				missing.push(s);
+			} else {
+			    pipe_services.push({'service': s})
+			}
+		} else if ("service" in s) { // check if the service object has name param
+			if (!(s["service"] in this.services)) { // check if this name exists in mcp object
+				missing.push(s);
+			} else{
+			    pipe_services.push(s)
+			}
+		} else {
+			malformed.push(s);
 		}
+	});
+	if (missing.length > 0 || malformed.length > 0) { // if there are any missing/malformed services return with error
+		let msg = {
+			'description': 'set_pipeline: one or more services are either missing or malformed',
+			'missing': missing,
+			'malformed': malformed
+		}
+		this.logger.error(msg);
+		cb({'code': 400, 'message': msg});
+		return;
 	}
 
-	let pipeline_services = args.services;
 	this.pipelines[args.name] = {
-		'services': pipeline_services,
+		'services': pipe_services,
 		'active': true
 	};
 	cb(null, {'message': `pipeline [${args.name}] created`});
@@ -457,7 +605,7 @@ function post_to_report_service(funcname, args, cb) {
 		server.close();
 		let chunks = [];
 		c.on('data', (chunk) => {
-			chunks.push(chunk); 
+			chunks.push(chunk);
 		});
 		c.on('end', () => {
 			let doc = Buffer.concat(chunks);
@@ -508,7 +656,7 @@ function get_msg_history(args, cb) {
 		}
 
 	else
-		cb({'code': 400, 'message': 'no reporting service has been configured'});
+		cb({'code': 400, 'message': 'no reporting service is currently running'});
 }
 
 /**
@@ -523,7 +671,7 @@ function get_msg_status(args, cb) {
 			cb({code: 500, message: e});
 		}
 	else
-		cb({'code': 400, 'message': 'no reporting service has been configured'});
+		cb({'code': 400, 'message': 'no reporting service is currently running'});
 }
 
 /**
@@ -668,13 +816,15 @@ function create_log_observer(args, cb) {
  **/
 function check_services_and_logs(services) {
 	let set = new Set(services);
-	let missing_services = services.filter(s => !(s in this.services));
-	missing_services.forEach(s => set.delete(s));
+	if(set.size == 0){
+        return {'ok': [], 'missing': [], 'without_log': []}
+	}
+    let missing_services = services.filter(s => !(s in this.services));
+    missing_services.forEach(s => set.delete(s));
 
-	let without_log = Array.from(set).filter(s => !(('logging' in this.services[s].params) && ('logpath' in this.services[s].params.logging)));
-	without_log.forEach(s => set.delete(s));
-
-	return { 'ok': Array.from(set), 'missing': missing_services, 'without_log': without_log };
+    let without_log = Array.from(set).filter(s => !(('logging' in this.services[s].params) && ('logpath' in this.services[s].params.logging)));
+    without_log.forEach(s => set.delete(s));
+    return { 'ok': Array.from(set), 'missing': missing_services, 'without_log': without_log };
 }
 
 /*
@@ -723,7 +873,7 @@ function add_services_to_logsession(sessionid, services) {
 	ml.ok.forEach(s => l.services.add(s));
 	this.logger.info(ml, 'adding services to watcher');
 
-	l.session.filters[0] = service_log_filter(Array.from(l.services.values()));
+	l.session.filters[0] = this.service_log_filter(Array.from(l.services.values()));
 	return new Promise((resolve, reject) => {
 		l.session.watch_files(ml.ok.map(s => this.services[s].params.logging.logpath)).then(() => resolve(ml), reject);
 	});
@@ -736,9 +886,18 @@ function add_services_to_logsession(sessionid, services) {
 function service_log_filter(services) {
 	// WARNING: this depends on the service log format - changing the layout may break this
 	// when every service get its own log file we won't need this crutch anymore
-        let service_set = new Set(services);
-	return line => { let o = JSON.parse(line); return ('service' in o) && service_set.has(o.service); }
+    let service_set = new Set(services);
+	return line => {
+	    try {
+	        let o = JSON.parse(line);
+	        return ('service' in o) && service_set.has(o.service);
+	    } catch(err) {
+	        this.logger.error({error: err}, 'unable to read JSON line');
+	        return false;
+	    }
+	}
 }
+
 
 /**
  * set or refresh a timeout for session cleanup
@@ -786,7 +945,7 @@ function delete_log_observer(args, cb) {
 		};
 		for (s in args.services)
 			l.services.delete(args.services[s]);
-		l.session.filters[0] = service_log_filter(Array.from(l.services.values()));
+		l.session.filters[0] = this.service_log_filter(Array.from(l.services.values()));
 		let keep = new Set(Array.from(l.services.values()).map(s => this.services[s].params.logging.logpath));
 		let remove = args.services.map(s => this.services[s].params.logging.logpath);
 		remove = remove.filter(f => !keep.has(f));
@@ -821,4 +980,3 @@ function get_log_lines(args, cb) {
 	let lines = this.logsessions[args.sessionid].session.get_lines();
 	cb(null, { loglines: lines });
 }
-

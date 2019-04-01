@@ -17,8 +17,8 @@ class AppendService(base_service.BaseService):
         self.msg = msg
         super().__init__(args)
 
-    def on_message(self, msg, msg_id):
-        self.dispatch(msg + self.msg)
+    def on_message(self, msg, msg_id, parameters=None):
+        self.dispatch(msg + self.msg + parameters[0])
 
 
 class TestPipeline(unittest.TestCase):
@@ -36,7 +36,8 @@ class TestPipeline(unittest.TestCase):
                     },
                     'monitoring': {
                         'filename': '/dev/null'
-                    }
+                    },
+                    'params': ["some/file/path"]
                 }
             },
             {
@@ -51,7 +52,8 @@ class TestPipeline(unittest.TestCase):
                     },
                     'monitoring': {
                         'filename': '/dev/null'
-                    }
+                    },
+                    'params': ["http://localhost:5000"]
                 }
             },
             {
@@ -66,7 +68,8 @@ class TestPipeline(unittest.TestCase):
                     },
                     'monitoring': {
                         'filename': '/dev/null'
-                    }
+                    },
+                    'params': ["param"]
                 }
             },
         ]
@@ -91,9 +94,9 @@ class TestPipeline(unittest.TestCase):
         payload = "original message" * 1000
         expected_payload = payload
         for serv in self.services:
-            expected_payload += serv['msg']
+            expected_payload += serv['msg'] + serv['args']['params'][0]
         for serv in self.services:
-            mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port']))
+            mm.add_service(roxcomposer_message.Service(serv['args']['ip'], serv['args']['port'], serv['args']['params']))
         mm.add_service(roxcomposer_message.Service(ip, port))
         mm.set_payload(payload)
         bin_msg = mm.serialize()

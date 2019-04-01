@@ -15,6 +15,7 @@
 import socket
 import threading
 import time
+import traceback
 
 from roxcomposer import exceptions
 from roxcomposer.communication import roxcomposer_message
@@ -42,7 +43,6 @@ class BaseService:
             # there isn't a configuration file
             # the config will be loaded by the passed params directly
             self.params = params
-
 
         # buffer size to read a msg in specified byte chunks
         self.BUFFER_SIZE = 4096
@@ -107,7 +107,7 @@ class BaseService:
         self.roxcomposer_message = roxcomposer_message.Message()
 
     # need to be overwritten by inhertied classes.
-    def on_message(self, msg, msg_id):
+    def on_message(self, msg, msg_id, parameters=None):
         pass
 
     # need to be overwritten by inherited classes. This funciton gets the whole message object as a ROXcomposerMessage.
@@ -148,7 +148,7 @@ class BaseService:
             )
             connection.close()
             return True
-        except OSError as e:
+        except OSError as err:
             self.monitoring.msg_error(
                 service_name=self.params['name'],
                 message_id=message_id,
@@ -156,11 +156,13 @@ class BaseService:
                 processing_time=processing_time,
                 description='unable to dispatch message'
             )
-            self.logger.error(e.strerror + ' - ' + str(e.__traceback__))
+            self.logger.error(str(err.strerror) + "\n" + traceback.format_exc())
             return False
 
-    # receive roxcomposer protobuf messages sent to a socket running on the specified ip and port. To handle the received
-    # message please implement the on_message funtion in your inherited service.
+    # receive roxcomposer protobuf messages sent to a
+    # socket running on the specified ip and port. To
+    # handle the received message please implement the
+    # on_message function in your inherited service.
     def listen_to(self, ip, port):
         try:
             s = socket.socket()
@@ -168,9 +170,9 @@ class BaseService:
             # s.setblocking(0)
             s.bind((ip, port))
             s.listen()
-        except OSError as e:
-            self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
-            raise e
+        except OSError as err:
+            self.logger.critical(str(err.strerror) + "\n" + traceback.format_exc())
+            raise err
 
         try:
             while 1:
@@ -183,7 +185,7 @@ class BaseService:
                     chunk = connection.recv(self.BUFFER_SIZE)
                     if chunk != b'':
                         data += chunk
-                    else: # socket on the other end broke down
+                    else:  # socket on the other end broke down
                         self.logger.warn('the sending socket from {} seems to have broken down'.format(sender_address))
                         connection.close()
                         break
@@ -196,9 +198,9 @@ class BaseService:
 
                 try:
                     self.roxcomposer_message = roxcomposer_message.Message.deserialize(data)
-                except Exception as e:
-                    errmsg = 'unable to deserialize roxcomposer message {}'.format(e)
-                    self.logger.error(e)
+                except Exception as err:
+                    errmsg = 'unable to deserialize roxcomposer message {}'.format(err)
+                    self.logger.error(err)
                     self.monitoring.msg_error(
                         service_name=self.params['name'],
                         message_id='unknown',
@@ -215,20 +217,20 @@ class BaseService:
                     me = self.roxcomposer_message.pop_service()
                 except IndexError:
                     self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
-                finally:
                     me = roxcomposer_message.Service(ip, port)
 
                 self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())
 
                 self.msg_reception_time = time.time() * 1000
-                self.on_message(self.roxcomposer_message.payload, self.roxcomposer_message.id)
+                self.logger.debug('Received parameters: ' + str(me.parameters))
+                self.on_message(self.roxcomposer_message.payload, self.roxcomposer_message.id, me.parameters)
                 self.on_message_ext(self.roxcomposer_message)
 
                 if not data:
                     break
-        except OSError as e:
-            self.logger.critical(e.strerror + ' - ' + str(e.__traceback__))
-            raise e
+        except Exception as err:
+            self.logger.critical(str(err.strerror) + "\n" + traceback.format_exc())
+            raise err
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
     # the roxcomposer protobuf message.

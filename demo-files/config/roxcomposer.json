@@ -1,8 +1,7 @@
 {
   "SYSTEM": {
 	"port": 7475,
-    "loglevel": "info",
-    "logfile": "../logs/roxconnector.log"
+    "loglevel": "info"
   },
   "PLUGINS": {
       "roxcomposer": {
@@ -37,6 +36,13 @@
   },
   "REST": {
       "GET": {
+          "": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_root"
+              }
+          },
           "services": {
               "handler": {
                   "type": "plugin",
@@ -146,6 +152,13 @@
                   "type": "plugin",
                   "name": "roxcomposer",
                   "function": "delete_log_observer"
+              }
+          },
+          "delete_pipeline": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "delete_pipeline"
               }
           }
       }
