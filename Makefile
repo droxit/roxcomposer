@@ -69,7 +69,7 @@ $(build_dir_connector_plugins):
 
 connector: $(connector_package)
 
-$(connector_package): ROXCONNECTOR | $(build_package_dir) 
+$(connector_package): | $(build_package_dir) 
 	if [ $$ARTIFACT_AUTH ]; then curl -s -u "$$ARTIFACT_AUTH" $(connector_link) > $(connector_package); else echo -n "username for artifacts.droxit.de: "; read art_user; curl -s -u "$$art_user" $(connector_link) > $(connector_package); fi
 
 demo-package: $(demo_package)
