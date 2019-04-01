@@ -1,6 +1,7 @@
+.idea/*
 build/*
 dist/*
 roxcomposer.egg-info/*
-**/__pycache__/*
-**/package-lock.json
+package-lock.json
 **/node_modules/*
+**/__pycache__/*
