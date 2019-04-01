@@ -13,6 +13,7 @@
 * A service crashing on startup is now detected and communicated to the client. If present the service's error ouput is returned to the client.
 * Multiple erroneous log statements that caused server crashes were fixed.
 * Some minor argument handling fixes.
+* Fixed an error in version.sh that caused the build process to fail on occasion.
  
 # v0.4.0
 
