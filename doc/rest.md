@@ -64,6 +64,14 @@ The root path returns a short message that indicates that the server is running.
     - `name`: the name of the pipeline.
     - `services`: an array of service names or JSON objects (possibly mixed) that make up the pipeline in their intended order. The objects must have a `service` field that contains the service name and can optionally contain a `parameters` field that has a list of strings associated. Those parameters will be embedded into any message posted to this pipeline and are then available to the service.
 
+#### /delete\_pipeline
+
+- Description: Delete a previously defined pipeline
+- Method: `DELETE`
+- Parameters:
+  - Required:
+    - `name`: the name of the pipeline.
+    
 #### /pipelines
 
 - Description: Get a list of the currently defined pipelines.
@@ -114,6 +122,14 @@ The root path returns a short message that indicates that the server is running.
 - Description: Restore a previsously dumped state. Services will be attempted to start and pipelines restored if possible.
 - Method: `POST`
 - Parameters: a previously saved dump.
+
+#### /get\_logsession
+
+- Description: Retrieve information about a specific session.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `id`: the id of the log session.
 
 #### /log\_observer
 

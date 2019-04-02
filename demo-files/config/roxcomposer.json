@@ -131,6 +131,13 @@
                   "function": "get_msg_status"
               }
           },
+          "get_logsession": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_logsession"
+              }
+          },
           "load_and_start_pipeline": {
               "handler": {
                   "type": "plugin",
