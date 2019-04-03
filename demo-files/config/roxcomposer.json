@@ -71,6 +71,13 @@
                   "name": "roxcomposer",
                   "function": "get_log_lines"
               }
+          },
+          "roxcomposer_log_observer": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_log_lines"
+              }
           }
       },
       "PUT": {
@@ -79,6 +86,13 @@
                   "type": "plugin",
                   "name": "roxcomposer",
                   "function": "create_log_observer"
+              }
+          },
+          "roxcomposer_log_observer": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "create_roxcomposer_session"
               }
           }
       },
