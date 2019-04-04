@@ -809,7 +809,7 @@ function create_roxcomposer_session(args, cb){
     l.watch_files([logfile]).
         then(
             () => {
-                return cb(null, {message: "created roxcomposer logsession with id " + l.id, sessionid: l.id})
+                return cb(null, {message: "created roxcomposer logsession ", sessionid: l.id})
             },
             (err) => {
                 return cb({code:400, message: "could not create roxcomposer session "+ String(err)})
