@@ -1,8 +1,7 @@
 {
   "SYSTEM": {
 	"port": 7475,
-    "loglevel": "info",
-    "logfile": "../logs/roxconnector.log"
+    "loglevel": "info"
   },
   "PLUGINS": {
       "roxcomposer": {
@@ -144,6 +143,13 @@
                   "type": "plugin",
                   "name": "roxcomposer",
                   "function": "get_msg_status"
+              }
+          },
+          "get_logsession": {
+              "handler": {
+                  "type": "plugin",
+                  "name": "roxcomposer",
+                  "function": "get_logsession"
               }
           },
           "load_and_start_pipeline": {

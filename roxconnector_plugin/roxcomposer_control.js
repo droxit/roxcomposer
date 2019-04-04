@@ -53,6 +53,7 @@ function __roxcomposer_control_private() {
 	this.create_roxcomposer_session = create_roxcomposer_session.bind(this);
 	this.post_services_to_logsession = post_services_to_logsession.bind(this);
     this.service_log_filter = service_log_filter.bind(this);
+    this.get_logsession = get_logsession.bind(this);
 	this.default;
 }
 
@@ -60,6 +61,7 @@ module.exports = function (container) {
 	let mcp = new __roxcomposer_control_private();
 	container['init'] = mcp.init;
 	container['get_root'] = mcp.get_root;
+	container['get_logsession'] = mcp.get_logsession;
     container['delete_pipeline'] = mcp.delete_pipeline;
 	container['start_service'] = mcp.start_service;
 	container['shutdown_service'] = mcp.shutdown_service;
@@ -139,6 +141,27 @@ function check_args(args, fields) {
 		return `missing fields: [${missing.join(", ")}]`;
 	else
 		return false;
+}
+
+/**
+ * Retrieve information about a specific logsession
+ * must contain session id
+ **/
+function get_logsession(args, cb){
+    if (!args.hasOwnProperty('id')) {
+		let msg = 'get_logsession: session id not provided';
+		this.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+	}
+		let id = args['id'];
+	if(!this.logsessions.hasOwnProperty(id)){
+	    let msg = 'get_logsession: no session for session id '+ id;
+		this.logger.error({args: args}, msg);
+	    return cb({'code':400});
+	}
+	let services = Array.from(this.logsessions[id]['services'])
+	cb(null, {'id': id, 'services': services});
 }
 
 /**

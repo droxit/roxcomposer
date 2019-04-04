@@ -60,6 +60,14 @@ In the default configuration the following endpoints are available:
     - `name`: the name of the pipeline.
     - `services`: an array of service names that make up the pipeline in their intended order.
 
+#### /delete\_pipeline
+
+- Description: Delete a previously defined pipeline
+- Method: `DELETE`
+- Parameters:
+  - Required:
+    - `name`: the name of the pipeline.
+    
 #### /pipelines
 
 - Description: Get a list of the currently defined pipelines.
@@ -102,6 +110,14 @@ In the default configuration the following endpoints are available:
 - Description: Restore a previsously dumped state. Services will be attempted to start and pipelines restored if possible.
 - Method: `POST`
 - Parameters: a previously saved dump.
+
+#### /get\_logsession
+
+- Description: Retrieve information about a specific session.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `id`: the id of the log session.
 
 #### /log\_observer
 
