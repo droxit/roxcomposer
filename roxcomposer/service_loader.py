@@ -27,7 +27,8 @@ def load_class(classpath):
 
 
 def make_service_instance(classpath, args):
-    c = load_class(classpath)
-
-    return c(args)
-
+    try:
+        c = load_class(classpath)
+        return c(args)
+    except Exception as e:
+        raise exceptions.EmptyModule("Could not load module with classpath {} - {}".format(classpath, e)) from e

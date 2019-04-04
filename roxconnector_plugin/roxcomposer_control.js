@@ -50,8 +50,10 @@ function __roxcomposer_control_private() {
 	this.set_logsession_timeout = set_logsession_timeout.bind(this);
 	this.delete_log_observer = delete_log_observer.bind(this);
 	this.get_log_lines = get_log_lines.bind(this);
+	this.create_roxcomposer_session = create_roxcomposer_session.bind(this);
 	this.post_services_to_logsession = post_services_to_logsession.bind(this);
     this.service_log_filter = service_log_filter.bind(this);
+    this.get_logsession = get_logsession.bind(this);
 	this.default;
 }
 
@@ -59,6 +61,7 @@ module.exports = function (container) {
 	let mcp = new __roxcomposer_control_private();
 	container['init'] = mcp.init;
 	container['get_root'] = mcp.get_root;
+	container['get_logsession'] = mcp.get_logsession;
     container['delete_pipeline'] = mcp.delete_pipeline;
 	container['start_service'] = mcp.start_service;
 	container['shutdown_service'] = mcp.shutdown_service;
@@ -76,6 +79,7 @@ module.exports = function (container) {
 	container['delete_log_observer'] = mcp.delete_log_observer;
 	container['get_log_lines'] = mcp.get_log_lines;
 	container['post_services_to_logsession'] = mcp.post_services_to_logsession;
+	container['create_roxcomposer_session'] = mcp.create_roxcomposer_session;
 };
 
 /**
@@ -83,6 +87,9 @@ module.exports = function (container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
+    process.on('uncaughtException', cleanup_all.bind(this))
+    process.on('exit', cleanup_all.bind(this))
+
 	if (args && ('logger' in args))
 		this.logger = args.logger;
 	else
@@ -128,6 +135,20 @@ function init(args) {
 }
 
 /**
+ * cleanup all child processes when the parent terminates
+ *
+ **/
+function cleanup_all(){
+    for (var child_process in this.processes) {
+      if (this.processes.hasOwnProperty(child_process))
+        this.processes[child_process].kill('SIGINT');
+    }
+    console.log("Killing childprocesses");
+    process.exit(1);
+}
+
+
+/**
  * check arguments for the presence of fields
  * returns a list of missing fields
  **/
@@ -137,6 +158,27 @@ function check_args(args, fields) {
 		return `missing fields: [${missing.join(", ")}]`;
 	else
 		return false;
+}
+
+/**
+ * Retrieve information about a specific logsession
+ * must contain session id
+ **/
+function get_logsession(args, cb){
+    if (!args.hasOwnProperty('id')) {
+		let msg = 'get_logsession: session id not provided';
+		this.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+	}
+		let id = args['id'];
+	if(!this.logsessions.hasOwnProperty(id)){
+	    let msg = 'get_logsession: no session for session id '+ id;
+		this.logger.error({args: args}, msg);
+	    return cb({'code':400});
+	}
+	let services = Array.from(this.logsessions[id]['services'])
+	cb(null, {'id': id, 'services': services});
 }
 
 /**
@@ -327,12 +369,41 @@ function start_service(args, cb, exit_cb) {
 	this.logger.debug({opts: opt}, 'spawning process');
 
     // define what happens when the service process is terminated - set pipeline to INACTIVE
-	this.processes[name] = spawn('python3', opt, {stdio: 'inherit'})
+	this.processes[name] = spawn('python3', opt, { stdio: 'pipe' })
 		.on('exit', exit_cb ? exit_cb.bind(this, name) : cleanup_service.bind(this, name))
 		.on('error', (e) => {
 			delete this.services[name];
 			this.logger.error({error: e, args: args}, "unable to spawn service");
 		});
+
+
+	var errorMsg = "";
+
+    // this is responsible for communicating the output of the service processes
+    // each logging output is attempted to parse as JSON and then logged in the server
+    // the idea is to make internal service logs accessible to the user (in case the roxcomposer is not running locally)
+    // FixMe: There should probably be a buffer wrapper to ensure that data is not just a chunk
+    this.processes[name].stderr.on('data', (data)=>{
+        errorMsg = data.toString();
+        try{
+            let json_msg = JSON.parse(errorMsg);
+            if(json_msg.hasOwnProperty("level")){
+                if(json_msg["level"] == "ERROR"){
+                    this.logger.error({error: json_msg, service: name }, "service error");
+                } else if(json_msg["level"] == "CRITICAL"){
+                    this.logger.fatal({error: json_msg, service: name }, "fatal service error");
+                } else{
+                    this.logger.info({message: json_msg, service: name }, "service log");
+                }
+            } else{
+                this.logger.info({message: json_msg, service: name }, "service log");
+            }
+        }
+        catch(e){
+            this.logger.error({error: errorMsg, service: name }, "service error");
+        }
+    });
+
 
     //activate all pipelines that include this service and have no inactive services
 	Object.entries(this.pipelines)
@@ -350,8 +421,15 @@ function start_service(args, cb, exit_cb) {
 			if (should_be_active)
 				this.pipelines[pname].active = true;
 		});
+    // check if the service could be created (if the process exists)
+    setTimeout(function(){
+        if(this.processes.hasOwnProperty(name)){
 
-	cb(null, {'message': `service [${name}] created`});
+            cb(null, {'message': `service [${name}] created`});
+        } else{
+            cb({'code': 400, 'message': 'could not create service \n' + errorMsg});
+        }
+    }.bind(this), 1000);
 }
 
 /**
@@ -755,6 +833,41 @@ function create_log_observer(args, cb) {
 		cb(null, {sessionid: l.id});
 	}
 
+	this.set_logsession_timeout(l.id);
+}
+
+function create_roxcomposer_session(args, cb){
+    let missing = check_args(args, ['lines', 'timeout']);
+	if (missing) {
+		cb({code: 400, message: missing});
+		return;
+	}
+	let logfile = "";
+	// check if we have a logger that writes to file
+	for(var i = 0; i < this.logger.streams.length; i++){
+        if(this.logger.streams[i]["type"] === "file"){
+            logfile = this.logger.streams[i]["path"];
+        }
+	}
+	if(logfile === ""){
+	    cb({code: 400, message: "logger is not writing to file - cannot watch system logs"})
+	}
+
+    // create new LogSession
+	let l = new LogSession(args.lines);
+	this.logsessions[l.id] = { session: l, services: new Set(), timeout: args.timeout * 1000 };
+
+    //check if logfile configured
+    //if yes return that
+    l.watch_files([logfile]).
+        then(
+            () => {
+                return cb(null, {message: "created roxcomposer logsession ", sessionid: l.id})
+            },
+            (err) => {
+                return cb({code:400, message: "could not create roxcomposer session "+ String(err)})
+            }
+        );
 	this.set_logsession_timeout(l.id);
 }
 

@@ -25,6 +25,10 @@ The params section of the JSON string will be passed on to the invocation of mys
 
 In the default configuration the following endpoints are available:
 
+#### /
+
+The root path returns a short message that indicates that the server is running.
+
 #### /start\_service
 
 - Description: Start a service.
@@ -58,13 +62,29 @@ In the default configuration the following endpoints are available:
 - Parameters:
   - Required:
     - `name`: the name of the pipeline.
-    - `services`: an array of service names that make up the pipeline in their intended order.
+    - `services`: an array of service names or JSON objects (possibly mixed) that make up the pipeline in their intended order. The objects must have a `service` field that contains the service name and can optionally contain a `parameters` field that has a list of strings associated. Those parameters will be embedded into any message posted to this pipeline and are then available to the service.
 
+#### /delete\_pipeline
+
+- Description: Delete a previously defined pipeline
+- Method: `DELETE`
+- Parameters:
+  - Required:
+    - `name`: the name of the pipeline.
+    
 #### /pipelines
 
 - Description: Get a list of the currently defined pipelines.
 - Method: `GET`
 - Parameters: none
+
+#### /delete\_pipeline
+
+- Description: Delete a pipeline
+- Method: `DELETE`
+- Parameters:
+  - Required:
+    - `name`: the name of the pipeline
 
 #### /post\_to\_pipeline
 
@@ -102,6 +122,26 @@ In the default configuration the following endpoints are available:
 - Description: Restore a previsously dumped state. Services will be attempted to start and pipelines restored if possible.
 - Method: `POST`
 - Parameters: a previously saved dump.
+
+#### /get\_logsession
+
+- Description: Retrieve information about a specific session.
+- Method: `POST`
+- Parameters:
+  - Required:
+    - `id`: the id of the log session.
+   
+#### /roxcomposer_log_observer
+
+- Description: Retrieve server logs.
+- Method: `GET`
+- Parameters: none
+
+#### /roxcomposer_log_observer
+
+- Description: Create a log session for server logs.
+- Method: `PUT`
+- Parameters: none
 
 #### /log\_observer
 
@@ -187,6 +227,8 @@ This allows you to set a pipeline by naming it and listing the name's of the ser
 ```bash
 set_pipeline pipe myservice myotherservice gotanotherone
 ```
+
+Currently the cli does not support service parameters.
 
 #### pipelines
 

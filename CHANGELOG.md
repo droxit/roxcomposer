@@ -1,3 +1,20 @@
+# v0.4.1
+
+## New
+
+* Service parameters can now be specified when defining a pipeline - when posting to this pipeline the parameters will be embedded into the message.
+* REST endpoint for `/` added to demo configuration that returns a short info if the server is running.
+* Pipelines can now be deleted using the `/delete_pipeline` endpoint.
+* The cli now converts timestamps from service logs and message traces from UTC to the local time zone.
+
+## Fixed
+
+* Stopping the reporting service or a crash of the same don't lead to a server crash anymore upon calls to `/get_message_history` or `/get_message_status`.
+* A service crashing on startup is now detected and communicated to the client. If present the service's error ouput is returned to the client.
+* Multiple erroneous log statements that caused server crashes were fixed.
+* Some minor argument handling fixes.
+* Fixed an error in version.sh that caused the build process to fail on occasion.
+
 # v0.4.0
 
 ## New
