@@ -118,6 +118,18 @@ In the default configuration the following endpoints are available:
 - Parameters:
   - Required:
     - `id`: the id of the log session.
+   
+#### /roxcomposer_log_observer
+
+- Description: Retrieve server logs.
+- Method: `GET`
+- Parameters: none
+
+#### /roxcomposer_log_observer
+
+- Description: Create a log session for server logs.
+- Method: `PUT`
+- Parameters: none
 
 #### /log\_observer
 
