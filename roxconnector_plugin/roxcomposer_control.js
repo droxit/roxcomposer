@@ -50,6 +50,7 @@ function __roxcomposer_control_private() {
 	this.set_logsession_timeout = set_logsession_timeout.bind(this);
 	this.delete_log_observer = delete_log_observer.bind(this);
 	this.get_log_lines = get_log_lines.bind(this);
+	this.create_roxcomposer_session = create_roxcomposer_session.bind(this);
 	this.post_services_to_logsession = post_services_to_logsession.bind(this);
     this.service_log_filter = service_log_filter.bind(this);
     this.get_logsession = get_logsession.bind(this);
@@ -78,6 +79,7 @@ module.exports = function (container) {
 	container['delete_log_observer'] = mcp.delete_log_observer;
 	container['get_log_lines'] = mcp.get_log_lines;
 	container['post_services_to_logsession'] = mcp.post_services_to_logsession;
+	container['create_roxcomposer_session'] = mcp.create_roxcomposer_session;
 };
 
 /**
@@ -831,6 +833,41 @@ function create_log_observer(args, cb) {
 		cb(null, {sessionid: l.id});
 	}
 
+	this.set_logsession_timeout(l.id);
+}
+
+function create_roxcomposer_session(args, cb){
+    let missing = check_args(args, ['lines', 'timeout']);
+	if (missing) {
+		cb({code: 400, message: missing});
+		return;
+	}
+	let logfile = "";
+	// check if we have a logger that writes to file
+	for(var i = 0; i < this.logger.streams.length; i++){
+        if(this.logger.streams[i]["type"] === "file"){
+            logfile = this.logger.streams[i]["path"];
+        }
+	}
+	if(logfile === ""){
+	    cb({code: 400, message: "logger is not writing to file - cannot watch system logs"})
+	}
+
+    // create new LogSession
+	let l = new LogSession(args.lines);
+	this.logsessions[l.id] = { session: l, services: new Set(), timeout: args.timeout * 1000 };
+
+    //check if logfile configured
+    //if yes return that
+    l.watch_files([logfile]).
+        then(
+            () => {
+                return cb(null, {message: "created roxcomposer logsession ", sessionid: l.id})
+            },
+            (err) => {
+                return cb({code:400, message: "could not create roxcomposer session "+ String(err)})
+            }
+        );
 	this.set_logsession_timeout(l.id);
 }
 
