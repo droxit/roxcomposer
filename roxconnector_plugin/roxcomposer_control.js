@@ -783,30 +783,39 @@ function create_log_observer(args, cb) {
 	this.set_logsession_timeout(l.id);
 }
 
-
 function create_roxcomposer_session(args, cb){
     let missing = check_args(args, ['lines', 'timeout']);
 	if (missing) {
 		cb({code: 400, message: missing});
 		return;
 	}
-	let logfile = "../logs/roxconnector.log"
+	let logfile = "";
+	// check if we have a logger that writes to file
+	for(var i = 0; i < this.logger.streams.length; i++){
+        if(this.logger.streams[i]["type"] === "file"){
+            logfile = this.logger.streams[i]["path"];
+        }
+	}
+	if(logfile === ""){
+	    cb({code: 400, message: "logger is not writing to file - cannot watch system logs"})
+	}
+
     // create new LogSession
 	let l = new LogSession(args.lines);
 	this.logsessions[l.id] = { session: l, services: new Set(), timeout: args.timeout * 1000 };
-	this.set_logsession_timeout(l.id);
 
     //check if logfile configured
     //if yes return that
-    l.session.watch_files([logfile]).
+    l.watch_files([logfile]).
         then(
             () => {
-                return cb(null, {message: "created roxcomposer logsession with id " + l.id})
+                return cb(null, {message: "created roxcomposer logsession with id " + l.id, sessionid: l.id})
             },
             (err) => {
                 return cb({code:400, message: "could not create roxcomposer session "+ String(err)})
             }
         );
+	this.set_logsession_timeout(l.id);
 }
 
 /*
