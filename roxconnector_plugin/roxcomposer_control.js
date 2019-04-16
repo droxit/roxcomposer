@@ -54,6 +54,7 @@ function __roxcomposer_control_private() {
 	this.post_services_to_logsession = post_services_to_logsession.bind(this);
     this.service_log_filter = service_log_filter.bind(this);
     this.get_logsession = get_logsession.bind(this);
+    this.cleanup_all = cleanup_all.bind(this);
 	this.default;
 }
 
@@ -87,8 +88,8 @@ module.exports = function (container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
-    process.on('uncaughtException', cleanup_all.bind(this))
-    process.on('exit', cleanup_all.bind(this))
+    process.on('uncaughtException', this.cleanup_all);
+    process.on('exit', this.cleanup_all);
 
 	if (args && ('logger' in args))
 		this.logger = args.logger;
@@ -138,7 +139,9 @@ function init(args) {
  * cleanup all child processes when the parent terminates
  *
  **/
-function cleanup_all(){
+function cleanup_all(err){
+    console.log(err)
+    this.logger.fatal(err);
     for (var child_process in this.processes) {
       if (this.processes.hasOwnProperty(child_process))
         this.processes[child_process].kill('SIGINT');
@@ -501,8 +504,12 @@ function post_to_pipeline(args, cb) {
 		this.logger.info({message_id: msg.id, pipeline: args.name}, 'message posted to pipeline');
 		let packet = msg.serialize();
 		socket.end(packet);
-		cb(null, {'message': 'pipeline initiated', 'message_id': msg.id});
+
 	});
+	socket.on('end', () => {
+	    cb(null, {'message': 'pipeline initiated', 'message_id': msg.id});
+	});
+
 	socket.on('error', (e) => {
 		this.logger.error({error: e, service: { name: services_in_pipe[0], ip: start.params.ip, port: start.params.port }}, 'unable to connect to service');
 		cb({'code': 500, 'message': 'internal server error'});
@@ -590,7 +597,6 @@ function set_pipeline(args, cb) {
 		cb({'code': 400, 'message': msg});
 		return;
 	}
-
 	this.pipelines[args.name] = {
 		'services': pipe_services,
 		'active': true
