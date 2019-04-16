@@ -2,3 +2,4 @@ google
 protobuf>=3.3.*
 urwid>=2.*
 requests
+python-dateutil
