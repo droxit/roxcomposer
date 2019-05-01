@@ -18,6 +18,10 @@
           <option name="url" value="git@github.com:droxit/ROXcomposer-gui.git" />
           <option name="userName" value="" />
         </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="git@github.com:droxit/roxconnector.git" />
+          <option name="userName" value="" />
+        </UrlAndUserName>
       </list>
     </option>
     <option name="cloneParentDir" value="$USER_HOME$/dev/Webstorm" />
