@@ -59,7 +59,7 @@ fs.mkdtemp(`${tmp}${sep}`, (err, tmpdir) => {
 					name: "image_adder",
 					ip: "127.0.0.1",
 					port: 4003,
-					image: "./assets/minions-yeah.jpg",
+					image: "./assets/droxit.jpg",
 					logging: {
 						logpath: path.join(tmpdir, "service.log"),
 						level: "INFO"
