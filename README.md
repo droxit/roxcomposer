@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You have received a copy of the GNU General Public License
-along with this program. See also <http://www.gnu.org/licenses/>.
+along with this program ([plain text](COPYING), [Markdown](COPYING.md)). See also <http://www.gnu.org/licenses/>.
 
 ## Status
 
