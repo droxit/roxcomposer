@@ -2,7 +2,7 @@
 
 This is droxits microservice framework repository. It yields a python framework to set up microservices easily.
     
-Copyright (C) 2019  droxIT GmbH - S. Hanson, M. Villarroya, C. Lamberty, J. Becker, C. Hecktor, E. Heller
+Copyright (C) 2019  droxIT GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
