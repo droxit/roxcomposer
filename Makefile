@@ -20,7 +20,7 @@ connector_package_base = roxconnector-$(connector_version)
 connector_package_files = $(build_base)/$(connector_package_base)
 connector_archive := $(connector_package_base).tgz
 connector_package = $(build_base)/$(connector_archive)
-connector_link = https://artifacts.droxit.de/opt/artifacts/roxconnector/release/$(connector_archive)
+connector_link = https://artifacts.droxit.de/roxconnector/release/$(connector_archive)
 
 composer_scripts = scripts/install.sh scripts/start_server.sh
 
