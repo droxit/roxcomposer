@@ -62,7 +62,7 @@ setup(
     author_email='info@droxit.de',
 
     # Choose your license
-    license='none',
+    license='LGPLv3',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
