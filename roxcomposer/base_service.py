@@ -6,9 +6,26 @@
 # predefined pipeline structure. That means every service which is listed in a pipeline will get and send a message in
 # the defined direction.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2017 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer.                                    |
+# |                                                                      |
+# | ROXcomposer is free software: you can redistribute it and/or modify  |
+# | it under the terms of the GNU Lesser General Public License as       |
+# | published by the Free Software Foundation, either version 3 of the   |
+# | License, or (at your option) any later version.                      |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU Lesser General Public License    |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 
@@ -156,7 +173,7 @@ class BaseService:
                 processing_time=processing_time,
                 description='unable to dispatch message'
             )
-            self.logger.error(str(err.strerror) + "\n" + traceback.format_exc())
+            self.logger.error(str(err) + "\n" + traceback.format_exc())
             return False
 
     # receive roxcomposer protobuf messages sent to a
@@ -171,7 +188,7 @@ class BaseService:
             s.bind((ip, port))
             s.listen()
         except OSError as err:
-            self.logger.critical(str(err.strerror) + "\n" + traceback.format_exc())
+            self.logger.critical(str(err) + "\n" + traceback.format_exc())
             raise err
 
         try:
@@ -229,7 +246,7 @@ class BaseService:
                 if not data:
                     break
         except Exception as err:
-            self.logger.critical(str(err.strerror) + "\n" + traceback.format_exc())
+            self.logger.critical(str(err) + "\n" + traceback.format_exc())
             raise err
 
     # this function is usually called by services, to receive a message out of the pipeline object posted as part of
