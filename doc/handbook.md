@@ -15,6 +15,8 @@
 
 [Interfacing with the framework (REST API)](rest.md)
 
+[Logging and monitoring](logging_monitoring.md)
+
 [Elasticstack integration](elastic.md)
 
 [Appendix](appendix.md)
