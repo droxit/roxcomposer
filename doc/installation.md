@@ -10,6 +10,8 @@
 
 The project contains a Makefile with targets for package building and deployment:
 
+| command | description |
+| --- | ---- |
 | make python-package | build only the python package containing only the base functionality. The package will be placed in `dist` |
 | make demo-package   | build a whole demo system with all interlocking parts into one archive in `build` |
 | make deploy-demo    | deploy the demo (build it if needed) to a directory. The script will prompt for the target location. During this step the ROXconnector package will be downloaded and if needed access credentials will be prompted for |
