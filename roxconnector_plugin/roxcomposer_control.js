@@ -355,9 +355,9 @@ function start_service(args, cb, exit_cb) {
     // add default values if given to params if logging or monitoring is not set
     if(this.hasOwnProperty('default')) {
         if (!args.params.hasOwnProperty('logging') && this.default.hasOwnProperty('logging'))
-            args.params.logging = this.default.logging;
+            args.params.logging = Object.assign({}, this.default.logging);
         if (!args.params.hasOwnProperty('monitoring') && this.default.hasOwnProperty('monitoring'))
-            args.params.monitoring = this.default.monitoring;
+            args.params.monitoring = Object.assign({}, this.default.monitoring);
     }
 
 	if (args.params.hasOwnProperty('logging') && args.params.logging.hasOwnProperty('logpath')) {
