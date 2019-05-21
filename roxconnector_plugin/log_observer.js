@@ -117,14 +117,19 @@ function watch_file(file) {
 				let position = stats.size;
 				this.watcher = fs.watch(file, {}, (eventType, _) => {
 					if (eventType === 'change') {
-						fs.read(fd, this.buffer, offset, this.bufsize - offset, position, (err, bytesRead) => {
-							position += bytesRead;
-							ret = read_lines(this.buffer.toString('utf-8', 0, offset + bytesRead));
-							offset = this.buffer.write(ret.rest);
-							this.subscribers.forEach((s) => {
-								s.cb(ret.lines);
-							});
-						});
+					    try {
+                            fs.read(fd, this.buffer, offset, this.bufsize - offset, position, (err, bytesRead) => {
+                                position += bytesRead;
+                                ret = read_lines(this.buffer.toString('utf-8', 0, offset + bytesRead));
+                                offset = this.buffer.write(ret.rest);
+                                this.subscribers.forEach((s) => {
+                                    s.cb(ret.lines);
+                                });
+                            });
+					    }
+					    catch(e) {
+					        this.logger.error({error: e, file: file}, 'Unable to watch log file!');
+					    }
 					}
 				});
 				this.watcher.on('error', (err) => { console.error(err); });
