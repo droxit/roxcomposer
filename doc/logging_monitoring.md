@@ -16,7 +16,7 @@ The package provides a basic logger implementation which will be used out of the
 }
 ```
 
-`logpath` and `level` would be passed on to the basic logger. When left out the logger will use `stdout` at level `WARN`
+`logpath` and `level` would be passed to the basic logger. When left out the logger will use `stdout` at level `WARN`
 
 If logpath is an existing directory a logfile will be created within it using the service name suffixed with `.log`.
 
@@ -160,12 +160,13 @@ Assuming the following args passed to the service:
   "name": "service_name",
   ...
   "logging": {
-    "logpath": "logs/service_name.log"
+    "logpath": "logs/service_name.log",
     "level": "INFO"
   }
 }
+```
 
-the logger would be instantiated the following way:
+The logger would be instantiated the following way:
 
 ```python
 logger(servicename, logpath="logs/service_name.log", level="INFO"). If `log_path` points to a directory then a logfile is created within it using the service name suffixed with `.log`.
