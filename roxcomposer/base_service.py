@@ -91,6 +91,8 @@ class BaseService:
 
         self.logger = LoggingClass(self.params['name'], **logger_params)
 
+        # Read service parameters
+
         if self.params is None:
             # logger need the service name
             self.params['name'] = 'not defined'
@@ -106,6 +108,21 @@ class BaseService:
             if param not in self.params:
                 self.logger.critical('BaseService.__init__() - "' + param + '" is required in params.')
                 raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
+
+        # Validate service parameters
+
+        if not isinstance(self.params['ip'], str):
+            self.logger.critical('BaseService.__init__() - "ip" in params is not a string.')
+            raise exceptions.ConfigError('BaseService.__init__() - "ip" in params is not a string.')
+        if not isinstance(self.params['port'], int):
+            self.logger.critical('BaseService.__init__() - "port" in params is not an int.')
+            raise exceptions.ConfigError('BaseService.__init__() - "port" in params is not an int.')
+
+        try:
+            socket.inet_aton(self.params['ip'])
+        except socket.error:
+            self.logger.critical('BaseService.__init__() - "ip" in params is not a valid IP address.')
+            raise exceptions.ConfigError('BaseService.__init__() - "ip" in params is not a valid IP address.')
 
         # initialize monitoring
         monitoring_params = {
