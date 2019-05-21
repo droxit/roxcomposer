@@ -140,10 +140,6 @@ known status. See the API [documentation](rest.md) for details on accessing the 
 
 # Logging injection
 
-Any logging class needs to adhere to the following interface to be compatible to the base service:
-
-roxcomposer supports injection of logging classes which must adhere to an interface to be compatible to the base service class:
-
 ## Initialization
 
 Any logging class must have the following instantiation:
