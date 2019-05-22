@@ -92,7 +92,7 @@ class TestMonitoring(unittest.TestCase):
 
             params = {
                 'name': 'monitortest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -119,7 +119,7 @@ class TestMonitoring(unittest.TestCase):
 
             params = {
                 'name': 'monitortest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'monitoring': {
                     'filename': monitor_path,
@@ -131,7 +131,7 @@ class TestMonitoring(unittest.TestCase):
 
             params = {
                 'name': 'monitortest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'monitoring': {
                     'filename': monitor_path,
@@ -143,7 +143,7 @@ class TestMonitoring(unittest.TestCase):
 
             params = {
                 'name': 'monitortest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'monitoring': {
                     'filename': monitor_path,

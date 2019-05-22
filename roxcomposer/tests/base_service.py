@@ -113,6 +113,27 @@ class TestBaseService(unittest.TestCase):
 
         self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, self.test_params_2)
 
+        # test invalid parameters
+        self.assertRaises(exceptions.ConfigError, base_service.BaseService, {
+            'ip': '127.0.0.1',
+            'port': '4711',
+            'name': 'fancy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
+        })
+
+        self.assertRaises(exceptions.ConfigError, base_service.BaseService, {
+            'ip': '127.0.999.1',
+            'port': 4711,
+            'name': 'fancy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
+        })
+
         # test initiation with params
         bs_with_params = base_service.BaseService({
             'ip': '127.0.0.1',

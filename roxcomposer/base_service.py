@@ -140,11 +140,11 @@ class BaseService:
         self.logger.info('started', **self.params)
         self.roxcomposer_message = roxcomposer_message.Message()
 
-    # need to be overwritten by inhertied classes.
+    # need to be overwritten by inherited classes.
     def on_message(self, msg, msg_id, parameters=None):
         pass
 
-    # need to be overwritten by inherited classes. This funciton gets the whole message object as a ROXcomposerMessage.
+    # need to be overwritten by inherited classes. This function gets the whole message object as a ROXcomposerMessage.
     # If you just need the payload's message, please user on_message instead.
     def on_message_ext(self, extended_msg):
         pass
@@ -250,7 +250,8 @@ class BaseService:
                 try:
                     me = self.roxcomposer_message.pop_service()
                 except IndexError:
-                    self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
+                    self.logger.warn('Received message with empty pipeline - any additional parameters meant for this '
+                                     'service are lost')
                     me = roxcomposer_message.Service(ip, port)
 
                 self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())
