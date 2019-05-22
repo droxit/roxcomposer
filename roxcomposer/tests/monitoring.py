@@ -35,11 +35,12 @@ from roxcomposer import exceptions
 
 
 class TestMonitoring(unittest.TestCase):
- 
+
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_basic_monitoring(self):
         self.assertRaises(exceptions.ParameterMissing, basic_monitoring.BasicMonitoring)
-        self.assertRaises(exceptions.ConfigError, basic_monitoring.BasicMonitoring, filename='/not/even/remotely/viable')
+        self.assertRaises(exceptions.ConfigError, basic_monitoring.BasicMonitoring,
+                          filename='/not/even/remotely/viable')
         self.assertRaises(exceptions.ParameterMissing, basic_monitoring.BasicReporting)
         self.assertRaises(exceptions.ConfigError, basic_monitoring.BasicReporting, filename='/not/even/remotely/viable')
 
