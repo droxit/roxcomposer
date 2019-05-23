@@ -1,3 +1,13 @@
+# v0.4.3
+
+## New
+
+* Check parameters of a service ("ip", "port") for validity and throw a `roxcomposer.exceptions.ConfigError` if parameters are invalid
+
+## Fixed 
+
+* Fixed crash when trying to bind to an invalid IP address specified in service parameters
+
 # v0.4.2
 
 ## New
