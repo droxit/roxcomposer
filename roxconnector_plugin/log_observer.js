@@ -96,8 +96,12 @@ function FileListener(bufsize=2048) {
 }
 
 // watch a file
+// TODO: Throw exception
 function watch_file(file) {
 	let p = new Promise((resolve, reject) => {
+
+	    throw new Error('Uh-oh!');
+
 		fs.open(file, 'r', (err, fd) => {
 			if (err) {
 				reject(err);
@@ -127,8 +131,8 @@ function watch_file(file) {
                                 });
                             });
 					    }
-					    catch(e) {
-					        this.logger.error({error: e, file: file}, 'Unable to watch log file!');
+					    catch(err) {
+					        this.logger.error({error: err, file: file}, 'Unable to watch log file!');
 					    }
 					}
 				});

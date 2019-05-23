@@ -882,15 +882,21 @@ function create_roxcomposer_session(args, cb){
 
     //check if logfile configured
     //if yes return that
-    l.watch_files([logfile]).
-        then(
-            () => {
-                return cb(null, {message: "created roxcomposer logsession ", sessionid: l.id})
-            },
-            (err) => {
-                return cb({code:400, message: "could not create roxcomposer session "+ String(err)})
-            }
-        );
+    // TODO: Include catch
+    l.watch_files([logfile]).then(
+        () => {
+            return cb(null, {message: "created roxcomposer logsession ", sessionid: l.id})
+            // console.log("success!")
+        },
+        (error) => {
+            // return cb({code:400, message: "could not create roxcomposer session "+ String(err)})
+            return Promise.reject(error)
+        }
+    ).catch(function(error) {
+        //console.log(error);
+        return cb({code:400, message: "could not create roxcomposer session "+ String(error)});
+    });
+
 	this.set_logsession_timeout(l.id);
 }
 

@@ -21,7 +21,6 @@
 
 import logging
 import os
-import time
 import json
 from functools import partial
 from datetime import datetime, timezone
@@ -36,9 +35,10 @@ level_map = {
     'CRITICAL': logging.CRITICAL
 }
 
+
 class JSONFormatter(logging.Formatter):
     def __init__(self):
-        pass
+        super().__init__()
 
     @staticmethod
     def get_attr(record, field):
@@ -54,7 +54,7 @@ class JSONFormatter(logging.Formatter):
             out[k] = r['extra'][k]
 
         return json.dumps(out)
-        #return json.dumps(r)
+        # return json.dumps(r)
 
 
 # This class provided a standard logging feature. It takes arguments like the {'path': './service.log'} to specify
@@ -93,7 +93,6 @@ class BasicLogger:
 
         for l in levels:
             setattr(self, l, partial(self.do_logging, l))
-
 
     def do_logging(self, level, msg, **extra):
         extra['service'] = self.servicename
