@@ -873,7 +873,7 @@ function create_roxcomposer_session(args, cb){
         }
 	}
 	if(logfile === ""){
-	    cb({code: 400, message: "logger is not writing to file - cannot watch system logs"})
+	    cb({code: 400, message: "logger is not writing to file - cannot watch system logs"});
 	}
 
     // create new LogSession
@@ -885,16 +885,16 @@ function create_roxcomposer_session(args, cb){
     // TODO: Include catch
     l.watch_files([logfile]).then(
         () => {
-            return cb(null, {message: "created roxcomposer logsession ", sessionid: l.id})
+            cb(null, {message: "created roxcomposer logsession ", sessionid: l.id});
             // console.log("success!")
         },
         (error) => {
-            // return cb({code:400, message: "could not create roxcomposer session "+ String(err)})
-            return Promise.reject(error)
+            // cb({code:400, message: "could not create roxcomposer session "+ String(err)});
+            Promise.reject(error)
         }
     ).catch(function(error) {
         //console.log(error);
-        return cb({code:400, message: "could not create roxcomposer session "+ String(error)});
+        cb({code:400, message: "could not create roxcomposer session "+ String(error)});
     });
 
 	this.set_logsession_timeout(l.id);
