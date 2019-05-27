@@ -54,6 +54,9 @@ Spawn = function () {
 		if (sig === 'SIGTERM' && ('exit' in this.ev_map))
 			this.ev_map.exit.forEach(cb => cb(0, 'SIGTERM'));
 	}).bind(this);
+
+    this.stderr = {};
+	this.stderr.on = (() => {});
 }
 
 let spawnMock = {
