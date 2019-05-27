@@ -744,20 +744,25 @@ function load_services_and_pipelines(args, cb) {
 
 	if ('services' in args) {
 		for (let s in args.services) {
-			if (s in this.services)
-				skipped_services.push(s);
-			else {
-				promises.push(new Promise((resolve) => {
-					this.start_service(args.services[s], (err, msg) => {
-						if (err) {
-							errors.push(err);
-						} else {
-							started_services.push(s);
-						}
-						resolve();
-					});
-				}));
-			}
+		    // check if it's a normal service or one with params
+		    if (!(typeof s === "string" || s instanceof String) && "service" in s) {
+		        s = s["service"];
+		    }
+
+		    if (s in this.services)
+                    skipped_services.push(s);
+            else {
+                promises.push(new Promise((resolve) => {
+                    this.start_service(args.services[s], (err, msg) => {
+                        if (err) {
+                            errors.push(err);
+                        } else {
+                            started_services.push(s);
+                        }
+                        resolve();
+                    });
+                }));
+            }
 		}
 	}
 
