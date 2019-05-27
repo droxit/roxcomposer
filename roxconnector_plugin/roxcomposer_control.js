@@ -749,9 +749,9 @@ function load_services_and_pipelines(args, cb) {
 		        s = s["service"];
 		    }
 
-		    if (s in this.services)
-                    skipped_services.push(s);
-            else {
+		    if (s in this.services) {
+		        skipped_services.push(s);
+            } else {
                 promises.push(new Promise((resolve) => {
                     this.start_service(args.services[s], (err, msg) => {
                         if (err) {
