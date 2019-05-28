@@ -96,7 +96,7 @@ function FileListener(bufsize=2048) {
 }
 
 // watch a file
-// TODO: Throw exception
+// TODO: Remove demo exception
 function watch_file(file) {
 	let p = new Promise((resolve, reject) => {
 
