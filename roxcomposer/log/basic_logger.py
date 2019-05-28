@@ -92,7 +92,14 @@ class BasicLogger:
         for l in levels:
             setattr(self, l, partial(self.do_logging, l))
 
-    def do_logging(self, level, msg, description, **extra):
+    def do_logging(self, level, msg, description="", **extra):
+        """
+        Create log message with specified data.
+        :param level: Log level.
+        :param msg: str - Message to be logged.
+        :param description: str - Description of log message (default: "").
+        :param extra: dict - Additional information.
+        """
         extra['service'] = self.servicename
         extra['description'] = description
         getattr(self.logger, level)(msg, extra={'extra': extra})
