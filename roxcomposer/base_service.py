@@ -91,6 +91,8 @@ class BaseService:
 
         self.logger = LoggingClass(self.params['name'], **logger_params)
 
+        # Read service parameters
+
         if self.params is None:
             # logger need the service name
             self.params['name'] = 'not defined'
@@ -106,6 +108,21 @@ class BaseService:
             if param not in self.params:
                 self.logger.critical('BaseService.__init__() - "' + param + '" is required in params.')
                 raise exceptions.ParameterMissing('BaseService.__init__() - "' + param + '" is required in params.')
+
+        # Validate service parameters
+
+        if not isinstance(self.params['ip'], str):
+            self.logger.critical('BaseService.__init__() - "ip" in params is not a string.')
+            raise exceptions.ConfigError('BaseService.__init__() - "ip" in params is not a string.')
+        if not isinstance(self.params['port'], int):
+            self.logger.critical('BaseService.__init__() - "port" in params is not an int.')
+            raise exceptions.ConfigError('BaseService.__init__() - "port" in params is not an int.')
+
+        try:
+            socket.inet_aton(self.params['ip'])
+        except socket.error:
+            self.logger.critical('BaseService.__init__() - "ip" in params is not a valid IP address.')
+            raise exceptions.ConfigError('BaseService.__init__() - "ip" in params is not a valid IP address.')
 
         # initialize monitoring
         monitoring_params = {
@@ -123,11 +140,11 @@ class BaseService:
         self.logger.info('started', **self.params)
         self.roxcomposer_message = roxcomposer_message.Message()
 
-    # need to be overwritten by inhertied classes.
+    # need to be overwritten by inherited classes.
     def on_message(self, msg, msg_id, parameters=None):
         pass
 
-    # need to be overwritten by inherited classes. This funciton gets the whole message object as a ROXcomposerMessage.
+    # need to be overwritten by inherited classes. This function gets the whole message object as a ROXcomposerMessage.
     # If you just need the payload's message, please user on_message instead.
     def on_message_ext(self, extended_msg):
         pass
@@ -233,7 +250,8 @@ class BaseService:
                 try:
                     me = self.roxcomposer_message.pop_service()
                 except IndexError:
-                    self.logger.warn('Received message with empty pipeline - any additional parameters meant for this service are lost')
+                    self.logger.warn('Received message with empty pipeline - any additional parameters meant for this '
+                                     'service are lost')
                     me = roxcomposer_message.Service(ip, port)
 
                 self.logger.debug('ROXcomposerMessage received: ' + self.roxcomposer_message.__str__())

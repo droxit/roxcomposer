@@ -19,11 +19,11 @@
 # |                                                                      |
 # |----------------------------------------------------------------------|
 
+import json
 import logging
 import os
-import json
-from functools import partial
 from datetime import datetime, timezone
+from functools import partial
 
 from roxcomposer import exceptions
 
@@ -78,8 +78,6 @@ class BasicLogger:
             handler = logging.StreamHandler()
         formatter = JSONFormatter()
         handler.setFormatter(formatter)
-        
-        handler.setFormatter(formatter)
 
         self.logger.addHandler(handler)
 
@@ -94,8 +92,16 @@ class BasicLogger:
         for l in levels:
             setattr(self, l, partial(self.do_logging, l))
 
-    def do_logging(self, level, msg, **extra):
+    def do_logging(self, level, msg, description="", **extra):
+        """
+        Create log message with specified data.
+        :param level: Log level.
+        :param msg: str - Message to be logged.
+        :param description: str - Description of log message (default: "").
+        :param extra: dict - Additional information.
+        """
         extra['service'] = self.servicename
+        extra['description'] = description
         getattr(self.logger, level)(msg, extra={'extra': extra})
 
 #
