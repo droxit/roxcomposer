@@ -130,7 +130,7 @@ function watch_file(file) {
 						} catch (err) {
 						    let err_new = new Error('Unable to watch file: ' + String(file));
 							console.error(err);
-							console.error(err_new)
+							console.error(err_new);
 							reject(err_new);
 						}
 					}
