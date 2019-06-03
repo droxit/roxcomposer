@@ -38,7 +38,7 @@ level_map = {
 
 class JSONFormatter(logging.Formatter):
     def __init__(self):
-        pass
+        super().__init__()
 
     @staticmethod
     def get_attr(record, field):
