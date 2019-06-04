@@ -46,6 +46,7 @@ The basic logger has functions for logging on different log levels: debug, info,
 ```python
 self.logger.info("Hello World!")
 self.logger.error('something went wrong', message_id='c534efc0-5065-40ba-8ec8-1186e85a14ef', additional={'stuff': 42}) # we can log anything that is JSON serializable
+self.logger.info({"key": "value"}, description="received message") # Use 'description' to separate a parsable JSON-message from its context
 ```
 
 the resulting log messages would look like this (the time is given in UTC):
@@ -53,6 +54,7 @@ the resulting log messages would look like this (the time is given in UTC):
 ```json
 {"level": "INFO", "msg": "Hello World!", "time": "2018-07-05T10:28:19+0000", "service": "myservice"}
 {"level": "ERROR", "msg": "something went wrong", "time": "2018-07-05T11:55:19+0000", "message_id": "c534efc0-5065-40ba-8ec8-1186e85a14ef", "additional": {"stuff": 42}, "service": "myservice"}
+{"level": "INFO", "msg": {"key": "value"}, "time": "2019-06-04T13:34:14+0000", "service": "testservice", "description": "received message"}
 ```
 
 ## Logging exceptions
