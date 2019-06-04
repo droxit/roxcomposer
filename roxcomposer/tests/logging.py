@@ -37,7 +37,7 @@ class TestLogging(unittest.TestCase):
     def test_basic_logger_fails(self):
         params = {
             'name': 'logger_should_fail',
-            'ip': 'not important',
+            'ip': '127.0.0.1',
             'port': 3,
             'logging': {
                 'level': 'WARNING',
@@ -63,7 +63,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logging_logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -123,7 +123,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -146,7 +146,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -162,7 +162,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -178,7 +178,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',

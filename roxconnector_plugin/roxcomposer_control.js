@@ -355,9 +355,9 @@ function start_service(args, cb, exit_cb) {
     // add default values if given to params if logging or monitoring is not set
     if(this.hasOwnProperty('default')) {
         if (!args.params.hasOwnProperty('logging') && this.default.hasOwnProperty('logging'))
-            args.params.logging = this.default.logging;
+            args.params.logging = Object.assign({}, this.default.logging);
         if (!args.params.hasOwnProperty('monitoring') && this.default.hasOwnProperty('monitoring'))
-            args.params.monitoring = this.default.monitoring;
+            args.params.monitoring = Object.assign({}, this.default.monitoring);
     }
 
 	if (args.params.hasOwnProperty('logging') && args.params.logging.hasOwnProperty('logpath')) {
@@ -744,20 +744,25 @@ function load_services_and_pipelines(args, cb) {
 
 	if ('services' in args) {
 		for (let s in args.services) {
-			if (s in this.services)
-				skipped_services.push(s);
-			else {
-				promises.push(new Promise((resolve) => {
-					this.start_service(args.services[s], (err, msg) => {
-						if (err) {
-							errors.push(err);
-						} else {
-							started_services.push(s);
-						}
-						resolve();
-					});
-				}));
-			}
+		    // check if it's a normal service or one with params
+		    if (!(typeof s === "string" || s instanceof String) && "service" in s) {
+		        s = s["service"];
+		    }
+
+		    if (s in this.services) {
+		        skipped_services.push(s);
+            } else {
+                promises.push(new Promise((resolve) => {
+                    this.start_service(args.services[s], (err, msg) => {
+                        if (err) {
+                            errors.push(err);
+                        } else {
+                            started_services.push(s);
+                        }
+                        resolve();
+                    });
+                }));
+            }
 		}
 	}
 
@@ -873,7 +878,7 @@ function create_roxcomposer_session(args, cb){
         }
 	}
 	if(logfile === ""){
-	    cb({code: 400, message: "logger is not writing to file - cannot watch system logs"})
+	    cb({code: 400, message: "logger is not writing to file - cannot watch system logs"});
 	}
 
     // create new LogSession
@@ -882,15 +887,14 @@ function create_roxcomposer_session(args, cb){
 
     //check if logfile configured
     //if yes return that
-    l.watch_files([logfile]).
-        then(
-            () => {
-                return cb(null, {message: "created roxcomposer logsession ", sessionid: l.id})
-            },
-            (err) => {
-                return cb({code:400, message: "could not create roxcomposer session "+ String(err)})
-            }
-        );
+    l.watch_files([logfile]).then(
+        () => {
+            cb(null, {message: "created roxcomposer logsession ", sessionid: l.id});
+        }
+    ).catch((error) => {
+        cb({code:400, message: "could not create roxcomposer session - " + String(error)});
+    });
+
 	this.set_logsession_timeout(l.id);
 }
 

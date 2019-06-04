@@ -97,7 +97,8 @@ function FileListener(bufsize=2048) {
 
 // watch a file
 function watch_file(file) {
-	let p = new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
+
 		fs.open(file, 'r', (err, fd) => {
 			if (err) {
 				reject(err);
@@ -117,22 +118,26 @@ function watch_file(file) {
 				let position = stats.size;
 				this.watcher = fs.watch(file, {}, (eventType, _) => {
 					if (eventType === 'change') {
-						fs.read(fd, this.buffer, offset, this.bufsize - offset, position, (err, bytesRead) => {
-							position += bytesRead;
-							ret = read_lines(this.buffer.toString('utf-8', 0, offset + bytesRead));
-							offset = this.buffer.write(ret.rest);
-							this.subscribers.forEach((s) => {
-								s.cb(ret.lines);
+						try {
+							fs.read(fd, this.buffer, offset, this.bufsize - offset, position, (err, bytesRead) => {
+								position += bytesRead;
+								ret = read_lines(this.buffer.toString('utf-8', 0, offset + bytesRead));
+								offset = this.buffer.write(ret.rest);
+								this.subscribers.forEach((s) => {
+									s.cb(ret.lines);
+								});
 							});
-						});
+						} catch (err) {
+						    let err_new = new Error('Unable to watch file: ' + String(file));
+							console.error(err);
+							console.error(err_new);
+							reject(err_new);
+						}
 					}
 				});
-				this.watcher.on('error', (err) => { console.error(err); });
 			});
 		});
 	});
-
-	return p;
 }
 
 // cleanup

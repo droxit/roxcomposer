@@ -1,3 +1,16 @@
+# v0.4.3
+
+## New
+
+* Check parameters of a service ("ip", "port") for validity and throw a `roxcomposer.exceptions.ConfigError` if parameters are invalid
+* Additional "description" field in logging JSON of BasicLogger - fixes #101
+
+## Fixed 
+
+* Fixed crash when trying to bind to an invalid IP address specified in service parameters
+* Server crash when watching too many files
+* Fixed false error output in Node tests
+
 # v0.4.2
 
 ## New
