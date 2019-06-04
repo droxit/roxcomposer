@@ -1,6 +1,6 @@
 {
   "name": "roxcomposer-control",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "plugin for droxIT ROXconnector - to control the roxcomposer framework",
   "main": "droxitApi.js",
   "dependencies": {
