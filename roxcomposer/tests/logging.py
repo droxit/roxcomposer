@@ -2,9 +2,26 @@
 #
 # Logging test including tests for basic_logging and logging dependency injection.
 #
-# devs@droxit.de
-#
-# Copyright (c) 2018 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer.                                    |
+# |                                                                      |
+# | ROXcomposer is free software: you can redistribute it and/or modify  |
+# | it under the terms of the GNU Lesser General Public License as       |
+# | published by the Free Software Foundation, either version 3 of the   |
+# | License, or (at your option) any later version.                      |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU Lesser General Public License    |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 import unittest
@@ -20,7 +37,7 @@ class TestLogging(unittest.TestCase):
     def test_basic_logger_fails(self):
         params = {
             'name': 'logger_should_fail',
-            'ip': 'not important',
+            'ip': '127.0.0.1',
             'port': 3,
             'logging': {
                 'level': 'WARNING',
@@ -46,7 +63,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logging_logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -106,7 +123,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -129,7 +146,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -145,7 +162,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',
@@ -161,7 +178,7 @@ class TestLogging(unittest.TestCase):
 
             params = {
                 'name': 'logtest',
-                'ip': 'not important',
+                'ip': '127.0.0.1',
                 'port': 7,
                 'logging': {
                     'level': 'DEBUG',

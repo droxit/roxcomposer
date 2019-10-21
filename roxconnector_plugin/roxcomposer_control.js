@@ -1,10 +1,27 @@
-//
-// Class roxcomposer control: ROXconnector control plugin for ROXcomposer
-//
-// devs@droxit.de - droxIT GmbH
-//
-// Copyright (c) 2018 droxIT GmbH
-//
+/*
+ * Class roxcomposer control: ROXconnector control plugin for ROXcomposer
+ *
+ * |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+ * |                                                                      |
+ * | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+ * |                                                                      |
+ * | This file is part of ROXcomposer.                                    |
+ * |                                                                      |
+ * | ROXcomposer is free software: you can redistribute it and/or modify  |
+ * | it under the terms of the GNU Lesser General Public License as       |
+ * | published by the Free Software Foundation, either version 3 of the   |
+ * | License, or (at your option) any later version.                      |
+ * |                                                                      |
+ * | This program is distributed in the hope that it will be useful,      |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+ * | GNU General Public License for more details.                         |
+ * |                                                                      |
+ * | You have received a copy of the GNU Lesser General Public License    |
+ * | along with this program. See also <http://www.gnu.org/licenses/>.    |
+ * |                                                                      |
+ * |----------------------------------------------------------------------|
+ */
 
 let fs = require('fs');
 let bunyan = require('bunyan');
@@ -50,8 +67,11 @@ function __roxcomposer_control_private() {
 	this.set_logsession_timeout = set_logsession_timeout.bind(this);
 	this.delete_log_observer = delete_log_observer.bind(this);
 	this.get_log_lines = get_log_lines.bind(this);
+	this.create_roxcomposer_session = create_roxcomposer_session.bind(this);
 	this.post_services_to_logsession = post_services_to_logsession.bind(this);
     this.service_log_filter = service_log_filter.bind(this);
+    this.get_logsession = get_logsession.bind(this);
+    this.cleanup_all = cleanup_all.bind(this);
 	this.default;
 }
 
@@ -59,6 +79,7 @@ module.exports = function (container) {
 	let mcp = new __roxcomposer_control_private();
 	container['init'] = mcp.init;
 	container['get_root'] = mcp.get_root;
+	container['get_logsession'] = mcp.get_logsession;
     container['delete_pipeline'] = mcp.delete_pipeline;
 	container['start_service'] = mcp.start_service;
 	container['shutdown_service'] = mcp.shutdown_service;
@@ -76,6 +97,7 @@ module.exports = function (container) {
 	container['delete_log_observer'] = mcp.delete_log_observer;
 	container['get_log_lines'] = mcp.get_log_lines;
 	container['post_services_to_logsession'] = mcp.post_services_to_logsession;
+	container['create_roxcomposer_session'] = mcp.create_roxcomposer_session;
 };
 
 /**
@@ -83,8 +105,8 @@ module.exports = function (container) {
  * args needs to contain IP, port and the beginning of the portrange for the micro services
  **/
 function init(args) {
-    process.on('uncaughtException', cleanup_all.bind(this))
-    process.on('exit', cleanup_all.bind(this))
+    process.on('uncaughtException', this.cleanup_all);
+    process.on('exit', this.cleanup_all);
 
 	if (args && ('logger' in args))
 		this.logger = args.logger;
@@ -134,7 +156,9 @@ function init(args) {
  * cleanup all child processes when the parent terminates
  *
  **/
-function cleanup_all(){
+function cleanup_all(err){
+    console.log(err)
+    this.logger.fatal(err);
     for (var child_process in this.processes) {
       if (this.processes.hasOwnProperty(child_process))
         this.processes[child_process].kill('SIGINT');
@@ -154,6 +178,27 @@ function check_args(args, fields) {
 		return `missing fields: [${missing.join(", ")}]`;
 	else
 		return false;
+}
+
+/**
+ * Retrieve information about a specific logsession
+ * must contain session id
+ **/
+function get_logsession(args, cb){
+    if (!args.hasOwnProperty('id')) {
+		let msg = 'get_logsession: session id not provided';
+		this.logger.error({args: args}, msg);
+		cb({'code': 400, 'message': msg});
+		return;
+	}
+		let id = args['id'];
+	if(!this.logsessions.hasOwnProperty(id)){
+	    let msg = 'get_logsession: no session for session id '+ id;
+		this.logger.error({args: args}, msg);
+	    return cb({'code':400});
+	}
+	let services = Array.from(this.logsessions[id]['services'])
+	cb(null, {'id': id, 'services': services});
 }
 
 /**
@@ -310,9 +355,9 @@ function start_service(args, cb, exit_cb) {
     // add default values if given to params if logging or monitoring is not set
     if(this.hasOwnProperty('default')) {
         if (!args.params.hasOwnProperty('logging') && this.default.hasOwnProperty('logging'))
-            args.params.logging = this.default.logging;
+            args.params.logging = Object.assign({}, this.default.logging);
         if (!args.params.hasOwnProperty('monitoring') && this.default.hasOwnProperty('monitoring'))
-            args.params.monitoring = this.default.monitoring;
+            args.params.monitoring = Object.assign({}, this.default.monitoring);
     }
 
 	if (args.params.hasOwnProperty('logging') && args.params.logging.hasOwnProperty('logpath')) {
@@ -476,8 +521,12 @@ function post_to_pipeline(args, cb) {
 		this.logger.info({message_id: msg.id, pipeline: args.name}, 'message posted to pipeline');
 		let packet = msg.serialize();
 		socket.end(packet);
-		cb(null, {'message': 'pipeline initiated', 'message_id': msg.id});
+
 	});
+	socket.on('end', () => {
+	    cb(null, {'message': 'pipeline initiated', 'message_id': msg.id});
+	});
+
 	socket.on('error', (e) => {
 		this.logger.error({error: e, service: { name: services_in_pipe[0], ip: start.params.ip, port: start.params.port }}, 'unable to connect to service');
 		cb({'code': 500, 'message': 'internal server error'});
@@ -565,7 +614,6 @@ function set_pipeline(args, cb) {
 		cb({'code': 400, 'message': msg});
 		return;
 	}
-
 	this.pipelines[args.name] = {
 		'services': pipe_services,
 		'active': true
@@ -696,20 +744,25 @@ function load_services_and_pipelines(args, cb) {
 
 	if ('services' in args) {
 		for (let s in args.services) {
-			if (s in this.services)
-				skipped_services.push(s);
-			else {
-				promises.push(new Promise((resolve) => {
-					this.start_service(args.services[s], (err, msg) => {
-						if (err) {
-							errors.push(err);
-						} else {
-							started_services.push(s);
-						}
-						resolve();
-					});
-				}));
-			}
+		    // check if it's a normal service or one with params
+		    if (!(typeof s === "string" || s instanceof String) && "service" in s) {
+		        s = s["service"];
+		    }
+
+		    if (s in this.services) {
+		        skipped_services.push(s);
+            } else {
+                promises.push(new Promise((resolve) => {
+                    this.start_service(args.services[s], (err, msg) => {
+                        if (err) {
+                            errors.push(err);
+                        } else {
+                            started_services.push(s);
+                        }
+                        resolve();
+                    });
+                }));
+            }
 		}
 	}
 
@@ -807,6 +860,40 @@ function create_log_observer(args, cb) {
 	} else {
 		cb(null, {sessionid: l.id});
 	}
+
+	this.set_logsession_timeout(l.id);
+}
+
+function create_roxcomposer_session(args, cb){
+    let missing = check_args(args, ['lines', 'timeout']);
+	if (missing) {
+		cb({code: 400, message: missing});
+		return;
+	}
+	let logfile = "";
+	// check if we have a logger that writes to file
+	for(var i = 0; i < this.logger.streams.length; i++){
+        if(this.logger.streams[i]["type"] === "file"){
+            logfile = this.logger.streams[i]["path"];
+        }
+	}
+	if(logfile === ""){
+	    cb({code: 400, message: "logger is not writing to file - cannot watch system logs"});
+	}
+
+    // create new LogSession
+	let l = new LogSession(args.lines);
+	this.logsessions[l.id] = { session: l, services: new Set(), timeout: args.timeout * 1000 };
+
+    //check if logfile configured
+    //if yes return that
+    l.watch_files([logfile]).then(
+        () => {
+            cb(null, {message: "created roxcomposer logsession ", sessionid: l.id});
+        }
+    ).catch((error) => {
+        cb({code:400, message: "could not create roxcomposer session - " + String(error)});
+    });
 
 	this.set_logsession_timeout(l.id);
 }

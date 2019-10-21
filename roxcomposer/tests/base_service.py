@@ -2,9 +2,26 @@
 #
 # Tests for the base service
 #
-# devs@droxit.de
-#
-# Copyright (c) 2018 droxIT GmbH
+# |------------------- OPEN SOURCE LICENSE DISCLAIMER -------------------|
+# |                                                                      |
+# | Copyright (C) 2019  droxIT GmbH - devs@droxit.de                     |
+# |                                                                      |
+# | This file is part of ROXcomposer.                                    |
+# |                                                                      |
+# | ROXcomposer is free software: you can redistribute it and/or modify  |
+# | it under the terms of the GNU Lesser General Public License as       |
+# | published by the Free Software Foundation, either version 3 of the   |
+# | License, or (at your option) any later version.                      |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the         |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You have received a copy of the GNU Lesser General Public License    |
+# | along with this program. See also <http://www.gnu.org/licenses/>.    |
+# |                                                                      |
+# |----------------------------------------------------------------------|
 #
 
 import unittest
@@ -95,6 +112,27 @@ class TestBaseService(unittest.TestCase):
         })
 
         self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, self.test_params_2)
+
+        # test invalid parameters
+        self.assertRaises(exceptions.ConfigError, base_service.BaseService, {
+            'ip': '127.0.0.1',
+            'port': '4711',
+            'name': 'fancy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
+        })
+
+        self.assertRaises(exceptions.ConfigError, base_service.BaseService, {
+            'ip': '127.0.999.1',
+            'port': 4711,
+            'name': 'fancy-service',
+            "logging": {
+                "level": "INFO",
+                "logpath": "/dev/null"
+            }
+        })
 
         # test initiation with params
         bs_with_params = base_service.BaseService({
@@ -190,7 +228,7 @@ class TestBaseService(unittest.TestCase):
     @unittest.skipIf('SKIP_TEMPDIR_TEST' in os.environ, "tempdir issues")
     def test_config_loading(self):
         os.environ['DROXIT_ROXCOMPOSER_CONFIG'] = '/bogus/path/from/hell.json'
-        self.assertRaises(exceptions.ConfigError, base_service.BaseService, { "service_key": "nevermind" })
+        self.assertRaises(exceptions.ConfigError, base_service.BaseService, {"service_key": "nevermind"})
 
         with TemporaryDirectory() as tdir:
             confname = os.path.join(tdir, "config.json")
@@ -203,14 +241,14 @@ class TestBaseService(unittest.TestCase):
 
             os.environ['DROXIT_ROXCOMPOSER_CONFIG'] = confname
 
-            self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, { "service_key": "nevermind" })
+            self.assertRaises(exceptions.ParameterMissing, base_service.BaseService, {"service_key": "nevermind"})
             s = base_service.BaseService({"service_key": "service.dummy"})
             self.assertDictEqual(s.params, self.test_params_1)
 
             f = open(confname, "w")
             f.write('this is no proper JSON')
             f.close()
-            self.assertRaises(exceptions.ConfigError, base_service.BaseService, { "service_key": "nevermind" })
+            self.assertRaises(exceptions.ConfigError, base_service.BaseService, {"service_key": "nevermind"})
 
 
 if __name__ == '__main__':

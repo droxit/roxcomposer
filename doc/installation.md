@@ -10,6 +10,8 @@
 
 The project contains a Makefile with targets for package building and deployment:
 
+| command | description |
+| --- | ---- |
 | make python-package | build only the python package containing only the base functionality. The package will be placed in `dist` |
 | make demo-package   | build a whole demo system with all interlocking parts into one archive in `build` |
 | make deploy-demo    | deploy the demo (build it if needed) to a directory. The script will prompt for the target location. During this step the ROXconnector package will be downloaded and if needed access credentials will be prompted for |
@@ -19,8 +21,8 @@ The project contains a Makefile with targets for package building and deployment
 To deploy a built demo archive you have to unpack it:
 
 ```bash
-tar xpf roxcomposer-demo-0.4.0.tar.gz
-cd roxcomposer-demo-0.4.0
+tar xpf roxcomposer-demo-0.4.3.tar.gz
+cd roxcomposer-demo-0.4.3
 ```
 
 and use the `install.sh` to pull the project dependencies:
@@ -39,7 +41,7 @@ The `--user` flag can be omitted if you have super user rights and want to insta
 If you only want to use the service base class and construct your own infrastructure around it you can just install the Python code package:
 
 ```bash
-pip3 install --user roxcomposer-0.4.0.tar.gz
+pip3 install --user roxcomposer-0.4.3.tar.gz
 ```
 
 The `--user` flag can be omitted (see above).

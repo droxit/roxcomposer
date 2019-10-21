@@ -70,6 +70,9 @@ jobs:
 
     working_directory: ~/repo
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "10:56:b2:4e:00:a7:3d:a4:82:f2:48:7c:38:86:18:2c"
       - checkout
       # build demo package
       - restore_cache:
@@ -110,9 +113,9 @@ jobs:
       - deploy:
           name: Deploy to gru
           command: |
-            export roxcomposer_folder='/opt/artifacts/roxcomposer/dev'
-            if [ $CIRCLE_BRANCH == 'master' ]; then export roxcomposer_folder='/opt/artifacts/roxcomposer/release'; fi
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./build/roxcomposer*.tar.gz devpi@176.9.144.37:$roxcomposer_folder
+            export roxcomposer_folder='/opt/artifacts/repo/roxcomposer/dev'
+            if [ $CIRCLE_BRANCH == 'master' ]; then export roxcomposer_folder='/opt/artifacts/repo/roxcomposer/release'; fi
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./build/roxcomposer*.tar.gz artifact@artifacts.droxit.de:$roxcomposer_folder
 
 workflows:
   version: 2
@@ -125,7 +128,6 @@ workflows:
             - test
           filters:
             branches:
-              only: disabled_for_now_since_gru_is_down
-              #only: /^(master|dev)$/
+              only: /^(master|dev)$/
 
 
