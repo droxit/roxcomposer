@@ -1,10 +1,11 @@
 <application>
   <component name="FileTypeManager" version="17">
     <extensionMap>
+      <mapping pattern="ignore" type="Git exclude file" />
       <mapping ext="php" type="PHP" />
       <mapping pattern="COPYING" type="PLAIN_TEXT" />
-      <mapping ext="lesser" type="PLAIN_TEXT" />
       <mapping ext="py" type="PLAIN_TEXT" />
+      <mapping ext="lesser" type="PLAIN_TEXT" />
       <removed_mapping ext="php" approved="true" type="PLAIN_TEXT" />
     </extensionMap>
   </component>
